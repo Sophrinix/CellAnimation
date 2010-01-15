@@ -10,11 +10,14 @@ cells_bw=cells_lbl>0;
 blob_lbl=bwlabeln(cells_bw);
 nr_cells=size(cells_centroids,1);
 blob_ids=zeros(nr_cells,1);
+matching_group_ids=blob_ids;
 for i=1:nr_cells
     blob_ids(i)=getLabelId(blob_lbl,cells_centroids(i,:));
 end
+%i want the orientation from 0 to 180 instead of -90 to 90 so i can run
+%percentages
 shape_params=[[cells_props.Area]' [cells_props.Eccentricity]' [cells_props.MajorAxisLength]' ...
-    [cells_props.MinorAxisLength]' [cells_props.Orientation]' [cells_props.Perimeter]'...
-    [cells_props.Solidity]' blob_ids];
+    [cells_props.MinorAxisLength]' [cells_props.Orientation]'+90 [cells_props.Perimeter]'...
+    [cells_props.Solidity]' blob_ids matching_group_ids];
 %end getShapeParams
 end

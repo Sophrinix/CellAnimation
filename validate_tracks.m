@@ -192,7 +192,7 @@ while (~isempty(untested_ids))
     track_start_time=cur_track_times(1);
     track_end_time=cur_track_times(end);
     cur_area=cur_track(1,areaCol);
-    if (cur_area>1.1*cur_track_median_area)
+    if (cur_area>1.3*cur_track_median_area)
         %a cell is smaller right after splitting
         untested_ids(1)=[];
         continue;
@@ -202,12 +202,12 @@ while (~isempty(untested_ids))
         untested_ids(1)=[];
         continue;
     end
-    cur_ecc=cur_track(1,eccCol);
-    if (cur_ecc<min_split_ecc)
-        %nuclei are elongated right after splitting
-        untested_ids(1)=[];
-        continue;
-    end
+%     cur_ecc=cur_track(1,eccCol);
+%     if (cur_ecc<min_split_ecc)
+%         %nuclei are elongated right after splitting
+%         untested_ids(1)=[];
+%         continue;
+%     end
     %get the tracks that exist when this track appears for now just tracks
     %in the current time for the future we might add other times
     existing_tracks_idx=(tracks(:,timeCol)==track_start_time)&(~cur_track_idx);
@@ -263,11 +263,11 @@ while (~isempty(untested_ids))
             %a cell is smaller right after splitting            
             continue;
         end
-        cur_ecc=potential_split_params(1,eccCol);
-        if (cur_ecc<min_split_ecc)
-            %nuclei are elongated right after splitting            
-            continue;
-        end
+%         cur_ecc=potential_split_params(1,eccCol);
+%         if (cur_ecc<min_split_ecc)
+%             %nuclei are elongated right after splitting            
+%             continue;
+%         end
         split_cells=[split_cells; [candidateID curID track_start_time track_end_time]];
         break;
     end
