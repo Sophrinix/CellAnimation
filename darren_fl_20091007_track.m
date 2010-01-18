@@ -10,7 +10,7 @@ TrackStruct.ImageFileBase=[well_folder ds TrackStruct.ImageFileName];
 %hepsin overexpressing
 % TrackStruct.ImageFileBase=[well_folder ds 'llh_hep_lm7_t'];
 TrackStruct.StartFrame=1;
-TrackStruct.FrameCount=72;
+TrackStruct.FrameCount=15;
 TrackStruct.TimeFrame=15; %minutes
 TrackStruct.FrameStep=1; %read every x frames
 TrackStruct.NumberFormat='%06d';
@@ -84,27 +84,7 @@ TrackStruct.bContourLink=false;
 TrackStruct.LinkDist=1;
 TrackStruct.ObjectReduce=0.3;
 TrackStruct.ClusterDist=5;
-TrackStruct.bCytoLocalAvg=true;
-TrackStruct.CytoBrightThreshold=1.1;
-TrackStruct.bNuclLocalAvg=true;
-TrackStruct.NuclBrightThreshold=1.1;
-TrackStruct.bCytoGrad=false;
-TrackStruct.CytoGradThreshold=2800;
-TrackStruct.bNuclGrad=false;
-TrackStruct.NuclGradThreshold=2800;
-TrackStruct.bCytoInt=false;
-TrackStruct.bSmoothContours=false;
-TrackStruct.bNuclInt=false;
-TrackStruct.bMaxEcc=false;
-TrackStruct.MaxCellEcc=0.99;
 TrackStruct.bClearBorder=true;
-TrackStruct.IntensityThreshold=1;
-TrackStruct.L1=1.2;
-TrackStruct.L2=0.6;
-TrackStruct.L3=2;
-TrackStruct.Alpha1=5*pi/6;
-TrackStruct.Alpha2=pi/2;
-TrackStruct.MinPolArea=80;
 TrackStruct.ApproxDist=2;
 TrackStruct.ClearBorderDist=2;
 TrackStruct.WatershedMed=3;
@@ -112,6 +92,67 @@ TrackStruct.MaxMergeDist=20;
 TrackStruct.MaxSplitDist=45;
 TrackStruct.MaxSplitArea=500;
 TrackStruct.MinSplitEcc=0.6;
+
+%for thresholding filters one needs to specify a FilterStruct array for each
+%filter applied. the filter struct specifies the filter function name as
+%well as any parameters that filter requires. in addition the way each
+%image is combined with the result from other filter is specified. filters
+%will be run in the order in which they are present in the filter array
+
+%'Brightness Local Averaging Filter' - start
+filterLocalAverageStruct.Name='Brightness Local Averaging Filter';
+filterLocalAverageStruct.FilterFunctionHandle=@generateBinImgUsingLocAvg;
+%what image to use for filter input: 0 is image as it is before any thresholding
+%filters 1 is the image resulting from first thresholding filter and so on
+filterLocalAverageStruct.SourceImageOrder=0;
+%what logical operation to use to combine the results from this filter with
+%the result from the previous filters.
+filterLocalAverageStruct.CombineWithPrevFilter='OR';
+%structural element for average filter
+parametersLocalAverageFilterStruct.strel='disk';
+%structural element size
+parametersLocalAverageFilterStruct.strelSize=10;
+%local average percentage brightness threshold
+parametersLocalAverageFilterStruct.BrightnessThresholdPct=1.1;
+%erase objects at the image border?
+parametersLocalAverageFilterStruct.bClearBorder=true;
+%how far from the border are we erasing objects?
+parametersLocalAverageFilterStruct.clearBorderDist=2;
+%set the filter params
+filterLocalAverageStruct.filterParams=parametersLocalAverageFilterStruct;
+%'Brightness Local Averaging Filter' - end
+
+%'Global Pixel Intensity Filter' - start
+filterGlobalPixelIntensityStruct.Name='Global Pixel Intensity Filter';
+%handle to the filter function
+filterGlobalPixelIntensityStruct.FilterFunctionHandle=@generateBinImgUsingGlobInt;
+%what image to use for filter input: 0 is image as it is before any thresholding
+%filters 1 is the image resulting from first thresholding filter and so on
+filterGlobalPixelIntensityStruct.SourceImageOrder=0;
+%what logical operation to use to combine the results from this filter with
+%the result from the previous filters.
+filterGlobalPixelIntensityStruct.CombineWithPrevFilter='AND';
+%pixels that are below this percentage of average max intensity will be set to zero in the binary
+%image
+parametersGlobalPixelIntensityStruct.IntensityThresholdPct=0.1;
+%erase objects at the image border?
+parametersGlobalPixelIntensityStruct.bClearBorder=true;
+%how far from the border are we erasing objects?
+parametersGlobalPixelIntensityStruct.clearBorderDist=2;
+%set the filter params
+filterGlobalPixelIntensityStruct.filterParams=parametersGlobalPixelIntensityStruct;
+%'Global Pixel Intensity Filter' - end
+
+cytoThresholdingFilterArray{1}=filterLocalAverageStruct;
+cytoThresholdingFilterArray{2}=filterGlobalPixelIntensityStruct;
+%filters used to create the binary cytoplasm image
+TrackStruct.CytoThresholdingFilters=cytoThresholdingFilterArray;
+
+%filters used to create the binary nuclei image
+nuclThresholdingFilterArray=cytoThresholdingFilterArray;
+nuclThresholdingFilterArray{1}.filterParams.BrightnessThresholdPct=1.1;
+TrackStruct.NuclThresholdingFilters=nuclThresholdingFilterArray;
+
 disp(TrackStruct)
 
 cells_track(TrackStruct);

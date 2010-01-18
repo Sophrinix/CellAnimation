@@ -1,73 +1,59 @@
-function [cyto_lbl nuclei_lbl]=segment_nuclei(img_to_proc,track_struct)
-%IMPORTANT - need to use img_cells to calculate a median brightness value
-%and then visit each blob and rescale its intensity so that its average
-%intensity matches the median intensity of the image. this way i will
-%eliminate all uneven illumination
-
-%minimum area of the two resulting polygons for which i will accept a cut
-% polygon_area=500;
-%minimum blob area for which i will not remove it from a thresholded image
-% blob_area=150; %for 10x
-% blob_area=300; %for 20x ht1080
-% avg_vol=1000; %cubic microns
+function cyto_lbl=segment_nuclei(img_to_proc,track_struct)
 
 img_to_proc_norm=imnorm(img_to_proc,'uint16');
 img_level_1=impyramid(img_to_proc_norm,'reduce');
+clear img_to_proc_norm
 img_sz=size(img_level_1);
 img_cyto=zeros(img_sz);
 img_nucl=zeros(img_sz);
-bClearBorder=track_struct.bClearBorder;
-clearBorderDist=track_struct.ClearBorderDist;
-bCytoLocalAvg=track_struct.bCytoLocalAvg;
-bNuclLocalAvg=track_struct.bNuclLocalAvg;
 
-if (bCytoLocalAvg||bNuclLocalAvg)
-    avg_filter=fspecial('disk',10);
-    img_avg=imfilter(img_level_1,avg_filter,'replicate');
-    if (bCytoLocalAvg)
-        img_cyto_local_avg_bw=generateBinImgUsingLocAvg(img_level_1, img_avg, track_struct.CytoBrightThreshold,...
-            bClearBorder,clearBorderDist);
-        img_cyto=img_cyto|img_cyto_local_avg_bw;
-    end
-    if (bNuclLocalAvg)
-        img_nucl_local_avg_bw=generateBinImgUsingLocAvg(img_level_1, img_avg, track_struct.NuclBrightThreshold,...
-            bClearBorder,clearBorderDist);
-        img_nucl=img_nucl|img_nucl_local_avg_bw;
-    end  
+%apply the cytoplasm filters
+cytoThresholdingFilters=track_struct.CytoThresholdingFilters;
+for i=1:length(cytoThresholdingFilters)
+    cur_filter=cytoThresholdingFilters{i};
+    filterFunction=cur_filter.FilterFunctionHandle;
+    img_filtered=filterFunction(img_level_1,cur_filter.filterParams);
+    switch (cur_filter.CombineWithPrevFilter)
+        case 'AND'
+            img_cyto=img_cyto&img_filtered;
+        case 'OR'
+            img_cyto=img_cyto|img_filtered;
+    end    
 end
 
-bCytoGrad=track_struct.bCytoGrad;
-bNuclGrad=track_struct.bNuclGrad;
-bSmoothContours=track_struct.bSmoothContours;
-if (bCytoGrad||bNuclGrad)
-    [grad_x grad_y]=gradient(double(img_level_1));
-    grad_mag=sqrt(grad_x.^2+grad_y.^2);
-    if (bCytoGrad)
-        img_cyto_grad_bw=generateBinImgUsingGradient(grad_mag,track_struct.CytoGradThreshold,bClearBorder,...
-            clearBorderDist,bSmoothContours);
-        img_cyto=img_cyto|img_cyto_grad_bw;
-    end
-    if (bNuclGrad)
-        img_nucl_grad_bw=generateBinImgUsingGradient(grad_mag,track_struct.NuclGradThreshold,bClearBorder,...
-            clearBorderDist,bSmoothContours);
-        img_nucl=img_nucl|img_nucl_grad_bw;
-    end 
+%apply the nuclear filters
+nuclThresholdingFilters=track_struct.NuclThresholdingFilters;
+for i=1:length(nuclThresholdingFilters)
+    cur_filter=nuclThresholdingFilters{i};
+    filterFunction=cur_filter.FilterFunctionHandle;
+    img_filtered=filterFunction(img_level_1,cur_filter.filterParams);
+    switch (cur_filter.CombineWithPrevFilter)
+        case 'AND'
+            img_nucl=img_nucl&img_filtered;
+        case 'OR'
+            img_nucl=img_nucl|img_filtered;
+    end    
 end
 
-bCytoInt=track_struct.bCytoInt;
-bNuclInt=track_struct.bNuclInt;
-if (bCytoInt||bNuclInt)
-    if (bCytoInt)
-        img_cyto_int_bw=generateBinImgUsingGlobInt(img_level_1,track_struct.CytoIntThreshold,bClearBorder,...
-            clearBorderDist);
-        img_cyto=img_cyto|img_cyto_int_bw;
-    end
-    if (bNuclInt)
-        img_nucl_int_bw=generateBinImgUsingGlobInt(img_level_1,track_struct.NuclIntThreshold,bClearBorder,...
-            clearBorderDist);
-        img_nucl=img_nucl|img_nucl_int_bw;
-    end
-end
+
+% bCytoGrad=track_struct.bCytoGrad;
+% bNuclGrad=track_struct.bNuclGrad;
+% bSmoothContours=track_struct.bSmoothContours;
+% if (bCytoGrad||bNuclGrad)
+%     [grad_x grad_y]=gradient(double(img_level_1));
+%     grad_mag=sqrt(grad_x.^2+grad_y.^2);
+%     if (bCytoGrad)
+%         img_cyto_grad_bw=generateBinImgUsingGradient(grad_mag,track_struct.CytoGradThreshold,bClearBorder,...
+%             clearBorderDist,bSmoothContours);
+%         img_cyto=img_cyto|img_cyto_grad_bw;
+%     end
+%     if (bNuclGrad)
+%         img_nucl_grad_bw=generateBinImgUsingGradient(grad_mag,track_struct.NuclGradThreshold,bClearBorder,...
+%             clearBorderDist,bSmoothContours);
+%         img_nucl=img_nucl|img_nucl_grad_bw;
+%     end 
+% end
+
 
 % if (track_struct.bContourLink)
 %     grad_fill_lbl=bwlabeln(img_grad_clean);
@@ -116,13 +102,7 @@ end
 
 
 
-clear img_avg
-clear img_cyto_local_avg_bw
-clear img_nucl_local_avg_bw
-clear img_cyto_grad_bw
-clear img_nucl_grad_bw
-clear img_cyto_int_bw
-clear img_nucl_int_bw
+clear img_filtered
 
 
 %bring it back to original size - use nearest as interpolation will mess up
@@ -136,16 +116,9 @@ img_cyto=imreconstruct(img_cyto&img_nucl,img_cyto);
 nuclei_lbl=bwlabeln(img_nucl);
 cyto_lbl=bwlabeln(img_cyto);
 
-% % start polygonal approximation
-l1=track_struct.L1;
-l2=track_struct.L2;
-l3=track_struct.L3;
-alpha1=track_struct.Alpha1;
-alpha2=track_struct.Alpha2;
-min_pol_area=track_struct.MinPolArea;
+% % get convex objects
 approx_dist=track_struct.ApproxDist;
-[split_polygons lbl_id]=polygonal_approx(img_nucl,nuclei_lbl,min_pol_area,approx_dist,l1,l2,l3,...
-    alpha1,alpha2,false,true);
+convex_idx=getConvexObjects(img_nucl,approx_dist);
 %eliminate the convex objects from the objects to be split by the watershed
 % %assign new label ids to polygons that have been split
 % while(~isempty(lbl_id))
@@ -217,9 +190,8 @@ ws_lbl(bkg_mask)=0;
 % 
 % 
 nuclei_nr=max(nuclei_lbl(:));
-convex_cells=ismember([1:nuclei_nr],lbl_id);
 for i=1:nuclei_nr
-    if (convex_cells(i))
+    if (convex_idx(i))
         %don't let the watershed split convex blobs
         continue;
     end
@@ -234,7 +206,7 @@ for i=1:nuclei_nr
         %the blob is one colony no need to modify cyto_lbl
         continue;
     else
-        nr_clusters=length(ws_cluster_ids);        
+        nr_clusters=length(ws_cluster_ids);
         [blob_1 blob_2]=find(cur_obj);
         segmentation_idx=clusterdata([blob_1 blob_2], 'maxclust', nr_clusters, 'linkage', 'average');
         %get the areas of the newly segmented blobs
@@ -252,7 +224,7 @@ for i=1:nuclei_nr
         valid_len=length(valid_segmentation_ids);
         if (valid_len==1)
             %only one of the blobs will be large enough so we can't split
-            continue;            
+            continue;
         end
         invalid_segmentation_ids=segmentation_ids(~valid_new_blobs_idx);
         if (~isempty(invalid_segmentation_ids))
@@ -295,9 +267,6 @@ for i=1:nuclei_nr
         end
     end    
 end
-%some stray pixels may result after knncalsify - clear them or they will
-%cause problems later on
-
 
 nuclei_nr=max(nuclei_lbl(:));
 nuclei_centroids_1=zeros(nuclei_nr,1);
@@ -401,54 +370,30 @@ end
 cyto_lbl=imresize(cyto_lbl,2,'nearest');
 end %end main function
 
-function img_bw=generateBinImgUsingLocAvg(img_to_proc,img_avg,avg_thresh,bClearBorder,clearBorderDist)
-img_bw=img_to_proc>(avg_thresh*img_avg);
-if (bClearBorder)
-    if (clearBorderDist>1)
-        img_bw(1:clearBorderDist-1,1:end)=1;
-        img_bw(end-clearBorderDist+1:end,1:end)=1;
-        img_bw(1:end,1:clearBorderDist-1)=1;
-        img_bw(1:end,end-clearBorderDist+1:end)=1;
-    end
-    img_bw=imclearborder(img_bw);
-end
-end %end generateBinImgUsingLocAvg
 
-function img_bw=generateBinImgUsingGradient(grad_mag,grad_thresh,bClearBorder,clearBorderDist,bSmoothCont)
-img_bw=grad_mag>grad_thresh;
-img_neg=~img_bw;
-%fill holes smaller than a certain size;
-holes_lbl=bwlabeln(img_neg);
-holes_props=regionprops(holes_lbl,'Area');
-small_holes_idx=find([holes_props.Area] < 20);
-small_holes_lbl=ismember(holes_lbl, small_holes_idx);
-small_holes_bw=small_holes_lbl>0;
-img_grad_fill=img_bw|small_holes_bw;
-if (bSmoothCont)
-img_grad_fill=imopen(img_grad_fill,strel('diamond',4));
-img_grad_fill=imopen(img_grad_fill,strel('disk',1));
-end
-if (bClearBorder)
-    if (clearBorderDist>1)
-        img_grad_fill(1:clearBorderDist-1,1:end)=1;
-        img_grad_fill(end-clearBorderDist+1:end,1:end)=1;
-        img_grad_fill(1:end,1:clearBorderDist-1)=1;
-        img_grad_fill(1:end,end-clearBorderDist+1:end)=1;
-    end
-    img_grad_fill=imclearborder(img_grad_fill);
-end
-img_bw=img_grad_fill;
-end %end generateBinImgUsingGradient
-
-function img_bw=generateBinImgUsingGlobInt(img_to_proc,glob_thresh,bClearBorder,clearBorderDist)
-img_bw=im2bw(img_to_proc,glob_thresh*graythresh(img_to_proc));
-if (bClearBorder)
-    if (clearBorderDist>1)
-        img_bw(1:clearBorderDist-1,1:end)=1;
-        img_bw(end-clearBorderDist+1:end,1:end)=1;
-        img_bw(1:end,1:clearBorderDist-1)=1;
-        img_bw(1:end,end-clearBorderDist+1:end)=1;
-    end
-    img_bw=imclearborder(img_bw);
-end
-end %end generateBinImgUsingGlobInt
+% 
+% function img_bw=generateBinImgUsingGradient(grad_mag,grad_thresh,bClearBorder,clearBorderDist,bSmoothCont)
+% img_bw=grad_mag>grad_thresh;
+% img_neg=~img_bw;
+% %fill holes smaller than a certain size;
+% holes_lbl=bwlabeln(img_neg);
+% holes_props=regionprops(holes_lbl,'Area');
+% small_holes_idx=find([holes_props.Area] < 20);
+% small_holes_lbl=ismember(holes_lbl, small_holes_idx);
+% small_holes_bw=small_holes_lbl>0;
+% img_grad_fill=img_bw|small_holes_bw;
+% if (bSmoothCont)
+% img_grad_fill=imopen(img_grad_fill,strel('diamond',4));
+% img_grad_fill=imopen(img_grad_fill,strel('disk',1));
+% end
+% if (bClearBorder)
+%     if (clearBorderDist>1)
+%         img_grad_fill(1:clearBorderDist-1,1:end)=1;
+%         img_grad_fill(end-clearBorderDist+1:end,1:end)=1;
+%         img_grad_fill(1:end,1:clearBorderDist-1)=1;
+%         img_grad_fill(1:end,end-clearBorderDist+1:end)=1;
+%     end
+%     img_grad_fill=imclearborder(img_grad_fill);
+% end
+% img_bw=img_grad_fill;
+% end %end generateBinImgUsingGradient
