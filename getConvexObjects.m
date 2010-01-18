@@ -9,11 +9,6 @@ convex_objects_idx=false(obj_nr,1);
 for i=1:obj_nr    
     cur_bound=obj_bounds{i};
     pol_points_1=dpsimplify([cur_bound(:,1) cur_bound(:,2)],pol_simplify);
-    pols_split=splitSelfIntersectPolygon(pol_points_1);
-    if (size(pols_split,1)>1)
-        %self intersecting polygons are not convex
-        continue;
-    end    
     %to get the angles inside the polygon we need to create vectors that
     %have as base each vertex and as end the next and previous vertice and
     %then translate their base to the origin. because we need each vertex
