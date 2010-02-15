@@ -576,7 +576,10 @@ function []=displaydata(cur_img, cur_tracks, cells_lbl, cells_ancestry, curframe
 % tic
 %create a color version of our image so we can add cell
 %boundaries and ids in color
-cur_img=imnorm(cur_img,'uint8');
+imnorm_args.IntegerClass.Value='uint8';
+imnorm_args.RawImage.Value=cur_img;
+imnorm_output=imNorm(imnorm_args);
+cur_img=imnorm_output.Image;
 red_color=cur_img;
 green_color=cur_img;
 blue_color=cur_img;
