@@ -1,10 +1,11 @@
-function convex_objects_idx=getConvexObjects(img_cells, pol_simplify)
+function output_args=getConvexObjects(input_args)
 %assumes the index of the boundaries is the same as the label index
 %bwboundaries uses bwlabel internally then calls bwboundariesmex on the
 %label image so it all works out
-obj_bounds=bwboundaries(img_cells);
+obj_bounds=bwboundaries(input_args.Image.Value);
 obj_nr=length(obj_bounds);
 convex_objects_idx=false(obj_nr,1);
+pol_simplify=input_args.ApproximationDistance.Value;
 
 for i=1:obj_nr    
     cur_bound=obj_bounds{i};
@@ -48,4 +49,9 @@ for i=1:obj_nr
         %convex polygon - no concave angles
         convex_objects_idx(i)=true;
     end
+end
+
+output_args.ConvexObjectsIndex=convex_objects_idx;
+
+%end getConvexObjects
 end

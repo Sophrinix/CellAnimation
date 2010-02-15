@@ -1,15 +1,17 @@
-function img_norm=imnorm(img_raw,intclass)
+function output_args=imNorm(input_args)
 %normalize image so that lowest value is zero and highest value is the
 %maximum allowed value for the specified intclass
-max_val=double(intmax(intclass));
+int_class=input_args.IntegerClass.Value;
+max_val=double(intmax(int_class));
+img_raw=input_args.RawImage.Value;
 img_dbl=floor(double((img_raw-min(img_raw(:))))*max_val./double(max(img_raw(:))-min(img_raw(:))));
-switch(intclass)
+switch(int_class)
     case 'uint8'
-       img_norm=uint8(img_dbl);
+       output_args.Image=uint8(img_dbl);
     case 'uint16'
-       img_norm=uint16(img_dbl);
+       output_args.Image=uint16(img_dbl);
     otherwise
-        img_norm=[];
+        output_args.Image=[];
 end
 
 %end function
