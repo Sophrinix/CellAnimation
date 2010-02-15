@@ -1,6 +1,7 @@
-function []=validate_tracks(track_struct)
+function output_args=validate_tracks(input_args)
 %track id column should be 1
-
+output_args=[];
+track_struct=input_args.TrackStruct.Value;
 file_struct=load(track_struct.TracksFile);
 tracks=file_struct.tracks;
 clear('file_struct');
@@ -476,7 +477,10 @@ for i=1:frame_step:frame_step*framecount
 
             end
             %calculate the new region props
-            [new_shape_params new_centroid]=getShapeParams(cur_blobs_lbl);            
+            get_shape_params_args.LabelMatrix.Value=cur_blobs_lbl;
+            shape_params_output=getShapeParams(get_shape_params_args);
+            new_shape_params=shape_params_output.ShapeParameters;
+            new_centroid=shape_params_output.Centroids;
             %update the new centroids with respect to the uncropped image
             new_centroid=new_centroid+[min_1 min_2];
             %update the tracks matrix

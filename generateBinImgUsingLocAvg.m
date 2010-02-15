@@ -1,15 +1,18 @@
-function img_bw=generateBinImgUsingLocAvg(img_to_proc,filterParamsStruct)
-avg_filter=fspecial(filterParamsStruct.strel,filterParamsStruct.strelSize);
-img_avg=imfilter(img_to_proc,avg_filter,'replicate');
-img_bw=img_to_proc>(filterParamsStruct.BrightnessThresholdPct*img_avg);
-clearBorderDist=filterParamsStruct.clearBorderDist;
-if (filterParamsStruct.bClearBorder)
-    if (clearBorderDist>1)
-        img_bw(1:clearBorderDist-1,1:end)=1;
-        img_bw(end-clearBorderDist+1:end,1:end)=1;
-        img_bw(1:end,1:clearBorderDist-1)=1;
-        img_bw(1:end,end-clearBorderDist+1:end)=1;
+function output_args=generateBinImgUsingLocAvg(input_args)
+
+avg_filter=fspecial(input_args.Strel.Value,input_args.StrelSize.Value);
+img_avg=imfilter(input_args.Image.Value,avg_filter,'replicate');
+img_bw=input_args.Image.Value>(input_args.BrightnessThresholdPct.Value*img_avg);
+clear_border_dist=input_args.ClearBorderDist.Value;
+if (input_args.ClearBorder.Value)
+    if (clear_border_dist>1)
+        img_bw(1:clear_border_dist-1,1:end)=1;
+        img_bw(end-clear_border_dist+1:end,1:end)=1;
+        img_bw(1:end,1:clear_border_dist-1)=1;
+        img_bw(1:end,end-clear_border_dist+1:end)=1;
     end
-    img_bw=imclearborder(img_bw);
+    output_args.Image=imclearborder(img_bw);
 end
-end %end generateBinImgUsingLocAvg
+
+%end generateBinImgUsingLocAvg
+end

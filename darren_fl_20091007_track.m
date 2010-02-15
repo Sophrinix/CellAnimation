@@ -10,7 +10,7 @@ TrackStruct.ImageFileBase=[well_folder ds TrackStruct.ImageFileName];
 %hepsin overexpressing
 % TrackStruct.ImageFileBase=[well_folder ds 'llh_hep_lm7_t'];
 TrackStruct.StartFrame=1;
-TrackStruct.FrameCount=15;
+TrackStruct.FrameCount=72;
 TrackStruct.TimeFrame=15; %minutes
 TrackStruct.FrameStep=1; %read every x frames
 TrackStruct.NumberFormat='%06d';
@@ -93,69 +93,441 @@ TrackStruct.MaxSplitDist=45;
 TrackStruct.MaxSplitArea=500;
 TrackStruct.MinSplitEcc=0.6;
 
-%for thresholding filters one needs to specify a FilterStruct array for each
-%filter applied. the filter struct specifies the filter function name as
-%well as any parameters that filter requires. in addition the way each
-%image is combined with the result from other filter is specified. filters
-%will be run in the order in which they are present in the filter array
+display_trackstruct_function.InstanceName='DisplayTrackStruct';
+display_trackstruct_function.FunctionHandle=@displayVariable;
+display_trackstruct_function.FunctionArgs.Variable.Value=TrackStruct;
+display_trackstruct_function.FunctionArgs.VariableName.Value='TrackStruct';
+%threshold images
+global functions_list;
+loop_args.StartLoop=TrackStruct.StartFrame;
+image_read_loop.InstanceName='SegmentationLoop';
+image_read_loop.FunctionHandle=@forLoop;
+image_read_loop.FunctionArgs.StartLoop.Value=TrackStruct.StartFrame;
+image_read_loop.FunctionArgs.EndLoop.Value=TrackStruct.FrameCount*TrackStruct.FrameStep;
+image_read_loop.FunctionArgs.IncrementLoop.Value=1;
+image_read_loop.FunctionArgs.MatchingGroups.Value=[]; %need to add another provider
+image_read_loop.FunctionArgs.MatchingGroups.FunctionInstance='IfIsEmptyPreviousCellsLabel';
+image_read_loop.FunctionArgs.MatchingGroups.OutputArg='MatchingGroups';
+image_read_loop.FunctionArgs.Tracks.FunctionInstance='IfIsEmptyPreviousCellsLabel';
+image_read_loop.FunctionArgs.Tracks.OutputArg='Tracks';
+image_read_loop.FunctionArgs.Tracks.Value=[];
+image_read_loop.KeepValues.Tracks.FunctionInstance='IfIsEmptyPreviousCellsLabel';
+image_read_loop.KeepValues.Tracks.OutputArg='Tracks';
+image_read_loop.KeepValues.MatchingGroups.FunctionInstance='IfIsEmptyPreviousCellsLabel';
+image_read_loop.KeepValues.MatchingGroups.OutputArg='MatchingGroups';
 
-%'Brightness Local Averaging Filter' - start
-filterLocalAverageStruct.Name='Brightness Local Averaging Filter';
-filterLocalAverageStruct.FilterFunctionHandle=@generateBinImgUsingLocAvg;
-%what image to use for filter input: 0 is image as it is before any thresholding
-%filters 1 is the image resulting from first thresholding filter and so on
-filterLocalAverageStruct.SourceImageOrder=0;
-%what logical operation to use to combine the results from this filter with
-%the result from the previous filters.
-filterLocalAverageStruct.CombineWithPrevFilter='OR';
-%structural element for average filter
-parametersLocalAverageFilterStruct.strel='disk';
-%structural element size
-parametersLocalAverageFilterStruct.strelSize=10;
-%local average percentage brightness threshold
-parametersLocalAverageFilterStruct.BrightnessThresholdPct=1.1;
-%erase objects at the image border?
-parametersLocalAverageFilterStruct.bClearBorder=true;
-%how far from the border are we erasing objects?
-parametersLocalAverageFilterStruct.clearBorderDist=2;
-%set the filter params
-filterLocalAverageStruct.filterParams=parametersLocalAverageFilterStruct;
-%'Brightness Local Averaging Filter' - end
+display_curtrackframe_function.InstanceName='DisplayCurFrame';
+display_curtrackframe_function.FunctionHandle=@displayVariable;
+display_curtrackframe_function.FunctionArgs.Variable.FunctionInstance='SegmentationLoop';
+display_curtrackframe_function.FunctionArgs.Variable.OutputArg='LoopCounter';
+display_curtrackframe_function.FunctionArgs.VariableName.Value='Current Tracking Frame';
 
-%'Global Pixel Intensity Filter' - start
-filterGlobalPixelIntensityStruct.Name='Global Pixel Intensity Filter';
-%handle to the filter function
-filterGlobalPixelIntensityStruct.FilterFunctionHandle=@generateBinImgUsingGlobInt;
-%what image to use for filter input: 0 is image as it is before any thresholding
-%filters 1 is the image resulting from first thresholding filter and so on
-filterGlobalPixelIntensityStruct.SourceImageOrder=0;
-%what logical operation to use to combine the results from this filter with
-%the result from the previous filters.
-filterGlobalPixelIntensityStruct.CombineWithPrevFilter='AND';
-%pixels that are below this percentage of average max intensity will be set to zero in the binary
-%image
-parametersGlobalPixelIntensityStruct.IntensityThresholdPct=0.1;
-%erase objects at the image border?
-parametersGlobalPixelIntensityStruct.bClearBorder=true;
-%how far from the border are we erasing objects?
-parametersGlobalPixelIntensityStruct.clearBorderDist=2;
-%set the filter params
-filterGlobalPixelIntensityStruct.filterParams=parametersGlobalPixelIntensityStruct;
-%'Global Pixel Intensity Filter' - end
+make_file_name_function.InstanceName='MakeImageNamesInSegmentationLoop';
+make_file_name_function.FunctionHandle=@makeImgFileName;
+make_file_name_function.FunctionArgs.FileBase.Value=TrackStruct.ImageFileBase;
+make_file_name_function.FunctionArgs.CurFrame.FunctionInstance='SegmentationLoop';
+make_file_name_function.FunctionArgs.CurFrame.OutputArg='LoopCounter';
+make_file_name_function.FunctionArgs.NumberFmt.Value=TrackStruct.NumberFormat;
+make_file_name_function.FunctionArgs.FileExt.Value=TrackStruct.ImgExt;
+read_image_function.InstanceName='ReadImagesInSegmentationLoop';
+read_image_function.FunctionHandle=@readImage;
+read_image_function.FunctionArgs.ImageName.FunctionInstance='MakeImageNamesInSegmentationLoop';
+read_image_function.FunctionArgs.ImageName.OutputArg='FileName';
+read_image_function.FunctionArgs.ImageChannel.Value='';
+normalize_image_to_16bit_function.InstanceName='NormalizeImageTo16Bit';
+normalize_image_to_16bit_function.FunctionHandle=@imNorm;
+normalize_image_to_16bit_function.FunctionArgs.RawImage.FunctionInstance='ReadImagesInSegmentationLoop';
+normalize_image_to_16bit_function.FunctionArgs.RawImage.OutputArg='Image';
+normalize_image_to_16bit_function.FunctionArgs.IntegerClass.Value='uint16';
 
-cytoThresholdingFilterArray{1}=filterLocalAverageStruct;
-cytoThresholdingFilterArray{2}=filterGlobalPixelIntensityStruct;
-%filters used to create the binary cytoplasm image
-TrackStruct.CytoThresholdingFilters=cytoThresholdingFilterArray;
+gaussian_pyramid_function.InstanceName='GaussianPyramid';
+gaussian_pyramid_function.FunctionHandle=@gaussianPyramid;
+gaussian_pyramid_function.FunctionArgs.Image.FunctionInstance='NormalizeImageTo16Bit';
+gaussian_pyramid_function.FunctionArgs.Image.OutputArg='Image';
+cyto_local_avg_filter_function.InstanceName='CytoBrightnessLocalAveragingFilter';
+cyto_local_avg_filter_function.FunctionHandle=@generateBinImgUsingLocAvg;
+cyto_local_avg_filter_function.FunctionArgs.Image.FunctionInstance='GaussianPyramid';
+cyto_local_avg_filter_function.FunctionArgs.Image.OutputArg='Image';
+cyto_local_avg_filter_function.FunctionArgs.Strel.Value='disk';
+cyto_local_avg_filter_function.FunctionArgs.StrelSize.Value=10;
+cyto_local_avg_filter_function.FunctionArgs.BrightnessThresholdPct.Value=1.1;
+cyto_local_avg_filter_function.FunctionArgs.ClearBorder.Value=true;
+cyto_local_avg_filter_function.FunctionArgs.ClearBorderDist.Value=2;
+cyto_global_int_filter_function.InstanceName='CytoGlobalBrightnessIntensityFilter';
+cyto_global_int_filter_function.FunctionHandle=@generateBinImgUsingGlobInt;
+cyto_global_int_filter_function.FunctionArgs.Image.FunctionInstance='GaussianPyramid';
+cyto_global_int_filter_function.FunctionArgs.Image.OutputArg='Image';
+cyto_global_int_filter_function.FunctionArgs.IntensityThresholdPct.Value=0.1;
+cyto_global_int_filter_function.FunctionArgs.ClearBorder.Value=true;
+cyto_global_int_filter_function.FunctionArgs.ClearBorderDist.Value=2;
+combine_cyto_images_function.InstanceName='CombineCytoplasmImages';
+combine_cyto_images_function.FunctionHandle=@combineImages;
+combine_cyto_images_function.FunctionArgs.Image1.FunctionInstance='CytoBrightnessLocalAveragingFilter';
+combine_cyto_images_function.FunctionArgs.Image1.OutputArg='Image';
+combine_cyto_images_function.FunctionArgs.Image2.FunctionInstance='CytoGlobalBrightnessIntensityFilter';
+combine_cyto_images_function.FunctionArgs.Image2.OutputArg='Image';
+combine_cyto_images_function.FunctionArgs.CombineOperation.Value='OR';
+fill_holes_cyto_images_function.InstanceName='FillHolesCytoplasmImages';
+fill_holes_cyto_images_function.FunctionHandle=@fillHoles;
+fill_holes_cyto_images_function.FunctionArgs.Image.FunctionInstance='CombineCytoplasmImages';
+fill_holes_cyto_images_function.FunctionArgs.Image.OutputArg='Image';
+clear_small_cells_function.InstanceName='ClearSmallCells';
+clear_small_cells_function.FunctionHandle=@clearSmallObjects;
+clear_small_cells_function.FunctionArgs.Image.FunctionInstance='FillHolesCytoplasmImages';
+clear_small_cells_function.FunctionArgs.Image.OutputArg='Image';
+clear_small_cells_function.FunctionArgs.MinObjectArea.Value=TrackStruct.MinCytoArea;
+nucl_local_avg_filter_function.InstanceName='NuclBrightnessLocalAveragingFilter';
+nucl_local_avg_filter_function.FunctionHandle=@generateBinImgUsingLocAvg;
+nucl_local_avg_filter_function.FunctionArgs.Image.FunctionInstance='GaussianPyramid';
+nucl_local_avg_filter_function.FunctionArgs.Image.OutputArg='Image';
+nucl_local_avg_filter_function.FunctionArgs.Strel.Value='disk';
+nucl_local_avg_filter_function.FunctionArgs.StrelSize.Value=10;
+nucl_local_avg_filter_function.FunctionArgs.BrightnessThresholdPct.Value=1.1;
+nucl_local_avg_filter_function.FunctionArgs.ClearBorder.Value=true;
+nucl_local_avg_filter_function.FunctionArgs.ClearBorderDist.Value=2;
+nucl_global_int_filter_function.InstanceName='NuclGlobalBrightnessIntensityFilter';
+nucl_global_int_filter_function.FunctionHandle=@generateBinImgUsingGlobInt;
+nucl_global_int_filter_function.FunctionArgs.Image.FunctionInstance='GaussianPyramid';
+nucl_global_int_filter_function.FunctionArgs.Image.OutputArg='Image';
+nucl_global_int_filter_function.FunctionArgs.IntensityThresholdPct.Value=0.1;
+nucl_global_int_filter_function.FunctionArgs.ClearBorder.Value=true;
+nucl_global_int_filter_function.FunctionArgs.ClearBorderDist.Value=2;
+combine_nucl_images_function.InstanceName='CombineNuclearImages';
+combine_nucl_images_function.FunctionHandle=@combineImages;
+combine_nucl_images_function.FunctionArgs.Image1.FunctionInstance='CytoBrightnessLocalAveragingFilter';
+combine_nucl_images_function.FunctionArgs.Image1.OutputArg='Image';
+combine_nucl_images_function.FunctionArgs.Image2.FunctionInstance='CytoGlobalBrightnessIntensityFilter';
+combine_nucl_images_function.FunctionArgs.Image2.OutputArg='Image';
+combine_nucl_images_function.FunctionArgs.CombineOperation.Value='OR';
+fill_holes_nucl_images_function.InstanceName='FillHolesNuclearImages';
+fill_holes_nucl_images_function.FunctionHandle=@fillHoles;
+fill_holes_nucl_images_function.FunctionArgs.Image.FunctionInstance='CombineNuclearImages';
+fill_holes_nucl_images_function.FunctionArgs.Image.OutputArg='Image';
+clear_small_nuclei_function.InstanceName='ClearSmallNuclei';
+clear_small_nuclei_function.FunctionHandle=@clearSmallObjects;
+clear_small_nuclei_function.FunctionArgs.Image.FunctionInstance='FillHolesNuclearImages';
+clear_small_nuclei_function.FunctionArgs.Image.OutputArg='Image';
+clear_small_nuclei_function.FunctionArgs.MinObjectArea.Value=TrackStruct.MinNuclArea;
+combine_nucl_plus_cyto_function.InstanceName='CombineNuclearAndCytoplasmImages';
+combine_nucl_plus_cyto_function.FunctionHandle=@combineImages;
+combine_nucl_plus_cyto_function.FunctionArgs.Image1.FunctionInstance='ClearSmallNuclei';
+combine_nucl_plus_cyto_function.FunctionArgs.Image1.OutputArg='Image';
+combine_nucl_plus_cyto_function.FunctionArgs.Image2.FunctionInstance='ClearSmallCells';
+combine_nucl_plus_cyto_function.FunctionArgs.Image2.OutputArg='Image';
+combine_nucl_plus_cyto_function.FunctionArgs.CombineOperation.Value='AND';
+reconstruct_cyto_function.InstanceName='ReconstructCytoplasmImage';
+reconstruct_cyto_function.FunctionHandle=@reconstructObjects;
+reconstruct_cyto_function.FunctionArgs.GuideImage.FunctionInstance='CombineNuclearAndCytoplasmImages';
+reconstruct_cyto_function.FunctionArgs.GuideImage.OutputArg='Image';
+reconstruct_cyto_function.FunctionArgs.ImageToReconstruct.FunctionInstance='ClearSmallCells';
+reconstruct_cyto_function.FunctionArgs.ImageToReconstruct.OutputArg='Image';
+label_nuclei_function.InstanceName='LabelNuclei';
+label_nuclei_function.FunctionHandle=@labelObjects;
+label_nuclei_function.FunctionArgs.Image.FunctionInstance='ClearSmallNuclei';
+label_nuclei_function.FunctionArgs.Image.OutputArg='Image';
+label_cyto_function.InstanceName='LabelCytoplasm';
+label_cyto_function.FunctionHandle=@labelObjects;
+label_cyto_function.FunctionArgs.Image.FunctionInstance='ReconstructCytoplasmImage';
+label_cyto_function.FunctionArgs.Image.OutputArg='Image';
 
-%filters used to create the binary nuclei image
-nuclThresholdingFilterArray=cytoThresholdingFilterArray;
-nuclThresholdingFilterArray{1}.filterParams.BrightnessThresholdPct=1.1;
-TrackStruct.NuclThresholdingFilters=nuclThresholdingFilterArray;
+%segment images
+get_convex_objects_function.InstanceName='GetConvexObjects';
+get_convex_objects_function.FunctionHandle=@getConvexObjects;
+get_convex_objects_function.FunctionArgs.Image.FunctionInstance='ClearSmallNuclei';
+get_convex_objects_function.FunctionArgs.Image.OutputArg='Image';
+get_convex_objects_function.FunctionArgs.ApproximationDistance.Value=TrackStruct.ApproxDist;
+distance_watershed_function.InstanceName='DistanceWatershed';
+distance_watershed_function.FunctionHandle=@distanceWatershed;
+distance_watershed_function.FunctionArgs.Image.FunctionInstance='ClearSmallNuclei';
+distance_watershed_function.FunctionArgs.Image.OutputArg='Image';
+distance_watershed_function.FunctionArgs.MedianFilterNhood.Value=TrackStruct.WatershedMed;
+polygonal_assisted_watershed_function.InstanceName='PolygonalAssistedWatershed';
+polygonal_assisted_watershed_function.FunctionHandle=@polygonalAssistedWatershed;
+polygonal_assisted_watershed_function.FunctionArgs.ImageLabel.FunctionInstance='LabelNuclei';
+polygonal_assisted_watershed_function.FunctionArgs.ImageLabel.OutputArg='LabelMatrix';
+polygonal_assisted_watershed_function.FunctionArgs.WatershedLabel.FunctionInstance='DistanceWatershed';
+polygonal_assisted_watershed_function.FunctionArgs.WatershedLabel.OutputArg='WatershedLabel';
+polygonal_assisted_watershed_function.FunctionArgs.ConvexObjectsIndex.FunctionInstance='GetConvexObjects';
+polygonal_assisted_watershed_function.FunctionArgs.ConvexObjectsIndex.OutputArg='ConvexObjectsIndex';
+polygonal_assisted_watershed_function.FunctionArgs.MinBlobArea.Value=TrackStruct.MinNuclArea;
+segment_objects_using_markers_function.InstanceName='SegmentObjectsUsingMarkers';
+segment_objects_using_markers_function.FunctionHandle=@segmentObjectsUsingMarkers;
+segment_objects_using_markers_function.FunctionArgs.MarkersLabel.FunctionInstance='PolygonalAssistedWatershed';
+segment_objects_using_markers_function.FunctionArgs.MarkersLabel.OutputArg='LabelMatrix';
+segment_objects_using_markers_function.FunctionArgs.ObjectsLabel.FunctionInstance='LabelCytoplasm';
+segment_objects_using_markers_function.FunctionArgs.ObjectsLabel.OutputArg='LabelMatrix';
+clear_small_components_function.InstanceName='ClearSmallComponents';
+clear_small_components_function.FunctionHandle=@clearSmallComponentsInLabelMatrix;
+clear_small_components_function.FunctionArgs.LabelMatrix.FunctionInstance='SegmentObjectsUsingMarkers';
+clear_small_components_function.FunctionArgs.LabelMatrix.OutputArg='LabelMatrix';
+clear_small_components_function.FunctionArgs.MinComponentArea.Value=TrackStruct.MinCytoArea;
+resize_cyto_label_function.InstanceName='ResizeCytoLabel';
+resize_cyto_label_function.FunctionHandle=@resizeImage;
+resize_cyto_label_function.FunctionArgs.Image.FunctionInstance='ClearSmallComponents';
+resize_cyto_label_function.FunctionArgs.Image.OutputArg='LabelMatrix';
+resize_cyto_label_function.FunctionArgs.Scale.Value=2;
+resize_cyto_label_function.FunctionArgs.Method.Value='nearest';
 
-disp(TrackStruct)
+%tracking
+if_is_empty_cells_label_function.InstanceName='IfIsEmptyPreviousCellsLabel';
+if_is_empty_cells_label_function.FunctionHandle=@if_statement;
+if_is_empty_cells_label_function.FunctionArgs.TestResult.FunctionInstance='IsEmptyPreviousCellsLabel';
+if_is_empty_cells_label_function.FunctionArgs.TestResult.OutputArg='Boolean';
+if_is_empty_cells_label_function.FunctionArgs.CellsLabel.FunctionInstance='ResizeCytoLabel';
+if_is_empty_cells_label_function.FunctionArgs.CellsLabel.OutputArg='Image';
+if_is_empty_cells_label_function.FunctionArgs.CurFrame.FunctionInstance='SegmentationLoop';
+if_is_empty_cells_label_function.FunctionArgs.CurFrame.OutputArg='LoopCounter';
+if_is_empty_cells_label_function.FunctionArgs.PreviousCellsLabel.FunctionInstance='StartTracks';
+if_is_empty_cells_label_function.FunctionArgs.PreviousCellsLabel.OutputArg='CellsLabel';
+if_is_empty_cells_label_function.FunctionArgs.PreviousCellsLabel.Value=[];
+if_is_empty_cells_label_function.FunctionArgs.Tracks.FunctionInstance='SegmentationLoop';
+if_is_empty_cells_label_function.FunctionArgs.Tracks.OutputArg='Tracks';
+if_is_empty_cells_label_function.FunctionArgs.Tracks.Value=[];
+if_is_empty_cells_label_function.FunctionArgs.MatchingGroups.FunctionInstance='SegmentationLoop';
+if_is_empty_cells_label_function.FunctionArgs.MatchingGroups.InputArg='MatchingGroups';
+if_is_empty_cells_label_function.FunctionArgs.TrackAssignments.Value=[];
+if_is_empty_cells_label_function.TestFunction.InstanceName='IsEmptyPreviousCellsLabel';
+if_is_empty_cells_label_function.TestFunction.FunctionHandle=@isEmptyFunction;
+if_is_empty_cells_label_function.TestFunction.FunctionArgs.TestVariable.FunctionInstance='IfIsEmptyPreviousCellsLabel';
+if_is_empty_cells_label_function.TestFunction.FunctionArgs.TestVariable.InputArg='PreviousCellsLabel'; %only works for subfunctions
+if_is_empty_cells_label_function.TestFunction.FunctionArgs.PreviousCellsLabel.Value=[];
+if_is_empty_cells_label_function.KeepValues.Tracks.FunctionInstance='StartTracks';
+if_is_empty_cells_label_function.KeepValues.Tracks.OutputArg='Tracks';
+if_is_empty_cells_label_function.KeepValues.Tracks.FunctionInstance2='ContinueTracks';
+if_is_empty_cells_label_function.KeepValues.Tracks.OutputArg2='Tracks';
+if_is_empty_cells_label_function.KeepValues.NewTracks.FunctionInstance='StartTracks';
+if_is_empty_cells_label_function.KeepValues.NewTracks.OutputArg='Tracks';
+if_is_empty_cells_label_function.KeepValues.NewTracks.FunctionInstance2='ContinueTracks';
+if_is_empty_cells_label_function.KeepValues.NewTracks.OutputArg2='NewTracks';
+if_is_empty_cells_label_function.KeepValues.MatchingGroups.FunctionInstance='StartTracks';
+if_is_empty_cells_label_function.KeepValues.MatchingGroups.OutputArg='MatchingGroups';
+if_is_empty_cells_label_function.KeepValues.MatchingGroups.FunctionInstance2='AssignCellsToTracksLoop';
+if_is_empty_cells_label_function.KeepValues.MatchingGroups.OutputArg2='MatchingGroups';
 
-cells_track(TrackStruct);
-validate_tracks(TrackStruct);
+
+
+get_shape_params_function.InstanceName='GetShapeParameters';
+get_shape_params_function.FunctionHandle=@getShapeParams;
+get_shape_params_function.FunctionArgs.LabelMatrix.FunctionInstance='IfIsEmptyPreviousCellsLabel';
+get_shape_params_function.FunctionArgs.LabelMatrix.InputArg='CellsLabel';
+start_tracks_function.InstanceName='StartTracks';
+start_tracks_function.FunctionHandle=@startTracks;
+start_tracks_function.FunctionArgs.CellsLabel.FunctionInstance='IfIsEmptyPreviousCellsLabel';
+start_tracks_function.FunctionArgs.CellsLabel.InputArg='CellsLabel'; %only works for subfunctions
+start_tracks_function.FunctionArgs.CurFrame.FunctionInstance='IfIsEmptyPreviousCellsLabel';
+start_tracks_function.FunctionArgs.CurFrame.InputArg='CurFrame'; %only works for subfunctions
+start_tracks_function.FunctionArgs.TimeFrame.Value=TrackStruct.TimeFrame;
+start_tracks_function.FunctionArgs.ShapeParameters.FunctionInstance='GetShapeParameters';
+start_tracks_function.FunctionArgs.ShapeParameters.OutputArg='ShapeParameters';
+get_cur_tracks_function.InstanceName='GetCurrentTracks';
+get_cur_tracks_function.FunctionHandle=@getCurrentTracks;
+get_cur_tracks_function.FunctionArgs.Tracks.FunctionInstance='IfIsEmptyPreviousCellsLabel';
+get_cur_tracks_function.FunctionArgs.Tracks.InputArg='Tracks';
+get_cur_tracks_function.FunctionArgs.CurFrame.FunctionInstance='IfIsEmptyPreviousCellsLabel';
+get_cur_tracks_function.FunctionArgs.CurFrame.InputArg='CurFrame';
+get_cur_tracks_function.FunctionArgs.OffsetFrame.Value=-1;
+
+get_cur_tracks_function.FunctionArgs.TimeFrame.Value=TrackStruct.TimeFrame;
+get_cur_tracks_function.FunctionArgs.TimeCol.Value=tracks_layout.TimeCol;
+get_cur_tracks_function.FunctionArgs.TrackIDCol.Value=tracks_layout.TrackIDCol;
+get_cur_tracks_function.FunctionArgs.MaxMissingFrames.Value=TrackStruct.MaxFramesMissing;
+get_prev_tracks_function=get_cur_tracks_function;
+get_prev_tracks_function.InstanceName='GetPreviousTracks';
+get_prev_tracks_function.FunctionArgs.OffsetFrame.Value=-2;
+make_unassigned_cells_list_function.InstanceName='MakeUnassignedCellsList';
+make_unassigned_cells_list_function.FunctionHandle=@makeUnassignedCellsList;
+make_unassigned_cells_list_function.FunctionArgs.CellsCentroids.FunctionInstance='GetShapeParameters';
+make_unassigned_cells_list_function.FunctionArgs.CellsCentroids.OutputArg='Centroids';
+get_mean_displacement_function.InstanceName='GetCellsMeanDisplacement';
+get_mean_displacement_function.FunctionHandle=@getObjectsMeanDisplacement;
+get_mean_displacement_function.FunctionArgs.ObjectCentroids.FunctionInstance='GetShapeParameters';
+get_mean_displacement_function.FunctionArgs.ObjectCentroids.OutputArg='Centroids';
+get_mean_displacement_function.FunctionArgs.CurrentTracks.FunctionInstance='GetCurrentTracks';
+get_mean_displacement_function.FunctionArgs.CurrentTracks.OutputArg='Tracks';
+get_mean_displacement_function.FunctionArgs.Centroid1Col.Value=tracks_layout.Centroid1Col;
+get_mean_displacement_function.FunctionArgs.Centroid2Col.Value=tracks_layout.Centroid2Col;
+get_params_coeff_of_variation_function.InstanceName='GetParamsCoefficientOfVariation';
+get_params_coeff_of_variation_function.FunctionHandle=@getParamsCoefficientOfVariation;
+get_params_coeff_of_variation_function.FunctionArgs.Params.FunctionInstance='GetShapeParameters';
+get_params_coeff_of_variation_function.FunctionArgs.Params.OutputArg='ShapeParameters';
+get_params_coeff_of_variation_function.FunctionArgs.AreaCol.Value=tracks_layout.AreaCol;
+get_params_coeff_of_variation_function.FunctionArgs.SolidityCol.Value=tracks_layout.SolCol;
+get_max_track_id_function.InstanceName='GetMaxTrackID';
+get_max_track_id_function.FunctionHandle=@getMaxTrackID;
+get_max_track_id_function.FunctionArgs.Tracks.FunctionInstance='IfIsEmptyPreviousCellsLabel';
+get_max_track_id_function.FunctionArgs.Tracks.OutputArg='Tracks';
+get_max_track_id_function.FunctionArgs.TrackIDCol.Value=tracks_layout.TrackIDCol;
+
+assign_cells_to_tracks_loop.InstanceName='AssignCellsToTracksLoop';
+assign_cells_to_tracks_loop.FunctionHandle=@whileLoop;
+assign_cells_to_tracks_loop.TestFunction.InstanceName='IsNotEmptyUnassignedCells';
+assign_cells_to_tracks_loop.TestFunction.FunctionHandle=@isNotEmptyFunction;
+assign_cells_to_tracks_loop.TestFunction.FunctionArgs.TestVariable.FunctionInstance='AssignCellsToTracksLoop';
+assign_cells_to_tracks_loop.TestFunction.FunctionArgs.TestVariable.InputArg='UnassignedCells';
+assign_cells_to_tracks_loop.FunctionArgs.TestResult.FunctionInstance='IsNotEmptyUnassignedCells';
+assign_cells_to_tracks_loop.FunctionArgs.TestResult.OutputArg='Boolean';
+assign_cells_to_tracks_loop.FunctionArgs.UnassignedCells.FunctionInstance='MakeUnassignedCellsList';
+assign_cells_to_tracks_loop.FunctionArgs.UnassignedCells.OutputArg='UnassignedCellsIDs';
+assign_cells_to_tracks_loop.FunctionArgs.UnassignedCells.FunctionInstance2='AssignCellToTrackUsingAll';
+assign_cells_to_tracks_loop.FunctionArgs.UnassignedCells.OutputArg2='UnassignedIDs';
+assign_cells_to_tracks_loop.FunctionArgs.CellsLabel.FunctionInstance='IfIsEmptyPreviousCellsLabel';
+assign_cells_to_tracks_loop.FunctionArgs.CellsLabel.InputArg='CellsLabel';
+assign_cells_to_tracks_loop.FunctionArgs.PreviousCellsLabel.FunctionInstance='IfIsEmptyPreviousCellsLabel';
+assign_cells_to_tracks_loop.FunctionArgs.PreviousCellsLabel.InputArg='PreviousCellsLabel';
+assign_cells_to_tracks_loop.FunctionArgs.ShapeParameters.FunctionInstance='GetShapeParameters';
+assign_cells_to_tracks_loop.FunctionArgs.ShapeParameters.OutputArg='ShapeParameters';
+assign_cells_to_tracks_loop.FunctionArgs.CellsCentroids.FunctionInstance='GetShapeParameters';
+assign_cells_to_tracks_loop.FunctionArgs.CellsCentroids.OutputArg='Centroids';
+assign_cells_to_tracks_loop.FunctionArgs.CurrentTracks.FunctionInstance='GetCurrentTracks';
+assign_cells_to_tracks_loop.FunctionArgs.CurrentTracks.OutputArg='Tracks';
+assign_cells_to_tracks_loop.FunctionArgs.SearchRadius.FunctionInstance='GetCellsMeanDisplacement';
+assign_cells_to_tracks_loop.FunctionArgs.SearchRadius.OutputArg='SearchRadius';
+assign_cells_to_tracks_loop.FunctionArgs.TrackAssignments.FunctionInstance='IfIsEmptyPreviousCellsLabel';
+assign_cells_to_tracks_loop.FunctionArgs.TrackAssignments.InputArg='TrackAssignments';
+assign_cells_to_tracks_loop.FunctionArgs.TrackAssignments.FunctionInstance2='AssignCellToTrackUsingAll';
+assign_cells_to_tracks_loop.FunctionArgs.TrackAssignments.OutputArg2='TrackAssignments';
+assign_cells_to_tracks_loop.FunctionArgs.MaxTrackID.FunctionInstance='GetMaxTrackID';
+assign_cells_to_tracks_loop.FunctionArgs.MaxTrackID.OutputArg='MaxTrackID';
+assign_cells_to_tracks_loop.FunctionArgs.Tracks.FunctionInstance='IfIsEmptyPreviousCellsLabel';
+assign_cells_to_tracks_loop.FunctionArgs.Tracks.InputArg='Tracks';
+assign_cells_to_tracks_loop.FunctionArgs.MatchingGroups.FunctionInstance='IfIsEmptyPreviousCellsLabel';
+assign_cells_to_tracks_loop.FunctionArgs.MatchingGroups.InputArg='MatchingGroups';
+assign_cells_to_tracks_loop.FunctionArgs.MatchingGroups.FunctionInstance2='AssignCellToTrackUsingAll';
+assign_cells_to_tracks_loop.FunctionArgs.MatchingGroups.OutputArg2='MatchingGroups';
+assign_cells_to_tracks_loop.FunctionArgs.ParamsCoeffOfVariation.FunctionInstance='GetParamsCoefficientOfVariation';
+assign_cells_to_tracks_loop.FunctionArgs.ParamsCoeffOfVariation.OutputArg='CoefficientOfVariation';
+assign_cells_to_tracks_loop.FunctionArgs.PreviousTracks.FunctionInstance='GetPreviousTracks';
+assign_cells_to_tracks_loop.FunctionArgs.PreviousTracks.OutputArg='Tracks';
+assign_cells_to_tracks_loop.KeepValues.TrackAssignments.FunctionInstance='AssignCellToTrackUsingAll';
+assign_cells_to_tracks_loop.KeepValues.TrackAssignments.OutputArg='TrackAssignments';
+assign_cells_to_tracks_loop.KeepValues.ShapeParameters.FunctionInstance='SetMatchingGroupIndex';
+assign_cells_to_tracks_loop.KeepValues.ShapeParameters.OutputArg='ShapeParameters';
+assign_cells_to_tracks_loop.KeepValues.MatchingGroups.FunctionInstance='AssignCellToTrackUsingAll';
+assign_cells_to_tracks_loop.KeepValues.MatchingGroups.OutputArg='MatchingGroups';
+
+get_current_unassigned_cell_function.InstanceName='GetCurrentUnassignedCell';
+get_current_unassigned_cell_function.FunctionHandle=@getCurrentUnassignedCell;
+get_current_unassigned_cell_function.FunctionArgs.UnassignedCells.FunctionInstance='AssignCellsToTracksLoop';
+get_current_unassigned_cell_function.FunctionArgs.UnassignedCells.InputArg='UnassignedCells';
+assign_cell_to_track_function.InstanceName='AssignCellToTrackUsingAll';
+assign_cell_to_track_function.FunctionHandle=@assignCellToTrackUsingAll;
+assign_cell_to_track_function.FunctionArgs.UnassignedCells.FunctionInstance='AssignCellsToTracksLoop';
+assign_cell_to_track_function.FunctionArgs.UnassignedCells.InputArg='UnassignedCells';
+assign_cell_to_track_function.FunctionArgs.CellsLabel.FunctionInstance='AssignCellsToTracksLoop';
+assign_cell_to_track_function.FunctionArgs.CellsLabel.InputArg='CellsLabel';
+assign_cell_to_track_function.FunctionArgs.PreviousCellsLabel.FunctionInstance='AssignCellsToTracksLoop';
+assign_cell_to_track_function.FunctionArgs.PreviousCellsLabel.InputArg='CellsLabel';
+assign_cell_to_track_function.FunctionArgs.ShapeParameters.FunctionInstance='AssignCellsToTracksLoop';
+assign_cell_to_track_function.FunctionArgs.ShapeParameters.InputArg='ShapeParameters';
+assign_cell_to_track_function.FunctionArgs.CellsCentroids.FunctionInstance='AssignCellsToTracksLoop';
+assign_cell_to_track_function.FunctionArgs.CellsCentroids.InputArg='CellsCentroids';
+assign_cell_to_track_function.FunctionArgs.CurrentTracks.FunctionInstance='AssignCellsToTracksLoop';
+assign_cell_to_track_function.FunctionArgs.CurrentTracks.InputArg='CurrentTracks';
+assign_cell_to_track_function.FunctionArgs.SearchRadius.FunctionInstance='AssignCellsToTracksLoop';
+assign_cell_to_track_function.FunctionArgs.SearchRadius.InputArg='SearchRadius';
+assign_cell_to_track_function.FunctionArgs.TrackAssignments.FunctionInstance='AssignCellsToTracksLoop';
+assign_cell_to_track_function.FunctionArgs.TrackAssignments.InputArg='TrackAssignments';
+assign_cell_to_track_function.FunctionArgs.MaxTrackID.FunctionInstance='AssignCellsToTracksLoop';
+assign_cell_to_track_function.FunctionArgs.MaxTrackID.InputArg='MaxTrackID';
+assign_cell_to_track_function.FunctionArgs.Tracks.FunctionInstance='AssignCellsToTracksLoop';
+assign_cell_to_track_function.FunctionArgs.Tracks.InputArg='Tracks';
+assign_cell_to_track_function.FunctionArgs.MatchingGroups.FunctionInstance='AssignCellsToTracksLoop';
+assign_cell_to_track_function.FunctionArgs.MatchingGroups.InputArg='MatchingGroups';
+assign_cell_to_track_function.FunctionArgs.ParamsCoeffOfVariation.FunctionInstance='AssignCellsToTracksLoop';
+assign_cell_to_track_function.FunctionArgs.ParamsCoeffOfVariation.InputArg='ParamsCoeffOfVariation';
+assign_cell_to_track_function.FunctionArgs.PreviousTracks.FunctionInstance='AssignCellsToTracksLoop';
+assign_cell_to_track_function.FunctionArgs.PreviousTracks.InputArg='PreviousTracks';
+assign_cell_to_track_function.FunctionArgs.TrackStruct.Value=TrackStruct;
+set_group_index_function.InstanceName='SetMatchingGroupIndex';
+set_group_index_function.FunctionHandle=@setGroupIndex;
+set_group_index_function.FunctionArgs.ShapeParameters.FunctionInstance='AssignCellsToTracksLoop';
+set_group_index_function.FunctionArgs.ShapeParameters.InputArg='ShapeParameters';
+set_group_index_function.FunctionArgs.CellID.FunctionInstance='GetCurrentUnassignedCell';
+set_group_index_function.FunctionArgs.CellID.OutputArg='CellID';
+set_group_index_function.FunctionArgs.GroupIndex.FunctionInstance='AssignCellToTrackUsingAll';
+set_group_index_function.FunctionArgs.GroupIndex.OutputArg='GroupIndex';
+set_group_index_function.FunctionArgs.AreaCol.Value=tracks_layout.AreaCol;
+set_group_index_function.FunctionArgs.GroupIDCol.Value=tracks_layout.MatchGroupIDCol;
+
+assign_cells_to_tracks_loop.LoopFunctions=[{get_current_unassigned_cell_function}; {assign_cell_to_track_function};...
+    {set_group_index_function}];
+
+continue_tracks_function.InstanceName='ContinueTracks';
+continue_tracks_function.FunctionHandle=@continueTracks;
+continue_tracks_function.FunctionArgs.Tracks.FunctionInstance='IfIsEmptyPreviousCellsLabel';
+continue_tracks_function.FunctionArgs.Tracks.InputArg='Tracks';
+continue_tracks_function.FunctionArgs.TrackAssignments.FunctionInstance='AssignCellsToTracksLoop';
+continue_tracks_function.FunctionArgs.TrackAssignments.OutputArg='TrackAssignments';
+continue_tracks_function.FunctionArgs.CurFrame.FunctionInstance='IfIsEmptyPreviousCellsLabel';
+continue_tracks_function.FunctionArgs.CurFrame.InputArg='CurFrame';
+continue_tracks_function.FunctionArgs.CellsCentroids.FunctionInstance='GetShapeParameters';
+continue_tracks_function.FunctionArgs.CellsCentroids.OutputArg='Centroids';
+continue_tracks_function.FunctionArgs.ShapeParameters.FunctionInstance='GetShapeParameters';
+continue_tracks_function.FunctionArgs.ShapeParameters.OutputArg='ShapeParameters';
+continue_tracks_function.FunctionArgs.TimeFrame.Value=TrackStruct.TimeFrame;
+
+if_is_empty_cells_label_function.IfFunctions=[{get_shape_params_function};{start_tracks_function}];
+
+if_is_empty_cells_label_function.ElseFunctions=[{get_cur_tracks_function};{get_prev_tracks_function};{get_shape_params_function};...
+    {make_unassigned_cells_list_function};{get_mean_displacement_function};{get_params_coeff_of_variation_function};...
+    {get_max_track_id_function};{assign_cells_to_tracks_loop};{continue_tracks_function}];
+
+save_cells_label_function.InstanceName='SaveCellsLabel';
+save_cells_label_function.FunctionHandle=@saveCellsLabel;
+save_cells_label_function.FunctionArgs.CellsLabel.FunctionInstance='ResizeCytoLabel';
+save_cells_label_function.FunctionArgs.CellsLabel.OutputArg='Image';
+save_cells_label_function.FunctionArgs.CurFrame.FunctionInstance='SegmentationLoop';
+save_cells_label_function.FunctionArgs.CurFrame.OutputArg='LoopCounter';
+save_cells_label_function.FunctionArgs.FileRoot.Value=TrackStruct.SegFileRoot;
+save_cells_label_function.FunctionArgs.NumberFormat.Value=TrackStruct.NumberFormat;
+display_tracks_function.InstanceName='DisplayTracks';
+display_tracks_function.FunctionHandle=@displayTracksData;
+display_tracks_function.FunctionArgs.Image.FunctionInstance='ReadImagesInSegmentationLoop';
+display_tracks_function.FunctionArgs.Image.OutputArg='Image';
+display_tracks_function.FunctionArgs.CellsLabel.FunctionInstance='ResizeCytoLabel';
+display_tracks_function.FunctionArgs.CellsLabel.OutputArg='Image';
+display_tracks_function.FunctionArgs.CurrentTracks.FunctionInstance='IfIsEmptyPreviousCellsLabel';
+display_tracks_function.FunctionArgs.CurrentTracks.OutputArg='NewTracks';
+display_tracks_function.FunctionArgs.CurFrame.FunctionInstance='SegmentationLoop';
+display_tracks_function.FunctionArgs.CurFrame.OutputArg='LoopCounter';
+display_tracks_function.FunctionArgs.TracksLayout.Value=tracks_layout;
+display_tracks_function.FunctionArgs.FileRoot.Value=[track_dir ds TrackStruct.ImageFileName];
+display_tracks_function.FunctionArgs.NumberFormat.Value=TrackStruct.NumberFormat;
+
+image_read_loop.LoopFunctions=[{display_curtrackframe_function};{make_file_name_function};{read_image_function};...
+    {normalize_image_to_16bit_function};{gaussian_pyramid_function};{cyto_local_avg_filter_function};{cyto_global_int_filter_function};...
+    {combine_cyto_images_function};{fill_holes_cyto_images_function};{clear_small_cells_function};{nucl_local_avg_filter_function};...
+    {nucl_global_int_filter_function};{combine_nucl_images_function};{fill_holes_nucl_images_function};{clear_small_nuclei_function};...
+    {combine_nucl_plus_cyto_function};{reconstruct_cyto_function};{label_nuclei_function};{label_cyto_function};{get_convex_objects_function};...
+    {distance_watershed_function};{polygonal_assisted_watershed_function};{segment_objects_using_markers_function};...
+    {clear_small_components_function};{resize_cyto_label_function};{if_is_empty_cells_label_function};{save_cells_label_function};...
+    {display_tracks_function}];
+
+save_tracks_function.InstanceName='SaveTracks';
+save_tracks_function.FunctionHandle=@saveTracks;
+save_tracks_function.FunctionArgs.Tracks.FunctionInstance='SegmentationLoop';
+save_tracks_function.FunctionArgs.Tracks.OutputArg='Tracks';
+save_tracks_function.FunctionArgs.TracksFileName.Value=TrackStruct.TracksFile;
+
+save_matching_groups_function.InstanceName='SaveMatchingGroups';
+save_matching_groups_function.FunctionHandle=@saveMatchingGroups;
+save_matching_groups_function.FunctionArgs.MatchingGroups.FunctionInstance='SegmentationLoop';
+save_matching_groups_function.FunctionArgs.MatchingGroups.OutputArg='MatchingGroups';
+save_matching_groups_function.FunctionArgs.MatchingGroupsFileName.Value=TrackStruct.RankFile;
+
+validate_tracks_function.InstanceName='ValidateTracks';
+validate_tracks_function.FunctionHandle=@validate_tracks;
+validate_tracks_function.FunctionArgs.TrackStruct.Value=TrackStruct;
+
+functions_list=[{display_trackstruct_function};{image_read_loop};{save_tracks_function};{save_matching_groups_function};...
+    {validate_tracks_function}];
+
+global dependencies_list;
+global dependencies_index;
+dependencies_list={};
+dependencies_index=java.util.Hashtable;
+makeDependencies([]);
+runFunctions();
+
 %end function
 end

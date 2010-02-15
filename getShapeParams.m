@@ -1,4 +1,5 @@
-function [shape_params cells_centroids]=getShapeParams(cells_lbl)
+function output_args=getShapeParams(input_args)
+cells_lbl=input_args.LabelMatrix.Value;
 cells_props=regionprops(cells_lbl,'Centroid','Area','Eccentricity','MajorAxisLength','MinorAxisLength',...
     'Orientation','Perimeter','Solidity');
 cells_centroids=[cells_props.Centroid]';
@@ -19,5 +20,8 @@ end
 shape_params=[[cells_props.Area]' [cells_props.Eccentricity]' [cells_props.MajorAxisLength]' ...
     [cells_props.MinorAxisLength]' [cells_props.Orientation]'+90 [cells_props.Perimeter]'...
     [cells_props.Solidity]' blob_ids matching_group_ids];
+output_args.ShapeParameters=shape_params;
+output_args.Centroids=cells_centroids;
+
 %end getShapeParams
 end
