@@ -25,9 +25,13 @@ trackIDCol=tracks_layout.TrackIDCol;
 
 [nearby_tracks_sorted group_idx matching_groups]=getNearbyTracksSorted(cur_id, cells_centroids,shape_params,track_struct,cur_tracks...
     ,prev_tracks,search_radius,matching_groups,tracks,params_coeff_var);
-nearby_tracks_ids=nearby_tracks_sorted(:,trackIDCol);
-%does list have at least one track?
-nearby_tracks_nr=length(nearby_tracks_ids);
+if (isempty(nearby_tracks_sorted))    
+    nearby_tracks_nr=0;
+else
+    nearby_tracks_ids=nearby_tracks_sorted(:,trackIDCol);
+    %does list have at least one track?
+    nearby_tracks_nr=length(nearby_tracks_ids);
+end
 for i=1:nearby_tracks_nr
     %pick the best track for current cell
     best_track_id=nearby_tracks_ids(i,trackIDCol);
