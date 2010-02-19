@@ -22,6 +22,7 @@ max_merge_dist=track_struct.MaxMergeDist;
 max_split_dist=track_struct.MaxSplitDist;
 max_split_area=track_struct.MaxSplitArea;
 min_split_ecc=track_struct.MinSplitEcc;
+max_split_ecc=track_struct.MaxSplitEcc;
 %layout of the tracks matrix
 tracks_layout=track_struct.TracksLayout;
 centroid1Col=tracks_layout.Centroid1Col;
@@ -203,12 +204,17 @@ while (~isempty(untested_ids))
         untested_ids(1)=[];
         continue;
     end
-%     cur_ecc=cur_track(1,eccCol);
-%     if (cur_ecc<min_split_ecc)
-%         %nuclei are elongated right after splitting
-%         untested_ids(1)=[];
-%         continue;
-%     end
+    cur_ecc=cur_track(1,eccCol);
+    if (cur_ecc<min_split_ecc)
+        %nuclei are elongated right after splitting
+        untested_ids(1)=[];
+        continue;
+    end
+    if (cur_ecc>max_split_ecc)
+        %nuclei are not perfect lines
+        untested_ids(1)=[];
+        continue;
+    end
     %get the tracks that exist when this track appears for now just tracks
     %in the current time for the future we might add other times
     existing_tracks_idx=(tracks(:,timeCol)==track_start_time)&(~cur_track_idx);
@@ -264,11 +270,15 @@ while (~isempty(untested_ids))
             %a cell is smaller right after splitting            
             continue;
         end
-%         cur_ecc=potential_split_params(1,eccCol);
-%         if (cur_ecc<min_split_ecc)
-%             %nuclei are elongated right after splitting            
-%             continue;
-%         end
+        cur_ecc=potential_split_params(1,eccCol);
+        if (cur_ecc<min_split_ecc)
+            %nuclei are elongated right after splitting            
+            continue;
+        end
+        if (cur_ecc>max_split_ecc)
+            %nuclei are not perfect lines         
+            continue;
+        end
         split_cells=[split_cells; [candidateID curID track_start_time track_end_time]];
         break;
     end

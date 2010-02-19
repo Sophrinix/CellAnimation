@@ -3,19 +3,18 @@ TrackStruct=[];
 TrackStruct.ImgExt='.tif';
 ds='\'  %directory symbol
 TrackStruct.DS=ds;
-root_folder='c:\darren';
+root_folder='i:\darren';
 TrackStruct.ImageFileName='DsRed - Confocal - n';
 %low hepsin expressing - not really wildtype
 TrackStruct.ImageFileBase=[well_folder ds TrackStruct.ImageFileName];
 %hepsin overexpressing
 % TrackStruct.ImageFileBase=[well_folder ds 'llh_hep_lm7_t'];
 TrackStruct.StartFrame=1;
-TrackStruct.FrameCount=72;
-TrackStruct.TimeFrame=15; %minutes
+TrackStruct.FrameCount=646;
+TrackStruct.TimeFrame=6; %minutes
 TrackStruct.FrameStep=1; %read every x frames
 TrackStruct.NumberFormat='%06d';
 TrackStruct.MaxFramesMissing=6; %how many frames a cell can disappear before we end its track
-
 
 name_idx=find(well_folder==ds,2,'last');
 %generate a unique well name
@@ -78,8 +77,8 @@ TrackStruct.AncestryLayout=ancestry_layout;
 %TrackStruct.SearchRadius=40; automatically determined right now
 % TrackStruct.SearchRadius=20;
 TrackStruct.Channel='';
-TrackStruct.MinCytoArea=60;
-TrackStruct.MinNuclArea=60;
+TrackStruct.MinCytoArea=30;
+TrackStruct.MinNuclArea=30;
 TrackStruct.bContourLink=false;
 TrackStruct.LinkDist=1;
 TrackStruct.ObjectReduce=0.3;
@@ -92,6 +91,7 @@ TrackStruct.MaxMergeDist=20;
 TrackStruct.MaxSplitDist=45;
 TrackStruct.MaxSplitArea=500;
 TrackStruct.MinSplitEcc=0.6;
+TrackStruct.MaxSplitEcc=0.9;
 
 display_trackstruct_function.InstanceName='DisplayTrackStruct';
 display_trackstruct_function.FunctionHandle=@displayVariable;
@@ -99,11 +99,10 @@ display_trackstruct_function.FunctionArgs.Variable.Value=TrackStruct;
 display_trackstruct_function.FunctionArgs.VariableName.Value='TrackStruct';
 %threshold images
 global functions_list;
-loop_args.StartLoop=TrackStruct.StartFrame;
 image_read_loop.InstanceName='SegmentationLoop';
 image_read_loop.FunctionHandle=@forLoop;
 image_read_loop.FunctionArgs.StartLoop.Value=TrackStruct.StartFrame;
-image_read_loop.FunctionArgs.EndLoop.Value=TrackStruct.FrameCount*TrackStruct.FrameStep;
+image_read_loop.FunctionArgs.EndLoop.Value=(TrackStruct.StartFrame+TrackStruct.FrameCount-1)*TrackStruct.FrameStep;
 image_read_loop.FunctionArgs.IncrementLoop.Value=1;
 image_read_loop.FunctionArgs.MatchingGroups.Value=[]; %need to add another provider
 image_read_loop.FunctionArgs.MatchingGroups.FunctionInstance='IfIsEmptyPreviousCellsLabel';
@@ -140,13 +139,19 @@ normalize_image_to_16bit_function.FunctionArgs.RawImage.FunctionInstance='ReadIm
 normalize_image_to_16bit_function.FunctionArgs.RawImage.OutputArg='Image';
 normalize_image_to_16bit_function.FunctionArgs.IntegerClass.Value='uint16';
 
-gaussian_pyramid_function.InstanceName='GaussianPyramid';
-gaussian_pyramid_function.FunctionHandle=@gaussianPyramid;
-gaussian_pyramid_function.FunctionArgs.Image.FunctionInstance='NormalizeImageTo16Bit';
-gaussian_pyramid_function.FunctionArgs.Image.OutputArg='Image';
+% gaussian_pyramid_function.InstanceName='GaussianPyramid';
+% gaussian_pyramid_function.FunctionHandle=@gaussianPyramid;
+% gaussian_pyramid_function.FunctionArgs.Image.FunctionInstance='NormalizeImageTo16Bit';
+% gaussian_pyramid_function.FunctionArgs.Image.OutputArg='Image';
+resize_image_function.InstanceName='ResizeImage';
+resize_image_function.FunctionHandle=@resizeImage;
+resize_image_function.FunctionArgs.Image.FunctionInstance='NormalizeImageTo16Bit';
+resize_image_function.FunctionArgs.Image.OutputArg='Image';
+resize_image_function.FunctionArgs.Scale.Value=0.5;
+resize_image_function.FunctionArgs.Method.Value='bicubic';
 cyto_local_avg_filter_function.InstanceName='CytoBrightnessLocalAveragingFilter';
 cyto_local_avg_filter_function.FunctionHandle=@generateBinImgUsingLocAvg;
-cyto_local_avg_filter_function.FunctionArgs.Image.FunctionInstance='GaussianPyramid';
+cyto_local_avg_filter_function.FunctionArgs.Image.FunctionInstance='ResizeImage';
 cyto_local_avg_filter_function.FunctionArgs.Image.OutputArg='Image';
 cyto_local_avg_filter_function.FunctionArgs.Strel.Value='disk';
 cyto_local_avg_filter_function.FunctionArgs.StrelSize.Value=10;
@@ -155,7 +160,7 @@ cyto_local_avg_filter_function.FunctionArgs.ClearBorder.Value=true;
 cyto_local_avg_filter_function.FunctionArgs.ClearBorderDist.Value=2;
 cyto_global_int_filter_function.InstanceName='CytoGlobalBrightnessIntensityFilter';
 cyto_global_int_filter_function.FunctionHandle=@generateBinImgUsingGlobInt;
-cyto_global_int_filter_function.FunctionArgs.Image.FunctionInstance='GaussianPyramid';
+cyto_global_int_filter_function.FunctionArgs.Image.FunctionInstance='ResizeImage';
 cyto_global_int_filter_function.FunctionArgs.Image.OutputArg='Image';
 cyto_global_int_filter_function.FunctionArgs.IntensityThresholdPct.Value=0.1;
 cyto_global_int_filter_function.FunctionArgs.ClearBorder.Value=true;
@@ -178,7 +183,7 @@ clear_small_cells_function.FunctionArgs.Image.OutputArg='Image';
 clear_small_cells_function.FunctionArgs.MinObjectArea.Value=TrackStruct.MinCytoArea;
 nucl_local_avg_filter_function.InstanceName='NuclBrightnessLocalAveragingFilter';
 nucl_local_avg_filter_function.FunctionHandle=@generateBinImgUsingLocAvg;
-nucl_local_avg_filter_function.FunctionArgs.Image.FunctionInstance='GaussianPyramid';
+nucl_local_avg_filter_function.FunctionArgs.Image.FunctionInstance='ResizeImage';
 nucl_local_avg_filter_function.FunctionArgs.Image.OutputArg='Image';
 nucl_local_avg_filter_function.FunctionArgs.Strel.Value='disk';
 nucl_local_avg_filter_function.FunctionArgs.StrelSize.Value=10;
@@ -187,7 +192,7 @@ nucl_local_avg_filter_function.FunctionArgs.ClearBorder.Value=true;
 nucl_local_avg_filter_function.FunctionArgs.ClearBorderDist.Value=2;
 nucl_global_int_filter_function.InstanceName='NuclGlobalBrightnessIntensityFilter';
 nucl_global_int_filter_function.FunctionHandle=@generateBinImgUsingGlobInt;
-nucl_global_int_filter_function.FunctionArgs.Image.FunctionInstance='GaussianPyramid';
+nucl_global_int_filter_function.FunctionArgs.Image.FunctionInstance='ResizeImage';
 nucl_global_int_filter_function.FunctionArgs.Image.OutputArg='Image';
 nucl_global_int_filter_function.FunctionArgs.IntensityThresholdPct.Value=0.1;
 nucl_global_int_filter_function.FunctionArgs.ClearBorder.Value=true;
@@ -416,7 +421,7 @@ assign_cell_to_track_function.FunctionArgs.UnassignedCells.InputArg='UnassignedC
 assign_cell_to_track_function.FunctionArgs.CellsLabel.FunctionInstance='AssignCellsToTracksLoop';
 assign_cell_to_track_function.FunctionArgs.CellsLabel.InputArg='CellsLabel';
 assign_cell_to_track_function.FunctionArgs.PreviousCellsLabel.FunctionInstance='AssignCellsToTracksLoop';
-assign_cell_to_track_function.FunctionArgs.PreviousCellsLabel.InputArg='CellsLabel';
+assign_cell_to_track_function.FunctionArgs.PreviousCellsLabel.InputArg='PreviousCellsLabel';
 assign_cell_to_track_function.FunctionArgs.ShapeParameters.FunctionInstance='AssignCellsToTracksLoop';
 assign_cell_to_track_function.FunctionArgs.ShapeParameters.InputArg='ShapeParameters';
 assign_cell_to_track_function.FunctionArgs.CellsCentroids.FunctionInstance='AssignCellsToTracksLoop';
@@ -495,7 +500,7 @@ display_tracks_function.FunctionArgs.FileRoot.Value=[track_dir ds TrackStruct.Im
 display_tracks_function.FunctionArgs.NumberFormat.Value=TrackStruct.NumberFormat;
 
 image_read_loop.LoopFunctions=[{display_curtrackframe_function};{make_file_name_function};{read_image_function};...
-    {normalize_image_to_16bit_function};{gaussian_pyramid_function};{cyto_local_avg_filter_function};{cyto_global_int_filter_function};...
+    {normalize_image_to_16bit_function};{resize_image_function};{cyto_local_avg_filter_function};{cyto_global_int_filter_function};...
     {combine_cyto_images_function};{fill_holes_cyto_images_function};{clear_small_cells_function};{nucl_local_avg_filter_function};...
     {nucl_global_int_filter_function};{combine_nucl_images_function};{fill_holes_nucl_images_function};{clear_small_nuclei_function};...
     {combine_nucl_plus_cyto_function};{reconstruct_cyto_function};{label_nuclei_function};{label_cyto_function};{get_convex_objects_function};...
