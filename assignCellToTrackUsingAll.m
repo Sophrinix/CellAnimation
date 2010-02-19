@@ -151,6 +151,7 @@ for i=1:nearby_tracks_nr
                 output_args.TrackAssignments=trackAssignments;
                 output_args.MatchingGroups=matching_groups;
                 output_args.GroupIndex=group_idx;
+                excluded_tracks{competing_id}=[excluded_tracks{competing_id}; best_track_id];
                 output_args.ExcludedTracks=excluded_tracks;
                 return;
             else
