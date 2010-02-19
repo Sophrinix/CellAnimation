@@ -28,7 +28,7 @@ while(lbl_id==0)
     if (isempty(lbl_vals))
         xtend_sz=xtend_sz+1;
     else
-        lbl_id=median(lbl_vals);
+        lbl_id=mode(lbl_vals);
     end
 end
 
