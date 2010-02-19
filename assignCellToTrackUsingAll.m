@@ -14,6 +14,7 @@ max_tracks=input_args.MaxTrackID.Value;
 tracks=input_args.Tracks.Value;
 matching_groups=input_args.MatchingGroups.Value;
 params_coeff_var=input_args.ParamsCoeffOfVariation.Value;
+excluded_tracks=input_args.ExcludedTracks.Value;
 
 %assign current cell to a track
 cur_id=unassignedIDs(1);
@@ -32,6 +33,10 @@ for i=1:nearby_tracks_nr
     %pick the best track for current cell
     best_track_id=nearby_tracks_ids(i,trackIDCol);
     track_lbl_id=getLabelId(prev_cells_lbl, nearby_tracks_sorted(i,centroid1Col:centroid2Col));
+    if (max(excluded_tracks{cur_id}==best_track_id)==1)
+        %can't get this track
+        continue;
+    end
     if (pathGoesThroughACell(cells_lbl, prev_cells_lbl,cur_id,track_lbl_id,0))
         %resulting path would go through another cell - this track cannot match this cell
         continue;
@@ -53,6 +58,7 @@ for i=1:nearby_tracks_nr
         output_args.TrackAssignments=trackAssignments;
         output_args.MatchingGroups=matching_groups;
         output_args.GroupIndex=group_idx;
+        output_args.ExcludedTracks=excluded_tracks;
         return;
     else
         %which cell is prefered by the track?
@@ -68,7 +74,10 @@ for i=1:nearby_tracks_nr
         if (preferred_cell_id==competing_id)
             %the competing cell is preferred does this cell have other
             %tracks it can get?
-            if (canCellGetAnotherTrack(cur_id,nearby_tracks_sorted(i+1:nearby_tracks_nr,:),prev_cells_lbl,cells_lbl,...
+            available_tracks_sorted=nearby_tracks_sorted(i+1:nearby_tracks_nr,:);
+            excluded_tracks_idx=ismember(available_tracks_sorted(:,trackIDCol),excluded_tracks{cur_id});
+            available_tracks_sorted(excluded_tracks_idx,:)=[];            
+            if (canCellGetAnotherTrack(cur_id,available_tracks_sorted,prev_cells_lbl,cells_lbl,...
                     track_struct,trackAssignments,shape_params,cells_centroids,prev_tracks,matching_groups,true))            
                %it does. we'll have to leave this track to the
                 %cell with the stronger claim
@@ -80,11 +89,15 @@ for i=1:nearby_tracks_nr
                 prev_tracks,search_radius,matching_groups,tracks,params_coeff_var);
             %remove the current track
             other_tracks_sorted(other_tracks_sorted(:,trackIDCol)==nearby_tracks_sorted(i,trackIDCol),:)=[];
-            if (~canCellGetAnotherTrack(competing_id,other_tracks_sorted,prev_cells_lbl,cells_lbl,...
-                    track_struct,trackAssignments,shape_params,cells_centroids,prev_tracks,matching_groups,false))            
+            %remove any tracks that have already been excluded
+            excluded_tracks_idx=ismember(other_tracks_sorted(:,trackIDCol),excluded_tracks{competing_id});
+            other_tracks_sorted(excluded_tracks_idx,:)=[];
+            if (isempty(other_tracks_sorted)||(~canCellGetAnotherTrack(competing_id,other_tracks_sorted,prev_cells_lbl,cells_lbl,...
+                    track_struct,trackAssignments,shape_params,cells_centroids,prev_tracks,matching_groups,false)))            
                %this track is the last option for the competing cell
                 %as well. we'll have to leave it to it since it is
                 %preferred by the track
+                excluded_tracks{cur_id}=[excluded_tracks{cur_id}; best_track_id];
                 continue;
             end
             %the competing cell has other options this cell doesn't so take
@@ -95,11 +108,15 @@ for i=1:nearby_tracks_nr
             output_args.TrackAssignments=trackAssignments;
             output_args.MatchingGroups=matching_groups;
             output_args.GroupIndex=group_idx;
+            output_args.ExcludedTracks=excluded_tracks;
             return;
         else
             %this cell is preferred by the track
-            if (~canCellGetAnotherTrack(cur_id,nearby_tracks_sorted(i+1:nearby_tracks_nr,:),prev_cells_lbl,cells_lbl,...
-                    track_struct,trackAssignments,shape_params,cells_centroids,prev_tracks,matching_groups,false))            
+            available_tracks_sorted=nearby_tracks_sorted(i+1:nearby_tracks_nr,:);
+            excluded_tracks_idx=ismember(available_tracks_sorted(:,trackIDCol),excluded_tracks{cur_id});
+            available_tracks_sorted(excluded_tracks_idx,:)=[];
+            if (isempty(available_tracks_sorted)||(~canCellGetAnotherTrack(cur_id,available_tracks_sorted,prev_cells_lbl,cells_lbl,...
+                    track_struct,trackAssignments,shape_params,cells_centroids,prev_tracks,matching_groups,false)))
                %this cell has no other tracks it can get
                 %bump the cell with the weaker claim
                 unassignedIDs(1)=trackAssignments(track_idx,2);
@@ -108,13 +125,18 @@ for i=1:nearby_tracks_nr
                 output_args.TrackAssignments=trackAssignments;
                 output_args.MatchingGroups=matching_groups;
                 output_args.GroupIndex=group_idx;
+                excluded_tracks{competing_id}=[excluded_tracks{competing_id}; best_track_id];
+                output_args.ExcludedTracks=excluded_tracks;
                 return;
             end
             %does the competing cell have other options?
             other_tracks_sorted=getNearbyTracksSorted(competing_id, cells_centroids,shape_params,track_struct,cur_tracks,...
                 prev_tracks,search_radius,matching_groups,tracks,params_coeff_var);
             %remove the current track
-            other_tracks_sorted(other_tracks_sorted(:,trackIDCol)==nearby_tracks_sorted(i,trackIDCol),:)=[];            
+            other_tracks_sorted(other_tracks_sorted(:,trackIDCol)==nearby_tracks_sorted(i,trackIDCol),:)=[];
+            %remove any tracks that have already been excluded
+            excluded_tracks_idx=ismember(other_tracks_sorted(:,trackIDCol),excluded_tracks{competing_id});
+            other_tracks_sorted(excluded_tracks_idx,:)=[];            
             if (canCellGetAnotherTrack(competing_id,other_tracks_sorted,prev_cells_lbl,cells_lbl,...
                     track_struct,trackAssignments,shape_params,cells_centroids,prev_tracks,matching_groups,false))            
                 %yes relinquish the track to this cell with the stronger
@@ -125,6 +147,7 @@ for i=1:nearby_tracks_nr
                 output_args.TrackAssignments=trackAssignments;
                 output_args.MatchingGroups=matching_groups;
                 output_args.GroupIndex=group_idx;
+                output_args.ExcludedTracks=excluded_tracks;
                 return;
             else
                 %this cell can get other tracks, the competing cell
@@ -152,6 +175,7 @@ output_args.UnassignedIDs=unassignedIDs;
 output_args.TrackAssignments=trackAssignments;
 output_args.MatchingGroups=matching_groups;
 output_args.GroupIndex=group_idx;
+output_args.ExcludedTracks=excluded_tracks;
 
 %end assignCellToTrackUsingAll
 end

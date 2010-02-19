@@ -10,7 +10,7 @@ TrackStruct.ImageFileBase=[well_folder ds TrackStruct.ImageFileName];
 %hepsin overexpressing
 % TrackStruct.ImageFileBase=[well_folder ds 'llh_hep_lm7_t'];
 TrackStruct.StartFrame=1;
-TrackStruct.FrameCount=72;
+TrackStruct.FrameCount=20;
 TrackStruct.TimeFrame=15; %minutes
 TrackStruct.FrameStep=1; %read every x frames
 TrackStruct.NumberFormat='%06d';
@@ -338,6 +338,10 @@ make_unassigned_cells_list_function.InstanceName='MakeUnassignedCellsList';
 make_unassigned_cells_list_function.FunctionHandle=@makeUnassignedCellsList;
 make_unassigned_cells_list_function.FunctionArgs.CellsCentroids.FunctionInstance='GetShapeParameters';
 make_unassigned_cells_list_function.FunctionArgs.CellsCentroids.OutputArg='Centroids';
+make_excluded_tracks_list_function.InstanceName='MakeExcludedTracksList';
+make_excluded_tracks_list_function.FunctionHandle=@makeExcludedTracksList;
+make_excluded_tracks_list_function.FunctionArgs.UnassignedCellsIDs.FunctionInstance='MakeUnassignedCellsList';
+make_excluded_tracks_list_function.FunctionArgs.UnassignedCellsIDs.OutputArg='UnassignedCellsIDs';
 get_mean_displacement_function.InstanceName='GetCellsMeanDisplacement';
 get_mean_displacement_function.FunctionHandle=@getObjectsMeanDisplacement;
 get_mean_displacement_function.FunctionArgs.ObjectCentroids.FunctionInstance='GetShapeParameters';
@@ -370,6 +374,10 @@ assign_cells_to_tracks_loop.FunctionArgs.UnassignedCells.FunctionInstance='MakeU
 assign_cells_to_tracks_loop.FunctionArgs.UnassignedCells.OutputArg='UnassignedCellsIDs';
 assign_cells_to_tracks_loop.FunctionArgs.UnassignedCells.FunctionInstance2='AssignCellToTrackUsingAll';
 assign_cells_to_tracks_loop.FunctionArgs.UnassignedCells.OutputArg2='UnassignedIDs';
+assign_cells_to_tracks_loop.FunctionArgs.ExcludedTracks.FunctionInstance='MakeExcludedTracksList';
+assign_cells_to_tracks_loop.FunctionArgs.ExcludedTracks.OutputArg='ExcludedTracks';
+assign_cells_to_tracks_loop.FunctionArgs.ExcludedTracks.FunctionInstance2='AssignCellToTrackUsingAll';
+assign_cells_to_tracks_loop.FunctionArgs.ExcludedTracks.OutputArg2='ExcludedTracks';
 assign_cells_to_tracks_loop.FunctionArgs.CellsLabel.FunctionInstance='IfIsEmptyPreviousCellsLabel';
 assign_cells_to_tracks_loop.FunctionArgs.CellsLabel.InputArg='CellsLabel';
 assign_cells_to_tracks_loop.FunctionArgs.PreviousCellsLabel.FunctionInstance='IfIsEmptyPreviousCellsLabel';
@@ -413,6 +421,8 @@ assign_cell_to_track_function.InstanceName='AssignCellToTrackUsingAll';
 assign_cell_to_track_function.FunctionHandle=@assignCellToTrackUsingAll;
 assign_cell_to_track_function.FunctionArgs.UnassignedCells.FunctionInstance='AssignCellsToTracksLoop';
 assign_cell_to_track_function.FunctionArgs.UnassignedCells.InputArg='UnassignedCells';
+assign_cell_to_track_function.FunctionArgs.ExcludedTracks.FunctionInstance='AssignCellsToTracksLoop';
+assign_cell_to_track_function.FunctionArgs.ExcludedTracks.InputArg='ExcludedTracks';
 assign_cell_to_track_function.FunctionArgs.CellsLabel.FunctionInstance='AssignCellsToTracksLoop';
 assign_cell_to_track_function.FunctionArgs.CellsLabel.InputArg='CellsLabel';
 assign_cell_to_track_function.FunctionArgs.PreviousCellsLabel.FunctionInstance='AssignCellsToTracksLoop';
@@ -469,8 +479,8 @@ continue_tracks_function.FunctionArgs.TimeFrame.Value=TrackStruct.TimeFrame;
 if_is_empty_cells_label_function.IfFunctions=[{get_shape_params_function};{start_tracks_function}];
 
 if_is_empty_cells_label_function.ElseFunctions=[{get_cur_tracks_function};{get_prev_tracks_function};{get_shape_params_function};...
-    {make_unassigned_cells_list_function};{get_mean_displacement_function};{get_params_coeff_of_variation_function};...
-    {get_max_track_id_function};{assign_cells_to_tracks_loop};{continue_tracks_function}];
+    {make_unassigned_cells_list_function};{make_excluded_tracks_list_function};{get_mean_displacement_function};...
+    {get_params_coeff_of_variation_function};{get_max_track_id_function};{assign_cells_to_tracks_loop};{continue_tracks_function}];
 
 save_cells_label_function.InstanceName='SaveCellsLabel';
 save_cells_label_function.FunctionHandle=@saveCellsLabel;
