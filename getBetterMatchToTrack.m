@@ -1,5 +1,5 @@
 function best_match_id=getBetterMatchToTrack(cur_track,cells_shape_params,cells_centroids,cells_ids,prev_tracks,matching_groups,...
-    track_struct, cells_lbl, prev_cells_lbl)
+    track_struct, cells_lbl, prev_cells_lbl,relevant_params_idx)
 %figure out which cell of a pair is a better match for the track this
 %should only be used with cell pairs otherwise is meaningless
 assert(size(cells_shape_params,1)==2);
@@ -42,7 +42,7 @@ else
     ranking_order=matching_groups(group_idx,:);
 end
 pair_scores=getPairScoresToSingle(cells_params,track_params,b_use_direction,unknown_param_weights,...
-    param_weights,ranking_order,group_idx);
+    param_weights,ranking_order,group_idx,relevant_params_idx);
 best_match_id=[];
 if (pair_scores(1)==pair_scores(2))
     %neither cell is a better match to the track

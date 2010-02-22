@@ -1,5 +1,5 @@
 function [nearby_tracks_sorted group_idx matching_groups]=getNearbyTracksSorted(cur_id,cells_centroids,shape_params,track_struct...
-    ,cur_tracks,prev_tracks,search_radius,matching_groups,tracks,params_coeff_var)
+    ,cur_tracks,prev_tracks,search_radius,matching_groups,tracks,params_coeff_var,relevant_params_idx)
 %get the tracks in the local nhood of this cell sorted by matching scores
 hugeNbr=1e6;
 cur_cell_centroid=cells_centroids(cur_id,:);
@@ -68,7 +68,7 @@ else
             matching_groups,track_struct,b_use_direction);        
         group_idx=0;
         [tracks_params_sorted sort_idx]=sortManyToOneUsingPairs(cell_ranking_params,tracks_ranking_params,...
-            b_use_direction,unknown_param_weights,param_weights,ranking_order,group_idx);
+            b_use_direction,unknown_param_weights,param_weights,ranking_order,group_idx,relevant_params_idx);
         %rank the best and second best matching track        
     else
         b_use_direction=true;
@@ -88,7 +88,7 @@ else
         %sort the tracks by ranking tracks in pairs to the cell instead of
         %all tracks at once. this prevents false best matching tracks.
         [tracks_params_sorted sort_idx]=sortManyToOneUsingPairs(cell_ranking_params,tracks_ranking_params,...
-            b_use_direction,unknown_param_weights,param_weights,ranking_order,group_idx);
+            b_use_direction,unknown_param_weights,param_weights,ranking_order,group_idx,relevant_params_idx);
         %figure out if we have a track that is a sure match to the cell
         if (length(sort_idx)==1)
             b_sure_match=true;
