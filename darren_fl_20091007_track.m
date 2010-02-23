@@ -395,8 +395,6 @@ assign_cells_to_tracks_loop.FunctionArgs.CellsCentroids.FunctionInstance='GetSha
 assign_cells_to_tracks_loop.FunctionArgs.CellsCentroids.OutputArg='Centroids';
 assign_cells_to_tracks_loop.FunctionArgs.CurrentTracks.FunctionInstance='GetCurrentTracks';
 assign_cells_to_tracks_loop.FunctionArgs.CurrentTracks.OutputArg='Tracks';
-assign_cells_to_tracks_loop.FunctionArgs.SearchRadius.FunctionInstance='GetCellsMeanDisplacement';
-assign_cells_to_tracks_loop.FunctionArgs.SearchRadius.OutputArg='SearchRadius';
 assign_cells_to_tracks_loop.FunctionArgs.TrackAssignments.FunctionInstance='IfIsEmptyPreviousCellsLabel';
 assign_cells_to_tracks_loop.FunctionArgs.TrackAssignments.InputArg='TrackAssignments';
 assign_cells_to_tracks_loop.FunctionArgs.TrackAssignments.FunctionInstance2='AssignCellToTrackUsingAll';
@@ -440,8 +438,10 @@ assign_cell_to_track_function.FunctionArgs.CellsCentroids.FunctionInstance='Assi
 assign_cell_to_track_function.FunctionArgs.CellsCentroids.InputArg='CellsCentroids';
 assign_cell_to_track_function.FunctionArgs.CurrentTracks.FunctionInstance='AssignCellsToTracksLoop';
 assign_cell_to_track_function.FunctionArgs.CurrentTracks.InputArg='CurrentTracks';
-assign_cell_to_track_function.FunctionArgs.SearchRadius.FunctionInstance='AssignCellsToTracksLoop';
-assign_cell_to_track_function.FunctionArgs.SearchRadius.InputArg='SearchRadius';
+%how far from the nearest future cell we should look for possible matches
+%to our present cell. ie 1.5 means we should look one and a half times the
+%distance between the current cell and the nearest future cell
+assign_cell_to_track_function.FunctionArgs.SearchRadiusPct.Value=1.5;
 assign_cell_to_track_function.FunctionArgs.TrackAssignments.FunctionInstance='AssignCellsToTracksLoop';
 assign_cell_to_track_function.FunctionArgs.TrackAssignments.InputArg='TrackAssignments';
 assign_cell_to_track_function.FunctionArgs.MaxTrackID.FunctionInstance='AssignCellsToTracksLoop';

@@ -1,5 +1,5 @@
 function [nearby_tracks_sorted group_idx matching_groups]=getNearbyTracksSorted(cur_id,cells_centroids,shape_params,track_struct...
-    ,cur_tracks,prev_tracks,search_radius,matching_groups,tracks,params_coeff_var,relevant_params_idx)
+    ,cur_tracks,prev_tracks,search_radius_pct,matching_groups,tracks,params_coeff_var,relevant_params_idx)
 %get the tracks in the local nhood of this cell sorted by matching scores
 hugeNbr=1e6;
 cur_cell_centroid=cells_centroids(cur_id,:);
@@ -18,6 +18,9 @@ param_weights=track_struct.DefaultParamWeights;
 unknown_param_weights=track_struct.UnknownParamWeights;
 dist_to_tracks=hypot(cur_tracks(:,centroid1Col)-cur_cell_centroid(1),...
     cur_tracks(:,centroid2Col)-cur_cell_centroid(2));
+dist_to_tracks_sorted=sort(dist_to_tracks);
+nearest_distance=dist_to_tracks_sorted(1);
+search_radius=search_radius_pct*nearest_distance;
 nearby_tracks_idx=(dist_to_tracks<search_radius);
 %keep only tracks in the current search nhood
 dist_to_tracks=dist_to_tracks(nearby_tracks_idx);
