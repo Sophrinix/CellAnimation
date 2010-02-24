@@ -42,10 +42,10 @@ for i=1:nearby_tracks_nr
         %can't get this track
         continue;
     end
-    if (pathGoesThroughACell(cells_lbl, prev_cells_lbl,cur_id,track_lbl_id,0))
-        %resulting path would go through another cell - this track cannot match this cell
-        continue;
-    end    
+%     if (pathGoesThroughACell(cells_lbl, prev_cells_lbl,cur_id,track_lbl_id,0))
+%         %resulting path would go through another cell - this track cannot match this cell
+%         continue;
+%     end    
     if (isempty(trackAssignments))
         track_idx=[];
         competing_id=[];
