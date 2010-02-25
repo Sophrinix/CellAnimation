@@ -112,10 +112,12 @@ else
             %parameters work best to assign other cells
             if (length(sort_idx)==1)
                 [dummy matching_groups group_idx]=addToMatchingGroups(matching_groups,cell_ranking_params,...
-                    tracks_params_sorted,params_coeff_var,1,min_reliable_params,pair_ranks, track_struct);
+                    tracks_params_sorted,params_coeff_var,1,min_reliable_params,pair_ranks,...
+                    track_struct,relevant_params_idx);
             else
                 [dummy matching_groups group_idx]=addToMatchingGroups(matching_groups,cell_ranking_params,...
-                    tracks_params_sorted(1:2,:),params_coeff_var,1,min_reliable_params,pair_ranks, track_struct);
+                    tracks_params_sorted(1:2,:),params_coeff_var,1,min_reliable_params,pair_ranks,...
+                    track_struct,relevant_params_idx);
             end
         else
             if (length(sort_idx)==1)
