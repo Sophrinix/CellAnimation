@@ -10,7 +10,7 @@ TrackStruct.ImageFileBase=[well_folder ds TrackStruct.ImageFileName];
 %hepsin overexpressing
 % TrackStruct.ImageFileBase=[well_folder ds 'llh_hep_lm7_t'];
 TrackStruct.StartFrame=1;
-TrackStruct.FrameCount=10;
+TrackStruct.FrameCount=100;
 TrackStruct.TimeFrame=7; %minutes
 TrackStruct.FrameStep=1; %read every x frames
 TrackStruct.NumberFormat='%06d';
@@ -90,7 +90,7 @@ TrackStruct.ClearBorderDist=2;
 TrackStruct.WatershedMed=3;
 TrackStruct.MaxMergeDist=20;
 TrackStruct.MaxSplitDist=45;
-TrackStruct.MaxSplitArea=500;
+TrackStruct.MaxSplitArea=250;
 TrackStruct.MinSplitEcc=0.6;
 TrackStruct.MaxSplitEcc=0.9;
 
