@@ -298,6 +298,9 @@ if_is_empty_cells_label_function.FunctionArgs.Tracks.OutputArg='Tracks';
 if_is_empty_cells_label_function.FunctionArgs.Tracks.Value=[];
 if_is_empty_cells_label_function.FunctionArgs.MatchingGroups.FunctionInstance='SegmentationLoop';
 if_is_empty_cells_label_function.FunctionArgs.MatchingGroups.InputArg='MatchingGroups';
+if_is_empty_cells_label_function.FunctionArgs.MatchingGroupsStats.FunctionInstance='GetMatchingGroupMeans';
+if_is_empty_cells_label_function.FunctionArgs.MatchingGroupsStats.OutputArg='MatchingGroupStats';
+if_is_empty_cells_label_function.FunctionArgs.MatchingGroupsStats.Value=[];
 if_is_empty_cells_label_function.FunctionArgs.TrackAssignments.Value=[];
 if_is_empty_cells_label_function.TestFunction.InstanceName='IsEmptyPreviousCellsLabel';
 if_is_empty_cells_label_function.TestFunction.FunctionHandle=@isEmptyFunction;
@@ -397,6 +400,8 @@ assign_cells_to_tracks_loop.FunctionArgs.PreviousCellsLabel.FunctionInstance='If
 assign_cells_to_tracks_loop.FunctionArgs.PreviousCellsLabel.InputArg='PreviousCellsLabel';
 assign_cells_to_tracks_loop.FunctionArgs.ShapeParameters.FunctionInstance='GetShapeParameters';
 assign_cells_to_tracks_loop.FunctionArgs.ShapeParameters.OutputArg='ShapeParameters';
+assign_cells_to_tracks_loop.FunctionArgs.ShapeParameters.FunctionInstance2='SetMatchingGroupIndex';
+assign_cells_to_tracks_loop.FunctionArgs.ShapeParameters.OutputArg2='ShapeParameters';
 assign_cells_to_tracks_loop.FunctionArgs.CellsCentroids.FunctionInstance='GetShapeParameters';
 assign_cells_to_tracks_loop.FunctionArgs.CellsCentroids.OutputArg='Centroids';
 assign_cells_to_tracks_loop.FunctionArgs.CurrentTracks.FunctionInstance='GetCurrentTracks';
@@ -411,6 +416,8 @@ assign_cells_to_tracks_loop.FunctionArgs.Tracks.FunctionInstance='IfIsEmptyPrevi
 assign_cells_to_tracks_loop.FunctionArgs.Tracks.InputArg='Tracks';
 assign_cells_to_tracks_loop.FunctionArgs.MatchingGroups.FunctionInstance='IfIsEmptyPreviousCellsLabel';
 assign_cells_to_tracks_loop.FunctionArgs.MatchingGroups.InputArg='MatchingGroups';
+assign_cells_to_tracks_loop.FunctionArgs.MatchingGroupsStats.FunctionInstance='IfIsEmptyPreviousCellsLabel';
+assign_cells_to_tracks_loop.FunctionArgs.MatchingGroupsStats.InputArg='MatchingGroupsStats';
 assign_cells_to_tracks_loop.FunctionArgs.MatchingGroups.FunctionInstance2='AssignCellToTrackUsingAll';
 assign_cells_to_tracks_loop.FunctionArgs.MatchingGroups.OutputArg2='MatchingGroups';
 assign_cells_to_tracks_loop.FunctionArgs.ParamsCoeffOfVariation.FunctionInstance='GetParamsCoefficientOfVariation';
@@ -456,6 +463,8 @@ assign_cell_to_track_function.FunctionArgs.Tracks.FunctionInstance='AssignCellsT
 assign_cell_to_track_function.FunctionArgs.Tracks.InputArg='Tracks';
 assign_cell_to_track_function.FunctionArgs.MatchingGroups.FunctionInstance='AssignCellsToTracksLoop';
 assign_cell_to_track_function.FunctionArgs.MatchingGroups.InputArg='MatchingGroups';
+assign_cell_to_track_function.FunctionArgs.MatchingGroupsStats.FunctionInstance='AssignCellsToTracksLoop';
+assign_cell_to_track_function.FunctionArgs.MatchingGroupsStats.InputArg='MatchingGroupsStats';
 assign_cell_to_track_function.FunctionArgs.ParamsCoeffOfVariation.FunctionInstance='AssignCellsToTracksLoop';
 assign_cell_to_track_function.FunctionArgs.ParamsCoeffOfVariation.InputArg='ParamsCoeffOfVariation';
 assign_cell_to_track_function.FunctionArgs.PreviousTracks.FunctionInstance='AssignCellsToTracksLoop';
@@ -487,15 +496,22 @@ continue_tracks_function.FunctionArgs.CurFrame.FunctionInstance='IfIsEmptyPrevio
 continue_tracks_function.FunctionArgs.CurFrame.InputArg='CurFrame';
 continue_tracks_function.FunctionArgs.CellsCentroids.FunctionInstance='GetShapeParameters';
 continue_tracks_function.FunctionArgs.CellsCentroids.OutputArg='Centroids';
-continue_tracks_function.FunctionArgs.ShapeParameters.FunctionInstance='GetShapeParameters';
+continue_tracks_function.FunctionArgs.ShapeParameters.FunctionInstance='AssignCellsToTracksLoop';
 continue_tracks_function.FunctionArgs.ShapeParameters.OutputArg='ShapeParameters';
 continue_tracks_function.FunctionArgs.TimeFrame.Value=TrackStruct.TimeFrame;
+
+get_matching_groups_means_function.InstanceName='GetMatchingGroupMeans';
+get_matching_groups_means_function.FunctionHandle=@getMatchingGroupMeans;
+get_matching_groups_means_function.FunctionArgs.Tracks.FunctionInstance='IfIsEmptyPreviousCellsLabel';
+get_matching_groups_means_function.FunctionArgs.Tracks.InputArg='Tracks';
+get_matching_groups_means_function.FunctionArgs.TracksLayout.Value=tracks_layout;
 
 if_is_empty_cells_label_function.IfFunctions=[{get_shape_params_function};{start_tracks_function}];
 
 if_is_empty_cells_label_function.ElseFunctions=[{get_cur_tracks_function};{get_prev_tracks_function};{get_shape_params_function};...
     {make_unassigned_cells_list_function};{make_excluded_tracks_list_function};{get_mean_displacement_function};...
-    {get_params_coeff_of_variation_function};{get_max_track_id_function};{assign_cells_to_tracks_loop};{continue_tracks_function}];
+    {get_params_coeff_of_variation_function};{get_max_track_id_function};{assign_cells_to_tracks_loop};{continue_tracks_function}...
+    ;{get_matching_groups_means_function}];
 
 save_cells_label_function.InstanceName='SaveCellsLabel';
 save_cells_label_function.FunctionHandle=@saveCellsLabel;

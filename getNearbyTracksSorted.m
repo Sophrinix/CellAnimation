@@ -1,5 +1,6 @@
 function [nearby_tracks_sorted group_idx matching_groups]=getNearbyTracksSorted(cur_id,cells_centroids,shape_params,track_struct...
-    ,cur_tracks,prev_tracks,search_radius_pct,matching_groups,tracks,params_coeff_var,relevant_params_idx)
+    ,cur_tracks,prev_tracks,search_radius_pct,matching_groups,params_coeff_var,relevant_params_idx,...
+    matching_group_stats)
 %get the tracks in the local nhood of this cell sorted by matching scores
 hugeNbr=1e6;
 cur_cell_centroid=cells_centroids(cur_id,:);
@@ -67,8 +68,8 @@ else
         %sort the tracks by ranking tracks in pairs to the cell instead of
         %all tracks at once. this prevents false best matching tracks.
         tracks_ranks=rankParams(cell_ranking_params,tracks_ranking_params);
-        ranking_order=getRankingOrder(cell_ranking_params,tracks_ranking_params,tracks_ranks,shape_params,tracks,...
-            matching_groups,track_struct,b_use_direction);        
+        ranking_order=getRankingOrder(cell_ranking_params,tracks_ranking_params,tracks_ranks,...
+            matching_groups,track_struct,b_use_direction,matching_group_stats);        
         group_idx=0;
         [tracks_params_sorted sort_idx]=sortManyToOneUsingPairs(cell_ranking_params,tracks_ranking_params,...
             b_use_direction,unknown_param_weights,param_weights,ranking_order,group_idx,relevant_params_idx);
@@ -86,8 +87,8 @@ else
         cell_ranking_params=[min(dist_to_tracks) 0 cur_shape_params(:,1:(solCol-areaCol+1))];
         tracks_ranking_params=[dist_to_tracks directions_diff nearby_tracks(:,areaCol:solCol)];
         tracks_ranks=rankParams(cell_ranking_params,tracks_ranking_params);
-        [ranking_order group_idx]=getRankingOrder(cell_ranking_params,tracks_ranking_params,tracks_ranks,shape_params,tracks...
-            ,matching_groups,track_struct,b_use_direction);
+        [ranking_order group_idx]=getRankingOrder(cell_ranking_params,tracks_ranking_params,tracks_ranks...
+            ,matching_groups,track_struct,b_use_direction,matching_group_stats);
         %sort the tracks by ranking tracks in pairs to the cell instead of
         %all tracks at once. this prevents false best matching tracks.
         [tracks_params_sorted sort_idx]=sortManyToOneUsingPairs(cell_ranking_params,tracks_ranking_params,...
@@ -118,11 +119,11 @@ else
             end
         else
             if (length(sort_idx)==1)
-                [dummy group_idx]=getRankingOrder(cell_ranking_params,tracks_params_sorted,pair_ranks,shape_params,...
-                    tracks,matching_groups,track_struct,true);
+                [dummy group_idx]=getRankingOrder(cell_ranking_params,tracks_params_sorted,pair_ranks,...
+                    matching_groups,track_struct,true,matching_group_stats);
             else
-                    [dummy group_idx]=getRankingOrder(cell_ranking_params,tracks_params_sorted(1:2,:),pair_ranks,shape_params,...
-                    tracks,matching_groups,track_struct,true);
+                    [dummy group_idx]=getRankingOrder(cell_ranking_params,tracks_params_sorted(1:2,:),pair_ranks,...
+                    matching_groups,track_struct,true,matching_group_stats);
             end
         end                
     end

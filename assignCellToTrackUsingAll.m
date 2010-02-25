@@ -11,8 +11,8 @@ search_radius_pct=input_args.SearchRadiusPct.Value;
 trackAssignments=input_args.TrackAssignments.Value;
 track_struct=input_args.TrackStruct.Value;
 max_tracks=input_args.MaxTrackID.Value;
-tracks=input_args.Tracks.Value;
 matching_groups=input_args.MatchingGroups.Value;
+matching_groups_stats=input_args.MatchingGroupsStats.Value;
 params_coeff_var=input_args.ParamsCoeffOfVariation.Value;
 excluded_tracks=input_args.ExcludedTracks.Value;
 relevant_params_idx=input_args.RelevantParametersIndex.Value;
@@ -26,7 +26,7 @@ centroid2Col=tracks_layout.Centroid2Col;
 trackIDCol=tracks_layout.TrackIDCol;
 
 [nearby_tracks_sorted group_idx matching_groups]=getNearbyTracksSorted(cur_id, cells_centroids,shape_params,track_struct,cur_tracks...
-    ,prev_tracks,search_radius_pct,matching_groups,tracks,params_coeff_var,relevant_params_idx);
+    ,prev_tracks,search_radius_pct,matching_groups,params_coeff_var,relevant_params_idx,matching_groups_stats);
 if (isempty(nearby_tracks_sorted))    
     nearby_tracks_nr=0;
 else
@@ -91,7 +91,7 @@ for i=1:nearby_tracks_nr
             %this cell has no other tracks it can connect to. does the
             %competing cell have other tracks it can get?
             other_tracks_sorted=getNearbyTracksSorted(competing_id, cells_centroids,shape_params,track_struct,cur_tracks,...
-                prev_tracks,search_radius_pct,matching_groups,tracks,params_coeff_var,relevant_params_idx);
+                prev_tracks,search_radius_pct,matching_groups,params_coeff_var,relevant_params_idx,matching_groups_stats);
             %remove the current track
             other_tracks_sorted(other_tracks_sorted(:,trackIDCol)==nearby_tracks_sorted(i,trackIDCol),:)=[];
             %remove any tracks that have already been excluded
@@ -136,7 +136,7 @@ for i=1:nearby_tracks_nr
             end
             %does the competing cell have other options?
             other_tracks_sorted=getNearbyTracksSorted(competing_id, cells_centroids,shape_params,track_struct,cur_tracks,...
-                prev_tracks,search_radius_pct,matching_groups,tracks,params_coeff_var,relevant_params_idx);
+                prev_tracks,search_radius_pct,matching_groups,params_coeff_var,relevant_params_idx,matching_groups_stats);
             %remove the current track
             other_tracks_sorted(other_tracks_sorted(:,trackIDCol)==nearby_tracks_sorted(i,trackIDCol),:)=[];
             %remove any tracks that have already been excluded
