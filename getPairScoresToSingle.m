@@ -40,7 +40,7 @@ else
         [dummy dummy2 pair_scores]=sortTracks(pair_ranks,pair_params,pair_ranking_order,param_weights);
     else
         [dummy dummy2 pair_scores]=sortTracks(pair_ranks,pair_params,...
-            pair_ranking_order(pair_ranking_order<max(pair_ranking_order)),param_weights(1:end-1));
+            pair_ranking_order(pair_ranking_order<max(pair_ranking_order)),param_weights);
     end
 end
 

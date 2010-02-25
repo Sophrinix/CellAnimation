@@ -8,12 +8,17 @@ cur_idx=dependencies_index.get(instance_name);
 
 %propagate any input args needed by the loop functions from outside
 updateArgs(instance_name,function_struct.FunctionArgs,'input');
-test_function_instance=function_struct.TestFunction.InstanceName;
-test_output=callFunction(test_function_instance,false);
 input_args=function_struct.FunctionArgs;
 loop_functions=function_struct.LoopFunctions;
 
-while(test_output.(input_args.TestResult.OutputArg))
+test_function_instance=function_struct.TestFunction.InstanceName;
+test_function_handle=function_struct.TestFunction.FunctionHandle;
+test_function_dependecy_idx=dependencies_index.get(test_function_instance);
+test_function_dependency_item=dependencies_list{test_function_dependecy_idx};
+test_output_name=input_args.TestResult.OutputArg;
+test_output=test_function_handle(test_function_dependency_item.FunctionArgs);
+
+while(test_output.(test_output_name))
     for j=1:size(loop_functions,1)
         loop_function_instance_name=loop_functions{j}.InstanceName;
         callFunction(loop_function_instance_name,false);
@@ -23,7 +28,8 @@ while(test_output.(input_args.TestResult.OutputArg))
     updateArgs(instance_name,dependency_item.FunctionArgs,'input');
     output_args=makeOutputStruct(function_struct);
     updateArgs(instance_name,output_args,'output');
-    test_output=callFunction(test_function_instance,false);
+    test_function_dependency_item=dependencies_list{test_function_dependecy_idx};
+    test_output=test_function_handle(test_function_dependency_item.FunctionArgs);
 end
 
 

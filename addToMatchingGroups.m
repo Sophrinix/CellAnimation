@@ -1,5 +1,5 @@
 function [ranking_order matching_groups group_idx]=addToMatchingGroups(matching_groups,cur_shape_params,nearby_params,...
-    params_coeff_var,best_fit_idx,min_reliable_params, track_ranks, track_struct)
+    params_coeff_var,best_fit_idx,min_reliable_params, track_ranks, track_struct, relevant_params_idx)
 %we need to rank parameters by how near they are to their former values
 %then once a ranking order is determined assign it to a matching_group. if
 %none exists with the same ranking order create a new one. the first two
@@ -75,6 +75,13 @@ end
 reliable_params_idx=ismember(ranking_order,reliable_params_col);
 %put the reliable params first
 ranking_order=[ranking_order(reliable_params_idx) ranking_order(~reliable_params_idx)];
+%remove parameters that have been set as irrelevant by user
+irrelevant_params_col=find(~relevant_params_idx);
+irrelevant_params_idx=ismember(ranking_order,irrelevant_params_col);
+ranking_order(irrelevant_params_idx)=[];
+%add them back at the end
+ranking_order=[ranking_order irrelevant_params_col];
+
 if (length(reliable_params_col)<min_reliable_params)
     %not enough reliable params to create a matching group
     group_idx=0;

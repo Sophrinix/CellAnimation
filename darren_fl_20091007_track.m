@@ -3,15 +3,15 @@ TrackStruct=[];
 TrackStruct.ImgExt='.tif';
 ds='\'  %directory symbol
 TrackStruct.DS=ds;
-root_folder='c:\darren';
+root_folder='i:\darren';
 TrackStruct.ImageFileName='DsRed - Confocal - n';
 %low hepsin expressing - not really wildtype
 TrackStruct.ImageFileBase=[well_folder ds TrackStruct.ImageFileName];
 %hepsin overexpressing
 % TrackStruct.ImageFileBase=[well_folder ds 'llh_hep_lm7_t'];
 TrackStruct.StartFrame=1;
-TrackStruct.FrameCount=72;
-TrackStruct.TimeFrame=15; %minutes
+TrackStruct.FrameCount=100;
+TrackStruct.TimeFrame=7; %minutes
 TrackStruct.FrameStep=1; %read every x frames
 TrackStruct.NumberFormat='%06d';
 TrackStruct.MaxFramesMissing=6; %how many frames a cell can disappear before we end its track
@@ -90,7 +90,7 @@ TrackStruct.ClearBorderDist=2;
 TrackStruct.WatershedMed=3;
 TrackStruct.MaxMergeDist=20;
 TrackStruct.MaxSplitDist=45;
-TrackStruct.MaxSplitArea=500;
+TrackStruct.MaxSplitArea=250;
 TrackStruct.MinSplitEcc=0.6;
 TrackStruct.MaxSplitEcc=0.9;
 
@@ -215,9 +215,14 @@ clear_small_nuclei_function.FunctionHandle=@clearSmallObjects;
 clear_small_nuclei_function.FunctionArgs.Image.FunctionInstance='FillHolesNuclearImages';
 clear_small_nuclei_function.FunctionArgs.Image.OutputArg='Image';
 clear_small_nuclei_function.FunctionArgs.MinObjectArea.Value=TrackStruct.MinNuclArea;
+solidity_filter_function.InstanceName='SolidityFilter';
+solidity_filter_function.FunctionHandle=@solidityFilter;
+solidity_filter_function.FunctionArgs.Image.FunctionInstance='ClearSmallNuclei';
+solidity_filter_function.FunctionArgs.Image.OutputArg='Image';
+solidity_filter_function.FunctionArgs.MinSolidity.Value=0.77;
 combine_nucl_plus_cyto_function.InstanceName='CombineNuclearAndCytoplasmImages';
 combine_nucl_plus_cyto_function.FunctionHandle=@combineImages;
-combine_nucl_plus_cyto_function.FunctionArgs.Image1.FunctionInstance='ClearSmallNuclei';
+combine_nucl_plus_cyto_function.FunctionArgs.Image1.FunctionInstance='SolidityFilter';
 combine_nucl_plus_cyto_function.FunctionArgs.Image1.OutputArg='Image';
 combine_nucl_plus_cyto_function.FunctionArgs.Image2.FunctionInstance='ClearSmallCells';
 combine_nucl_plus_cyto_function.FunctionArgs.Image2.OutputArg='Image';
@@ -226,11 +231,11 @@ reconstruct_cyto_function.InstanceName='ReconstructCytoplasmImage';
 reconstruct_cyto_function.FunctionHandle=@reconstructObjects;
 reconstruct_cyto_function.FunctionArgs.GuideImage.FunctionInstance='CombineNuclearAndCytoplasmImages';
 reconstruct_cyto_function.FunctionArgs.GuideImage.OutputArg='Image';
-reconstruct_cyto_function.FunctionArgs.ImageToReconstruct.FunctionInstance='ClearSmallCells';
+reconstruct_cyto_function.FunctionArgs.ImageToReconstruct.FunctionInstance='SolidityFilter';
 reconstruct_cyto_function.FunctionArgs.ImageToReconstruct.OutputArg='Image';
 label_nuclei_function.InstanceName='LabelNuclei';
 label_nuclei_function.FunctionHandle=@labelObjects;
-label_nuclei_function.FunctionArgs.Image.FunctionInstance='ClearSmallNuclei';
+label_nuclei_function.FunctionArgs.Image.FunctionInstance='SolidityFilter';
 label_nuclei_function.FunctionArgs.Image.OutputArg='Image';
 label_cyto_function.InstanceName='LabelCytoplasm';
 label_cyto_function.FunctionHandle=@labelObjects;
@@ -240,12 +245,12 @@ label_cyto_function.FunctionArgs.Image.OutputArg='Image';
 %segment images
 get_convex_objects_function.InstanceName='GetConvexObjects';
 get_convex_objects_function.FunctionHandle=@getConvexObjects;
-get_convex_objects_function.FunctionArgs.Image.FunctionInstance='ClearSmallNuclei';
+get_convex_objects_function.FunctionArgs.Image.FunctionInstance='SolidityFilter';
 get_convex_objects_function.FunctionArgs.Image.OutputArg='Image';
 get_convex_objects_function.FunctionArgs.ApproximationDistance.Value=TrackStruct.ApproxDist;
 distance_watershed_function.InstanceName='DistanceWatershed';
 distance_watershed_function.FunctionHandle=@distanceWatershed;
-distance_watershed_function.FunctionArgs.Image.FunctionInstance='ClearSmallNuclei';
+distance_watershed_function.FunctionArgs.Image.FunctionInstance='SolidityFilter';
 distance_watershed_function.FunctionArgs.Image.OutputArg='Image';
 distance_watershed_function.FunctionArgs.MedianFilterNhood.Value=TrackStruct.WatershedMed;
 polygonal_assisted_watershed_function.InstanceName='PolygonalAssistedWatershed';
@@ -257,6 +262,7 @@ polygonal_assisted_watershed_function.FunctionArgs.WatershedLabel.OutputArg='Wat
 polygonal_assisted_watershed_function.FunctionArgs.ConvexObjectsIndex.FunctionInstance='GetConvexObjects';
 polygonal_assisted_watershed_function.FunctionArgs.ConvexObjectsIndex.OutputArg='ConvexObjectsIndex';
 polygonal_assisted_watershed_function.FunctionArgs.MinBlobArea.Value=TrackStruct.MinNuclArea;
+
 segment_objects_using_markers_function.InstanceName='SegmentObjectsUsingMarkers';
 segment_objects_using_markers_function.FunctionHandle=@segmentObjectsUsingMarkers;
 segment_objects_using_markers_function.FunctionArgs.MarkersLabel.FunctionInstance='PolygonalAssistedWatershed';
@@ -292,6 +298,9 @@ if_is_empty_cells_label_function.FunctionArgs.Tracks.OutputArg='Tracks';
 if_is_empty_cells_label_function.FunctionArgs.Tracks.Value=[];
 if_is_empty_cells_label_function.FunctionArgs.MatchingGroups.FunctionInstance='SegmentationLoop';
 if_is_empty_cells_label_function.FunctionArgs.MatchingGroups.InputArg='MatchingGroups';
+if_is_empty_cells_label_function.FunctionArgs.MatchingGroupsStats.FunctionInstance='GetMatchingGroupMeans';
+if_is_empty_cells_label_function.FunctionArgs.MatchingGroupsStats.OutputArg='MatchingGroupStats';
+if_is_empty_cells_label_function.FunctionArgs.MatchingGroupsStats.Value=[];
 if_is_empty_cells_label_function.FunctionArgs.TrackAssignments.Value=[];
 if_is_empty_cells_label_function.TestFunction.InstanceName='IsEmptyPreviousCellsLabel';
 if_is_empty_cells_label_function.TestFunction.FunctionHandle=@isEmptyFunction;
@@ -391,6 +400,8 @@ assign_cells_to_tracks_loop.FunctionArgs.PreviousCellsLabel.FunctionInstance='If
 assign_cells_to_tracks_loop.FunctionArgs.PreviousCellsLabel.InputArg='PreviousCellsLabel';
 assign_cells_to_tracks_loop.FunctionArgs.ShapeParameters.FunctionInstance='GetShapeParameters';
 assign_cells_to_tracks_loop.FunctionArgs.ShapeParameters.OutputArg='ShapeParameters';
+assign_cells_to_tracks_loop.FunctionArgs.ShapeParameters.FunctionInstance2='SetMatchingGroupIndex';
+assign_cells_to_tracks_loop.FunctionArgs.ShapeParameters.OutputArg2='ShapeParameters';
 assign_cells_to_tracks_loop.FunctionArgs.CellsCentroids.FunctionInstance='GetShapeParameters';
 assign_cells_to_tracks_loop.FunctionArgs.CellsCentroids.OutputArg='Centroids';
 assign_cells_to_tracks_loop.FunctionArgs.CurrentTracks.FunctionInstance='GetCurrentTracks';
@@ -405,6 +416,8 @@ assign_cells_to_tracks_loop.FunctionArgs.Tracks.FunctionInstance='IfIsEmptyPrevi
 assign_cells_to_tracks_loop.FunctionArgs.Tracks.InputArg='Tracks';
 assign_cells_to_tracks_loop.FunctionArgs.MatchingGroups.FunctionInstance='IfIsEmptyPreviousCellsLabel';
 assign_cells_to_tracks_loop.FunctionArgs.MatchingGroups.InputArg='MatchingGroups';
+assign_cells_to_tracks_loop.FunctionArgs.MatchingGroupsStats.FunctionInstance='IfIsEmptyPreviousCellsLabel';
+assign_cells_to_tracks_loop.FunctionArgs.MatchingGroupsStats.InputArg='MatchingGroupsStats';
 assign_cells_to_tracks_loop.FunctionArgs.MatchingGroups.FunctionInstance2='AssignCellToTrackUsingAll';
 assign_cells_to_tracks_loop.FunctionArgs.MatchingGroups.OutputArg2='MatchingGroups';
 assign_cells_to_tracks_loop.FunctionArgs.ParamsCoeffOfVariation.FunctionInstance='GetParamsCoefficientOfVariation';
@@ -450,6 +463,8 @@ assign_cell_to_track_function.FunctionArgs.Tracks.FunctionInstance='AssignCellsT
 assign_cell_to_track_function.FunctionArgs.Tracks.InputArg='Tracks';
 assign_cell_to_track_function.FunctionArgs.MatchingGroups.FunctionInstance='AssignCellsToTracksLoop';
 assign_cell_to_track_function.FunctionArgs.MatchingGroups.InputArg='MatchingGroups';
+assign_cell_to_track_function.FunctionArgs.MatchingGroupsStats.FunctionInstance='AssignCellsToTracksLoop';
+assign_cell_to_track_function.FunctionArgs.MatchingGroupsStats.InputArg='MatchingGroupsStats';
 assign_cell_to_track_function.FunctionArgs.ParamsCoeffOfVariation.FunctionInstance='AssignCellsToTracksLoop';
 assign_cell_to_track_function.FunctionArgs.ParamsCoeffOfVariation.InputArg='ParamsCoeffOfVariation';
 assign_cell_to_track_function.FunctionArgs.PreviousTracks.FunctionInstance='AssignCellsToTracksLoop';
@@ -481,15 +496,22 @@ continue_tracks_function.FunctionArgs.CurFrame.FunctionInstance='IfIsEmptyPrevio
 continue_tracks_function.FunctionArgs.CurFrame.InputArg='CurFrame';
 continue_tracks_function.FunctionArgs.CellsCentroids.FunctionInstance='GetShapeParameters';
 continue_tracks_function.FunctionArgs.CellsCentroids.OutputArg='Centroids';
-continue_tracks_function.FunctionArgs.ShapeParameters.FunctionInstance='GetShapeParameters';
+continue_tracks_function.FunctionArgs.ShapeParameters.FunctionInstance='AssignCellsToTracksLoop';
 continue_tracks_function.FunctionArgs.ShapeParameters.OutputArg='ShapeParameters';
 continue_tracks_function.FunctionArgs.TimeFrame.Value=TrackStruct.TimeFrame;
+
+get_matching_groups_means_function.InstanceName='GetMatchingGroupMeans';
+get_matching_groups_means_function.FunctionHandle=@getMatchingGroupMeans;
+get_matching_groups_means_function.FunctionArgs.Tracks.FunctionInstance='IfIsEmptyPreviousCellsLabel';
+get_matching_groups_means_function.FunctionArgs.Tracks.InputArg='Tracks';
+get_matching_groups_means_function.FunctionArgs.TracksLayout.Value=tracks_layout;
 
 if_is_empty_cells_label_function.IfFunctions=[{get_shape_params_function};{start_tracks_function}];
 
 if_is_empty_cells_label_function.ElseFunctions=[{get_cur_tracks_function};{get_prev_tracks_function};{get_shape_params_function};...
     {make_unassigned_cells_list_function};{make_excluded_tracks_list_function};{get_mean_displacement_function};...
-    {get_params_coeff_of_variation_function};{get_max_track_id_function};{assign_cells_to_tracks_loop};{continue_tracks_function}];
+    {get_params_coeff_of_variation_function};{get_max_track_id_function};{assign_cells_to_tracks_loop};{continue_tracks_function}...
+    ;{get_matching_groups_means_function}];
 
 save_cells_label_function.InstanceName='SaveCellsLabel';
 save_cells_label_function.FunctionHandle=@saveCellsLabel;
@@ -517,7 +539,7 @@ image_read_loop.LoopFunctions=[{display_curtrackframe_function};{make_file_name_
     {normalize_image_to_16bit_function};{resize_image_function};{cyto_local_avg_filter_function};{cyto_global_int_filter_function};...
     {combine_cyto_images_function};{fill_holes_cyto_images_function};{clear_small_cells_function};{nucl_local_avg_filter_function};...
     {nucl_global_int_filter_function};{combine_nucl_images_function};{fill_holes_nucl_images_function};{clear_small_nuclei_function};...
-    {combine_nucl_plus_cyto_function};{reconstruct_cyto_function};{label_nuclei_function};{label_cyto_function};{get_convex_objects_function};...
+    {solidity_filter_function};{combine_nucl_plus_cyto_function};{reconstruct_cyto_function};{label_nuclei_function};{label_cyto_function};{get_convex_objects_function};...
     {distance_watershed_function};{polygonal_assisted_watershed_function};{segment_objects_using_markers_function};...
     {clear_small_components_function};{resize_cyto_label_function};{if_is_empty_cells_label_function};{save_cells_label_function};...
     {display_tracks_function}];

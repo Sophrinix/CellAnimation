@@ -1,5 +1,5 @@
-function [ranking_order group_idx]=getRankingOrder(cur_shape_params,nearby_shape_params,nearby_ranks,shape_params,...
-    tracks,matching_groups,track_struct,bUseDirection)
+function [ranking_order group_idx]=getRankingOrder(cur_shape_params,nearby_shape_params,nearby_ranks,...
+    matching_groups,track_struct,bUseDirection,matching_group_stats)
 %we need to figure out which parameters to use first when trying to match
 %this cell to a track - this can be done if the cell can be assigned to a
 %matching group. if not we'll assign a default ranking_order. determine if
@@ -14,6 +14,16 @@ group_id_col=tracks_layout.MatchGroupIDCol;
 [dummy closest_angle_idx]=min(nearby_ranks(:,angleCol));
 bDirection=false;
 bDistance=false;
+if (isempty(matching_group_stats))
+    b_group_stats=false;    
+else
+    b_group_stats=true;
+    nr_groups=size(matching_group_stats,1);
+    %can't use the matching groups added in this frame as we don't have the
+    %stats for those yet
+    matching_groups=matching_groups(1:nr_groups,:);
+end
+
 if (closest_angle_idx~=closest_distance_idx)
     %nearest distance and angle point to different cells
     %use the other parameters to pick which one is right
@@ -25,14 +35,22 @@ if (closest_angle_idx~=closest_distance_idx)
             if (bUseDirection)
                 %use direction matching groups
                 if (~isempty(matching_groups))
-                    matching_groups=matching_groups(matching_groups(:,1)==2,:);
+                    direction_groups_idx=matching_groups(:,1)==2;
+                    matching_groups=matching_groups(direction_groups_idx,:);
+                    if (b_group_stats)
+                        matching_group_stats=matching_group_stats(direction_groups_idx,:);
+                    end
                 end
                 bDirection=true;
             end
         else
             %use distance matching groups
             if (~isempty(matching_groups))
-                matching_groups=matching_groups(matching_groups(:,1)==1,:);
+                distance_groups_idx=matching_groups(:,1)==1;
+                matching_groups=matching_groups(distance_groups_idx,:);
+                if (b_group_stats)
+                    matching_group_stats=matching_group_stats(distance_groups_idx,:);
+                end
             end
             bDistance=true;
         end
@@ -45,7 +63,11 @@ if (closest_angle_idx~=closest_distance_idx)
             %use distance
             %use distance matching groups
             if (~isempty(matching_groups))
-                matching_groups=matching_groups(matching_groups(:,1)==1,:);
+                distance_groups_idx=matching_groups(:,1)==1;
+                matching_groups=matching_groups(distance_groups_idx,:);
+                if (b_group_stats)
+                    matching_group_stats=matching_group_stats(distance_groups_idx,:);
+                end
             end
             bDistance=true;
         end
@@ -55,16 +77,20 @@ if (closest_angle_idx~=closest_distance_idx)
         angle_diffs_sorted=sort(nearby_shape_params(:,2));
         max_angle_diff=track_struct.MaxAngleDiff;
         if ((angle_diffs_sorted(1)<max_angle_diff)&&(abs(angle_diffs_sorted(1)-angle_diffs_sorted(2))>max_angle_diff)&&bUseDirection)
-            %use direction matching groups
+            %use direction matching groups            
             if (~isempty(matching_groups))
-                matching_groups=matching_groups(matching_groups(:,1)==2,:);
-            end
+                direction_groups_idx=matching_groups(:,1)==2;
+                matching_groups=matching_groups(direction_groups_idx,:);
+                if (b_group_stats)
+                    matching_group_stats=matching_group_stats(direction_groups_idx,:);
+                end
+            end            
             bDirection=true;
         end
     end
 end
 
-if (isempty(matching_groups))
+if (isempty(matching_group_stats)||(size(cur_shape_params,2)<(end_params_col-start_params_col+3)))
     if (bDistance)
         ranking_order=track_struct.DistanceRankingOrder;
     elseif (bDirection)
@@ -79,17 +105,12 @@ if (isempty(matching_groups))
     group_idx=0;
     return;
 end
-nr_groups=size(matching_groups,1);
-group_diff=zeros(nr_groups,end_params_col-start_params_col+1);
-cur_params=cur_shape_params(:,1:end_params_col-start_params_col+1);
-for i=1:nr_groups
-    group_params_idx=(tracks(:,group_id_col)==i);
-    group_params_1=tracks(group_params_idx,start_params_col:end_params_col);
-    group_params_idx=(shape_params(:,group_id_col-start_params_col+1)==i);
-    group_params=[group_params_1; shape_params(group_params_idx,1:(end_params_col-start_params_col+1))];
-    group_stats=mean(group_params,1);
-    group_diff(i,:)=abs(group_stats-cur_params);
-end
+
+%can compare only on the true shape params first two columns are distance
+%and direction
+cur_params=cur_shape_params(:,3:end_params_col-start_params_col+3);
+nr_groups=size(matching_group_stats,1);
+group_diff=abs(matching_group_stats-repmat(cur_params,nr_groups,1));
 [dummy sort_idx]=sort(group_diff);
 ranks_sum=sum(sort_idx,2);
 [dummy group_idx]=min(ranks_sum);
