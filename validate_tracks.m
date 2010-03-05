@@ -106,62 +106,62 @@ tracks_to_be_merged=[];
 nr_tracks=size(track_ids,1)-1;
 blobIDCol=tracks_layout.BlobIDCol;
 %also merge tracks that share the same blob_id
-for i=1:nr_tracks
-    curID=untested_ids(i);
-    cur_track_idx=(tracks(:,trackIDCol)==curID);
-    cur_track=tracks(cur_track_idx,:);
-    cur_track_times=cur_track(:,timeCol);
-    cur_track_blob_ids=cur_track(:,blobIDCol);
-    track_start_time=cur_track_times(1);
-    track_end_time=cur_track_times(end);
-    %get only the tracks that appear at the same time with our current
-    %track
-    candidate_tracks_idx=ismember(tracks(:,timeCol),cur_track_times);
-    %remove our cell from the list
-    candidate_tracks_idx=candidate_tracks_idx&(~cur_track_idx);
-    %get a list of all the track ids that exist when this track exists
-    candidate_tracks=tracks(candidate_tracks_idx,:);
-    %only should be primary to tracks that are younger than or at most same
-    %age as the present track    
-    tracks_older_than_current=track_ids(track_start_times<track_start_time);
-    if (~isempty(tracks_older_than_current))
-        exclude_candidates_idx=ismember(candidate_tracks(:,trackIDCol),tracks_older_than_current);
-        candidate_tracks(exclude_candidates_idx,:)=[];
-    end
-    candidate_track_ids=unique(candidate_tracks(:,trackIDCol));    
-    
-    for j=1:size(cur_track,1)        
-        if (isempty(candidate_track_ids))
-            break;
-        end
-        cur_time=cur_track_times(j);
-        curBlobID=cur_track_blob_ids(j);
-        %get the tracks at this frame
-        cur_tracks_idx=candidate_tracks(:,timeCol)==cur_time;
-        cur_tracks=candidate_tracks(cur_tracks_idx,:);
-        if (~isempty(cur_tracks))
-            tracks_with_different_blob_ids_idx=~(cur_tracks(:,blobIDCol)==curBlobID);
-            tracks_with_different_blob_ids=cur_tracks(tracks_with_different_blob_ids_idx, trackIDCol);
-            %exclude the tracks with different blob ids from the list of
-            %possible merge candidates
-            exclude_tracks_idx=ismember(candidate_tracks(:,trackIDCol),tracks_with_different_blob_ids);
-            candidate_tracks(exclude_tracks_idx,:)=[];
-            candidate_track_ids=unique(candidate_tracks(:,trackIDCol));
-        end
-    end
-    %get any preexisting merge records for the current ID
-    if (~isempty(tracks_to_be_merged))
-        ids_already_recorded_idx=tracks_to_be_merged(:,2)==curID;
-        ids_already_recorded=tracks_to_be_merged(ids_already_recorded_idx,1);
-        if (~isempty(ids_already_recorded))
-            exclude_ids_idx=ismember(candidate_track_ids,ids_already_recorded);
-            candidate_track_ids(exclude_ids_idx)=[];
-        end
-    end
-    if (~isempty(candidate_track_ids))        
-        tracks_to_be_merged=[tracks_to_be_merged; repmat(curID,size(candidate_track_ids,1),1) candidate_track_ids];
-    end
-end
+% for i=1:nr_tracks
+%     curID=untested_ids(i)
+%     cur_track_idx=(tracks(:,trackIDCol)==curID);
+%     cur_track=tracks(cur_track_idx,:);
+%     cur_track_times=cur_track(:,timeCol);
+%     cur_track_blob_ids=cur_track(:,blobIDCol);
+%     track_start_time=cur_track_times(1);
+%     track_end_time=cur_track_times(end);
+%     %get only the tracks that appear at the same time with our current
+%     %track
+%     candidate_tracks_idx=ismember(tracks(:,timeCol),cur_track_times);
+%     %remove our cell from the list
+%     candidate_tracks_idx=candidate_tracks_idx&(~cur_track_idx);
+%     %get a list of all the track ids that exist when this track exists
+%     candidate_tracks=tracks(candidate_tracks_idx,:);
+%     %only should be primary to tracks that are younger than or at most same
+%     %age as the present track    
+%     tracks_older_than_current=track_ids(track_start_times<track_start_time);
+%     if (~isempty(tracks_older_than_current))
+%         exclude_candidates_idx=ismember(candidate_tracks(:,trackIDCol),tracks_older_than_current);
+%         candidate_tracks(exclude_candidates_idx,:)=[];
+%     end
+%     candidate_track_ids=unique(candidate_tracks(:,trackIDCol));    
+%     
+%     for j=1:size(cur_track,1)        
+%         if (isempty(candidate_track_ids))
+%             break;
+%         end
+%         cur_time=cur_track_times(j);
+%         curBlobID=cur_track_blob_ids(j);
+%         %get the tracks at this frame
+%         cur_tracks_idx=candidate_tracks(:,timeCol)==cur_time;
+%         cur_tracks=candidate_tracks(cur_tracks_idx,:);
+%         if (~isempty(cur_tracks))
+%             tracks_with_different_blob_ids_idx=~(cur_tracks(:,blobIDCol)==curBlobID);
+%             tracks_with_different_blob_ids=cur_tracks(tracks_with_different_blob_ids_idx, trackIDCol);
+%             %exclude the tracks with different blob ids from the list of
+%             %possible merge candidates
+%             exclude_tracks_idx=ismember(candidate_tracks(:,trackIDCol),tracks_with_different_blob_ids);
+%             candidate_tracks(exclude_tracks_idx,:)=[];
+%             candidate_track_ids=unique(candidate_tracks(:,trackIDCol));
+%         end
+%     end
+%     %get any preexisting merge records for the current ID
+%     if (~isempty(tracks_to_be_merged))
+%         ids_already_recorded_idx=tracks_to_be_merged(:,2)==curID;
+%         ids_already_recorded=tracks_to_be_merged(ids_already_recorded_idx,1);
+%         if (~isempty(ids_already_recorded))
+%             exclude_ids_idx=ismember(candidate_track_ids,ids_already_recorded);
+%             candidate_track_ids(exclude_ids_idx)=[];
+%         end
+%     end
+%     if (~isempty(candidate_track_ids))        
+%         tracks_to_be_merged=[tracks_to_be_merged; repmat(curID,size(candidate_track_ids,1),1) candidate_track_ids];
+%     end
+% end
 
 if (~isempty(tracks_to_be_merged))
     %perform the actual merge
