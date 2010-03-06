@@ -30,11 +30,11 @@ else
     new_object_numbers=1:length(valid_object_numbers);
     %we will replace valid numbers with new and everything else will be set to
     %zero
-    new_object_index=zeros(max(valid_object_numbers),1);
+    object_idx=cells_lbl>0;
+    new_object_index=zeros(max(cells_lbl(object_idx)),1);
     new_object_index(valid_object_numbers)=new_object_numbers;
     new_cells_lbl=cells_lbl;
-    %replace the old object numbers to prevent skips in numbering
-    object_idx=cells_lbl>0;
+    %replace the old object numbers to prevent skips in numbering    
     new_cells_lbl(object_idx)=new_object_index(cells_lbl(object_idx));
     output_args.LabelMatrix=new_cells_lbl;
 end
