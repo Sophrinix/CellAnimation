@@ -9,8 +9,8 @@ TrackStruct.ImageFileName='DsRed - Confocal - n';
 TrackStruct.ImageFileBase=[well_folder ds TrackStruct.ImageFileName];
 %hepsin overexpressing
 % TrackStruct.ImageFileBase=[well_folder ds 'llh_hep_lm7_t'];
-TrackStruct.StartFrame=219;
-TrackStruct.FrameCount=10;
+TrackStruct.StartFrame=1;
+TrackStruct.FrameCount=375;
 TrackStruct.TimeFrame=7; %minutes
 TrackStruct.FrameStep=1; %read every x frames
 TrackStruct.NumberFormat='%06d';
@@ -264,14 +264,14 @@ segment_objects_using_markers_function.FunctionArgs.MarkersLabel.FunctionInstanc
 segment_objects_using_markers_function.FunctionArgs.MarkersLabel.OutputArg='LabelMatrix';
 segment_objects_using_markers_function.FunctionArgs.ObjectsLabel.FunctionInstance='LabelCytoplasm';
 segment_objects_using_markers_function.FunctionArgs.ObjectsLabel.OutputArg='LabelMatrix';
-clear_small_components_function.InstanceName='ClearSmallComponents';
-clear_small_components_function.FunctionHandle=@clearSmallComponentsInLabelMatrix;
-clear_small_components_function.FunctionArgs.LabelMatrix.FunctionInstance='SegmentObjectsUsingMarkers';
-clear_small_components_function.FunctionArgs.LabelMatrix.OutputArg='LabelMatrix';
-clear_small_components_function.FunctionArgs.MinComponentArea.Value=TrackStruct.MinCytoArea;
+area_filter_function.InstanceName='AreaFilter';
+area_filter_function.FunctionHandle=@areaFilterLabel;
+area_filter_function.FunctionArgs.ObjectsLabel.FunctionInstance='SegmentObjectsUsingMarkers';
+area_filter_function.FunctionArgs.ObjectsLabel.OutputArg='LabelMatrix';
+area_filter_function.FunctionArgs.MinArea.Value=TrackStruct.MinCytoArea;
 solidity_filter_function.InstanceName='SolidityFilter';
 solidity_filter_function.FunctionHandle=@solidityFilterLabel;
-solidity_filter_function.FunctionArgs.ObjectsLabel.FunctionInstance='ClearSmallComponents';
+solidity_filter_function.FunctionArgs.ObjectsLabel.FunctionInstance='AreaFilter';
 solidity_filter_function.FunctionArgs.ObjectsLabel.OutputArg='LabelMatrix';
 solidity_filter_function.FunctionArgs.MinSolidity.Value=0.77;
 resize_cyto_label_function.InstanceName='ResizeCytoLabel';
@@ -541,7 +541,7 @@ image_read_loop.LoopFunctions=[{display_curtrackframe_function};{make_file_name_
     {fill_holes_nucl_images_function};{clear_small_nuclei_function};...
     {combine_nucl_plus_cyto_function};{reconstruct_cyto_function};{label_nuclei_function};{label_cyto_function};{get_convex_objects_function};...
     {distance_watershed_function};{polygonal_assisted_watershed_function};{segment_objects_using_markers_function};...
-    {clear_small_components_function};{solidity_filter_function};{resize_cyto_label_function};{if_is_empty_cells_label_function};{save_cells_label_function};...
+    {area_filter_function};{solidity_filter_function};{resize_cyto_label_function};{if_is_empty_cells_label_function};{save_cells_label_function};...
     {display_tracks_function}];
 
 save_tracks_function.InstanceName='SaveTracks';
