@@ -586,7 +586,13 @@ merge_tracks_function.FunctionArgs.Tracks.FunctionInstance='SegmentationLoop';
 merge_tracks_function.FunctionArgs.Tracks.OutputArg='Tracks';
 merge_tracks_function.FunctionArgs.TracksToBeMerged.FunctionInstance='DetectMergeCandidates';
 merge_tracks_function.FunctionArgs.TracksToBeMerged.OutputArg='TracksToBeMerged';
-merge_tracks_function.FunctionArgs.TrackStruct.Value=TrackStruct;
+merge_tracks_function.FunctionArgs.TracksLayout.Value=tracks_layout;
+merge_tracks_function.FunctionArgs.FrameCount.Value=TrackStruct.FrameCount;
+merge_tracks_function.FunctionArgs.StartFrame.Value=TrackStruct.StartFrame;
+merge_tracks_function.FunctionArgs.TimeFrame.Value=TrackStruct.TimeFrame;
+merge_tracks_function.FunctionArgs.SegFileRoot.Value=TrackStruct.SegFileRoot;
+merge_tracks_function.FunctionArgs.FrameStep.Value=TrackStruct.FrameStep;
+merge_tracks_function.FunctionArgs.NumberFormat.Value=TrackStruct.NumberFormat;
 
 get_track_ids_after_merge_function.InstanceName='GetTrackIDsAfterMerge';
 get_track_ids_after_merge_function.FunctionHandle=@getTrackIDs;

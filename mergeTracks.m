@@ -7,15 +7,14 @@ if isempty(tracks_to_be_merged)
     output_args.Tracks=tracks;
     return;
 end
-track_struct=input_args.TrackStruct.Value;
 
-framecount=track_struct.FrameCount;
-startframe=track_struct.StartFrame;
-timeframe=track_struct.TimeFrame;
-seg_file_root=track_struct.SegFileRoot;
-frame_step=track_struct.FrameStep;
-number_fmt=track_struct.NumberFormat;
-tracks_layout=track_struct.TracksLayout;
+framecount=input_args.FrameCount.Value;
+startframe=input_args.StartFrame.Value;
+timeframe=input_args.TimeFrame.Value;
+seg_file_root=input_args.SegFileRoot.Value;
+frame_step=input_args.FrameStep.Value;
+number_fmt=input_args.NumberFormat.Value;
+tracks_layout=input_args.TracksLayout.Value;
 timeCol=tracks_layout.TimeCol;
 trackIDCol=tracks_layout.TrackIDCol;
 centroid1Col=tracks_layout.Centroid1Col;
