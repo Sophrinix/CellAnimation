@@ -9,17 +9,16 @@ if isempty(split_cells)
     output_args.CellsAncestry=cells_ancestry;
     return;
 end
-track_struct=input_args.TrackStruct.Value;
 
-tracks_layout=track_struct.TracksLayout;
+tracks_layout=input_args.TracksLayout.Value;
 trackIDCol=tracks_layout.TrackIDCol;
 timeCol=tracks_layout.TimeCol;
 max_track_id=max(tracks(:,trackIDCol));
-ancestry_layout=track_struct.AncestryLayout;
+ancestry_layout=input_args.AncestryLayout.Value;
 stopTimeCol=ancestry_layout.StopTimeCol;
 generationCol=ancestry_layout.GenerationCol;
 ancestryIDCol=ancestry_layout.TrackIDCol;
-time_frame=track_struct.TimeFrame;
+time_frame=input_args.TimeFrame.Value;
 
 if (~isempty(split_cells))
     [dummy sort_idx]=sort(split_cells(:,3));

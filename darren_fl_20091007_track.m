@@ -644,7 +644,10 @@ split_tracks_function.FunctionArgs.Tracks.FunctionInstance='MergeTracks';
 split_tracks_function.FunctionArgs.Tracks.OutputArg='Tracks';
 split_tracks_function.FunctionArgs.CellsAncestry.FunctionInstance='MakeAncestryForCellsEnteringFrames';
 split_tracks_function.FunctionArgs.CellsAncestry.OutputArg='CellsAncestry';
-split_tracks_function.FunctionArgs.TrackStruct.Value=TrackStruct;
+split_tracks_function.FunctionArgs.TracksLayout.Value=tracks_layout;
+split_tracks_function.FunctionArgs.AncestryLayout.Value=ancestry_layout;
+split_tracks_function.FunctionArgs.TimeFrame.Value=TrackStruct.TimeFrame;
+
 
 save_updated_tracks_function.InstanceName='SaveUpdatedTracks';
 save_updated_tracks_function.FunctionHandle=@saveTracks;
