@@ -3,15 +3,15 @@ TrackStruct=[];
 TrackStruct.ImgExt='.tif';
 ds='\'  %directory symbol
 TrackStruct.DS=ds;
-root_folder='i:\darren';
+root_folder='c:\darren';
 TrackStruct.ImageFileName='DsRed - Confocal - n';
 %low hepsin expressing - not really wildtype
 TrackStruct.ImageFileBase=[well_folder ds TrackStruct.ImageFileName];
 %hepsin overexpressing
 % TrackStruct.ImageFileBase=[well_folder ds 'llh_hep_lm7_t'];
 TrackStruct.StartFrame=1;
-TrackStruct.FrameCount=375;
-TrackStruct.TimeFrame=7; %minutes
+TrackStruct.FrameCount=5;
+TrackStruct.TimeFrame=15; %minutes
 TrackStruct.FrameStep=1; %read every x frames
 TrackStruct.NumberFormat='%06d';
 TrackStruct.MaxFramesMissing=6; %how many frames a cell can disappear before we end its track
@@ -100,12 +100,11 @@ display_trackstruct_function.FunctionArgs.Variable.Value=TrackStruct;
 display_trackstruct_function.FunctionArgs.VariableName.Value='TrackStruct';
 %threshold images
 global functions_list;
-loop_args.StartLoop=TrackStruct.StartFrame;
 image_read_loop.InstanceName='SegmentationLoop';
 image_read_loop.FunctionHandle=@forLoop;
 image_read_loop.FunctionArgs.StartLoop.Value=TrackStruct.StartFrame;
 image_read_loop.FunctionArgs.EndLoop.Value=(TrackStruct.StartFrame+TrackStruct.FrameCount-1)*TrackStruct.FrameStep;
-image_read_loop.FunctionArgs.IncrementLoop.Value=1;
+image_read_loop.FunctionArgs.IncrementLoop.Value=TrackStruct.FrameStep;
 image_read_loop.FunctionArgs.MatchingGroups.Value=[]; %need to add another provider
 image_read_loop.FunctionArgs.MatchingGroups.FunctionInstance='IfIsEmptyPreviousCellsLabel';
 image_read_loop.FunctionArgs.MatchingGroups.OutputArg='MatchingGroups';
@@ -335,6 +334,7 @@ start_tracks_function.FunctionArgs.CurFrame.InputArg='CurFrame'; %only works for
 start_tracks_function.FunctionArgs.TimeFrame.Value=TrackStruct.TimeFrame;
 start_tracks_function.FunctionArgs.ShapeParameters.FunctionInstance='GetShapeParameters';
 start_tracks_function.FunctionArgs.ShapeParameters.OutputArg='ShapeParameters';
+
 get_cur_tracks_function.InstanceName='GetCurrentTracks';
 get_cur_tracks_function.FunctionHandle=@getCurrentTracks;
 get_cur_tracks_function.FunctionArgs.Tracks.FunctionInstance='IfIsEmptyPreviousCellsLabel';
@@ -342,11 +342,11 @@ get_cur_tracks_function.FunctionArgs.Tracks.InputArg='Tracks';
 get_cur_tracks_function.FunctionArgs.CurFrame.FunctionInstance='IfIsEmptyPreviousCellsLabel';
 get_cur_tracks_function.FunctionArgs.CurFrame.InputArg='CurFrame';
 get_cur_tracks_function.FunctionArgs.OffsetFrame.Value=-1;
-
 get_cur_tracks_function.FunctionArgs.TimeFrame.Value=TrackStruct.TimeFrame;
 get_cur_tracks_function.FunctionArgs.TimeCol.Value=tracks_layout.TimeCol;
 get_cur_tracks_function.FunctionArgs.TrackIDCol.Value=tracks_layout.TrackIDCol;
 get_cur_tracks_function.FunctionArgs.MaxMissingFrames.Value=TrackStruct.MaxFramesMissing;
+
 get_prev_tracks_function=get_cur_tracks_function;
 get_prev_tracks_function.InstanceName='GetPreviousTracks';
 get_prev_tracks_function.FunctionArgs.OffsetFrame.Value=-2;
@@ -556,12 +556,180 @@ save_matching_groups_function.FunctionArgs.MatchingGroups.FunctionInstance='Segm
 save_matching_groups_function.FunctionArgs.MatchingGroups.OutputArg='MatchingGroups';
 save_matching_groups_function.FunctionArgs.MatchingGroupsFileName.Value=TrackStruct.RankFile;
 
-validate_tracks_function.InstanceName='ValidateTracks';
-validate_tracks_function.FunctionHandle=@validate_tracks;
-validate_tracks_function.FunctionArgs.TrackStruct.Value=TrackStruct;
+get_track_ids_function.InstanceName='GetTrackIDs';
+get_track_ids_function.FunctionHandle=@getTrackIDs;
+get_track_ids_function.FunctionArgs.Tracks.FunctionInstance='SegmentationLoop';
+get_track_ids_function.FunctionArgs.Tracks.OutputArg='Tracks';
+get_track_ids_function.FunctionArgs.TrackIDCol.Value=tracks_layout.TrackIDCol;
+
+detect_merge_candidates_function.InstanceName='DetectMergeCandidates';
+detect_merge_candidates_function.FunctionHandle=@detectMergeCandidatesUsingDistance;
+detect_merge_candidates_function.FunctionArgs.MaxMergeDistance.Value=TrackStruct.MaxMergeDist;
+detect_merge_candidates_function.FunctionArgs.TrackIDs.FunctionInstance='GetTrackIDs';
+detect_merge_candidates_function.FunctionArgs.TrackIDs.OutputArg='TrackIDs';
+detect_merge_candidates_function.FunctionArgs.Tracks.FunctionInstance='SegmentationLoop';
+detect_merge_candidates_function.FunctionArgs.Tracks.OutputArg='Tracks';
+detect_merge_candidates_function.FunctionArgs.TracksLayout.Value=tracks_layout;
+
+merge_tracks_function.InstanceName='MergeTracks';
+merge_tracks_function.FunctionHandle=@mergeTracks;
+merge_tracks_function.FunctionArgs.Tracks.FunctionInstance='SegmentationLoop';
+merge_tracks_function.FunctionArgs.Tracks.OutputArg='Tracks';
+merge_tracks_function.FunctionArgs.TracksToBeMerged.FunctionInstance='DetectMergeCandidates';
+merge_tracks_function.FunctionArgs.TracksToBeMerged.OutputArg='TracksToBeMerged';
+merge_tracks_function.FunctionArgs.TrackStruct.Value=TrackStruct;
+
+get_track_ids_after_merge_function.InstanceName='GetTrackIDsAfterMerge';
+get_track_ids_after_merge_function.FunctionHandle=@getTrackIDs;
+get_track_ids_after_merge_function.FunctionArgs.Tracks.FunctionInstance='MergeTracks';
+get_track_ids_after_merge_function.FunctionArgs.Tracks.OutputArg='Tracks';
+get_track_ids_after_merge_function.FunctionArgs.TrackIDCol.Value=tracks_layout.TrackIDCol;
+
+make_ancestry_for_first_frame_cells_function.InstanceName='MakeAncestryForFirstFrameCells';
+make_ancestry_for_first_frame_cells_function.FunctionHandle=@makeAncestryForFirstFrameCells;
+make_ancestry_for_first_frame_cells_function.FunctionArgs.Tracks.FunctionInstance='MergeTracks';
+make_ancestry_for_first_frame_cells_function.FunctionArgs.Tracks.OutputArg='Tracks';
+make_ancestry_for_first_frame_cells_function.FunctionArgs.TrackIDs.FunctionInstance='GetTrackIDsAfterMerge';
+make_ancestry_for_first_frame_cells_function.FunctionArgs.TrackIDs.OutputArg='TrackIDs';
+make_ancestry_for_first_frame_cells_function.FunctionArgs.TimeCol.Value=tracks_layout.TimeCol;
+make_ancestry_for_first_frame_cells_function.FunctionArgs.TrackIDCol.Value=tracks_layout.TrackIDCol;
+
+detect_mitotic_events_function.InstanceName='DetectMitoticEvents';
+detect_mitotic_events_function.FunctionHandle=@detectMitoticEvents;
+detect_mitotic_events_function.FunctionArgs.Tracks.FunctionInstance='MergeTracks';
+detect_mitotic_events_function.FunctionArgs.Tracks.OutputArg='Tracks';
+detect_mitotic_events_function.FunctionArgs.UntestedIDs.FunctionInstance='MakeAncestryForFirstFrameCells';
+detect_mitotic_events_function.FunctionArgs.UntestedIDs.OutputArg='UntestedIDs';
+detect_mitotic_events_function.FunctionArgs.TracksLayout.Value=tracks_layout;
+detect_mitotic_events_function.FunctionArgs.MaxSplitArea.Value=TrackStruct.MaxSplitArea;
+detect_mitotic_events_function.FunctionArgs.MinSplitEccentricity.Value=TrackStruct.MinSplitEcc;
+detect_mitotic_events_function.FunctionArgs.MaxSplitEccentricity.Value=TrackStruct.MaxSplitEcc;
+detect_mitotic_events_function.FunctionArgs.MaxSplitDistance.Value=TrackStruct.MaxSplitDist;
+
+make_ancestry_for_cells_entering_frames_function.InstanceName='MakeAncestryForCellsEnteringFrames';
+make_ancestry_for_cells_entering_frames_function.FunctionHandle=@makeAncestryForCellsEnteringFrames;
+make_ancestry_for_cells_entering_frames_function.FunctionArgs.SplitCells.FunctionInstance='DetectMitoticEvents';
+make_ancestry_for_cells_entering_frames_function.FunctionArgs.SplitCells.OutputArg='SplitCells';
+make_ancestry_for_cells_entering_frames_function.FunctionArgs.TrackIDs.FunctionInstance='GetTrackIDsAfterMerge';
+make_ancestry_for_cells_entering_frames_function.FunctionArgs.TrackIDs.OutputArg='TrackIDs';
+make_ancestry_for_cells_entering_frames_function.FunctionArgs.FirstFrameIDs.FunctionInstance='MakeAncestryForFirstFrameCells';
+make_ancestry_for_cells_entering_frames_function.FunctionArgs.FirstFrameIDs.OutputArg='FirstFrameIDs';
+make_ancestry_for_cells_entering_frames_function.FunctionArgs.CellsAncestry.FunctionInstance='MakeAncestryForFirstFrameCells';
+make_ancestry_for_cells_entering_frames_function.FunctionArgs.CellsAncestry.OutputArg='CellsAncestry';
+make_ancestry_for_cells_entering_frames_function.FunctionArgs.Tracks.FunctionInstance='MergeTracks';
+make_ancestry_for_cells_entering_frames_function.FunctionArgs.Tracks.OutputArg='Tracks';
+make_ancestry_for_cells_entering_frames_function.FunctionArgs.TimeCol.Value=tracks_layout.TimeCol;
+make_ancestry_for_cells_entering_frames_function.FunctionArgs.TrackIDCol.Value=tracks_layout.TrackIDCol;
+
+split_tracks_function.InstanceName='SplitTracks';
+split_tracks_function.FunctionHandle=@splitTracks;
+split_tracks_function.FunctionArgs.SplitCells.FunctionInstance='DetectMitoticEvents';
+split_tracks_function.FunctionArgs.SplitCells.OutputArg='SplitCells';
+split_tracks_function.FunctionArgs.Tracks.FunctionInstance='MergeTracks';
+split_tracks_function.FunctionArgs.Tracks.OutputArg='Tracks';
+split_tracks_function.FunctionArgs.CellsAncestry.FunctionInstance='MakeAncestryForCellsEnteringFrames';
+split_tracks_function.FunctionArgs.CellsAncestry.OutputArg='CellsAncestry';
+split_tracks_function.FunctionArgs.TrackStruct.Value=TrackStruct;
+
+save_updated_tracks_function.InstanceName='SaveUpdatedTracks';
+save_updated_tracks_function.FunctionHandle=@saveTracks;
+save_updated_tracks_function.FunctionArgs.Tracks.FunctionInstance='SplitTracks';
+save_updated_tracks_function.FunctionArgs.Tracks.OutputArg='Tracks';
+save_updated_tracks_function.FunctionArgs.TracksFileName.Value=[TrackStruct.ProlDir ds 'tracks.mat'];
+
+save_ancestry_function.InstanceName='SaveAncestry';
+save_ancestry_function.FunctionHandle=@saveAncestry;
+save_ancestry_function.FunctionArgs.CellsAncestry.FunctionInstance='SplitTracks';
+save_ancestry_function.FunctionArgs.CellsAncestry.OutputArg='CellsAncestry';
+save_ancestry_function.FunctionArgs.AncestryFileName.Value=[TrackStruct.ProlDir ds 'ancestry.mat'];
+
+image_overlay_loop.InstanceName='ImageOverlayLoop';
+image_overlay_loop.FunctionHandle=@forLoop;
+image_overlay_loop.FunctionArgs.StartLoop.Value=TrackStruct.StartFrame;
+image_overlay_loop.FunctionArgs.EndLoop.Value=(TrackStruct.StartFrame+TrackStruct.FrameCount-1)*TrackStruct.FrameStep;
+image_overlay_loop.FunctionArgs.IncrementLoop.Value=TrackStruct.FrameStep;
+image_overlay_loop.FunctionArgs.Tracks.FunctionInstance='SplitTracks';
+image_overlay_loop.FunctionArgs.Tracks.OutputArg='Tracks';
+image_overlay_loop.FunctionArgs.CellsAncestry.FunctionInstance='SplitTracks';
+image_overlay_loop.FunctionArgs.CellsAncestry.OutputArg='CellsAncestry';
+
+make_file_name2_function.InstanceName='MakeImageNamesInOverlayLoop';
+make_file_name2_function.FunctionHandle=@makeImgFileName;
+make_file_name2_function.FunctionArgs.FileBase.Value=TrackStruct.ImageFileBase;
+make_file_name2_function.FunctionArgs.CurFrame.FunctionInstance='ImageOverlayLoop';
+make_file_name2_function.FunctionArgs.CurFrame.OutputArg='LoopCounter';
+make_file_name2_function.FunctionArgs.NumberFmt.Value=TrackStruct.NumberFormat;
+make_file_name2_function.FunctionArgs.FileExt.Value=TrackStruct.ImgExt;
+
+read_image2_function.InstanceName='ReadImagesInOverlayLoop';
+read_image2_function.FunctionHandle=@readImage;
+read_image2_function.FunctionArgs.ImageName.FunctionInstance='MakeImageNamesInOverlayLoop';
+read_image2_function.FunctionArgs.ImageName.OutputArg='FileName';
+read_image2_function.FunctionArgs.ImageChannel.Value='';
+
+get_cur_tracks2_function.InstanceName='GetCurrentTracks2';
+get_cur_tracks2_function.FunctionHandle=@getCurrentTracks;
+get_cur_tracks2_function.FunctionArgs.Tracks.FunctionInstance='ImageOverlayLoop';
+get_cur_tracks2_function.FunctionArgs.Tracks.InputArg='Tracks';
+get_cur_tracks2_function.FunctionArgs.CurFrame.FunctionInstance='ImageOverlayLoop';
+get_cur_tracks2_function.FunctionArgs.CurFrame.OutputArg='LoopCounter';
+get_cur_tracks2_function.FunctionArgs.OffsetFrame.Value=0;
+get_cur_tracks2_function.FunctionArgs.TimeFrame.Value=TrackStruct.TimeFrame;
+get_cur_tracks2_function.FunctionArgs.TimeCol.Value=tracks_layout.TimeCol;
+get_cur_tracks2_function.FunctionArgs.TrackIDCol.Value=tracks_layout.TrackIDCol;
+get_cur_tracks2_function.FunctionArgs.MaxMissingFrames.Value=0;
+
+make_mat_name_function.InstanceName='MakeMatNamesInOverlayLoop';
+make_mat_name_function.FunctionHandle=@makeImgFileName;
+make_mat_name_function.FunctionArgs.FileBase.Value=TrackStruct.SegFileRoot;
+make_mat_name_function.FunctionArgs.CurFrame.FunctionInstance='ImageOverlayLoop';
+make_mat_name_function.FunctionArgs.CurFrame.OutputArg='LoopCounter';
+make_mat_name_function.FunctionArgs.NumberFmt.Value=TrackStruct.NumberFormat;
+make_mat_name_function.FunctionArgs.FileExt.Value='.mat';
+
+load_cells_label_function.InstanceName='LoadCellsLabel';
+load_cells_label_function.FunctionHandle=@loadMatFile;
+load_cells_label_function.FunctionArgs.MatFileName.FunctionInstance='MakeMatNamesInOverlayLoop';
+load_cells_label_function.FunctionArgs.MatFileName.OutputArg='FileName';
+
+load_colormap_function.InstanceName='LoadColormap';
+load_colormap_function.FunctionHandle=@loadMatFile;
+load_colormap_function.FunctionArgs.MatFileName.Value='colormap_lines';
+
+display_ancestry_function.InstanceName='DisplayAncestry';
+display_ancestry_function.FunctionHandle=@displayAncestryData;
+display_ancestry_function.FunctionArgs.Image.FunctionInstance='ReadImagesInOverlayLoop';
+display_ancestry_function.FunctionArgs.Image.OutputArg='Image';
+display_ancestry_function.FunctionArgs.CurrentTracks.FunctionInstance='GetCurrentTracks2';
+display_ancestry_function.FunctionArgs.CurrentTracks.OutputArg='Tracks';
+display_ancestry_function.FunctionArgs.CellsLabel.FunctionInstance='LoadCellsLabel';
+display_ancestry_function.FunctionArgs.CellsLabel.OutputArg='cells_lbl';
+display_ancestry_function.FunctionArgs.CellsAncestry.FunctionInstance='ImageOverlayLoop';
+display_ancestry_function.FunctionArgs.CellsAncestry.InputArg='CellsAncestry';
+display_ancestry_function.FunctionArgs.CurFrame.FunctionInstance='ImageOverlayLoop';
+display_ancestry_function.FunctionArgs.CurFrame.OutputArg='LoopCounter';
+display_ancestry_function.FunctionArgs.ColorMap.FunctionInstance='LoadColormap';
+display_ancestry_function.FunctionArgs.ColorMap.OutputArg='cmap';
+display_ancestry_function.FunctionArgs.NumberFormat.Value=TrackStruct.NumberFormat;
+display_ancestry_function.FunctionArgs.TrackStruct.Value=TrackStruct;
+
+
+image_overlay_loop.LoopFunctions=[{make_file_name2_function};{read_image2_function};{get_cur_tracks2_function};{make_mat_name_function};...
+    {load_cells_label_function};{load_colormap_function};{display_ancestry_function}];
+
+save_ancestry_spreadsheets.InstanceName='SaveAncestrySpreadsheets';
+save_ancestry_spreadsheets.FunctionHandle=@saveAncestrySpreadsheets;
+save_ancestry_spreadsheets.FunctionArgs.Tracks.FunctionInstance='SplitTracks';
+save_ancestry_spreadsheets.FunctionArgs.Tracks.OutputArg='Tracks';
+save_ancestry_spreadsheets.FunctionArgs.CellsAncestry.FunctionInstance='ImageOverlayLoop';
+save_ancestry_spreadsheets.FunctionArgs.CellsAncestry.InputArg='CellsAncestry';
+save_ancestry_spreadsheets.FunctionArgs.TrackStruct.Value=TrackStruct;
+
 
 functions_list=[{display_trackstruct_function};{image_read_loop};{save_tracks_function};{save_matching_groups_function};...
-    {validate_tracks_function}];
+    {get_track_ids_function};{detect_merge_candidates_function};{merge_tracks_function};{get_track_ids_after_merge_function};...
+    {make_ancestry_for_first_frame_cells_function};{detect_mitotic_events_function};{make_ancestry_for_cells_entering_frames_function};...
+    {split_tracks_function};{save_updated_tracks_function};{save_ancestry_function};{image_overlay_loop};{save_ancestry_spreadsheets}];
 
 global dependencies_list;
 global dependencies_index;
