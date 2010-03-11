@@ -7,7 +7,6 @@ cells_ancestry=input_args.CellsAncestry.Value;
 curframe=input_args.CurFrame.Value;
 cmap=input_args.ColorMap.Value;
 number_fmt=input_args.NumberFormat.Value;
-track_struct=input_args.TrackStruct.Value;
 
 img_sz=size(cur_img);
 max_pxl=intmax('uint8');
@@ -19,17 +18,17 @@ red_color=cur_img;
 green_color=cur_img;
 blue_color=cur_img;
 
-prol_dir=track_struct.ProlDir;
-img_file_name=track_struct.ImageFileName;
-ds=track_struct.DS;
+prol_dir=input_args.ProlDir.Value;
+img_file_name=input_args.ImageFileName.Value;
+ds=input_args.DS.Value;
 output1=[prol_dir ds img_file_name];
 
-tracks_layout=track_struct.TracksLayout;
+tracks_layout=input_args.TracksLayout.Value;
 centroid1Col=tracks_layout.Centroid1Col;
 centroid2Col=tracks_layout.Centroid2Col;
 trackIDCol=tracks_layout.TrackIDCol;
 
-ancestry_layout=track_struct.AncestryLayout;
+ancestry_layout=input_args.AncestryLayout.Value;
 ancestryIDCol=ancestry_layout.TrackIDCol;
 generationCol=ancestry_layout.GenerationCol;
 

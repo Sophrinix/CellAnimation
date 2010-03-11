@@ -729,7 +729,11 @@ display_ancestry_function.FunctionArgs.CurFrame.OutputArg='LoopCounter';
 display_ancestry_function.FunctionArgs.ColorMap.FunctionInstance='LoadColormap';
 display_ancestry_function.FunctionArgs.ColorMap.OutputArg='cmap';
 display_ancestry_function.FunctionArgs.NumberFormat.Value=TrackStruct.NumberFormat;
-display_ancestry_function.FunctionArgs.TrackStruct.Value=TrackStruct;
+display_ancestry_function.FunctionArgs.TracksLayout.Value=tracks_layout;
+display_ancestry_function.FunctionArgs.ProlDir.Value=TrackStruct.ProlDir;
+display_ancestry_function.FunctionArgs.ImageFileName.Value=TrackStruct.ImageFileName;
+display_ancestry_function.FunctionArgs.DS.Value=ds;
+display_ancestry_function.FunctionArgs.AncestryLayout.Value=ancestry_layout;
 
 
 image_overlay_loop.LoopFunctions=[{make_file_name2_function};{read_image2_function};{get_cur_tracks2_function};{make_mat_name_function};...
