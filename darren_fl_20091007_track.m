@@ -714,6 +714,12 @@ load_colormap_function.InstanceName='LoadColormap';
 load_colormap_function.FunctionHandle=@loadMatFile;
 load_colormap_function.FunctionArgs.MatFileName.Value='colormap_lines';
 
+display_overlaying_frame_function.InstanceName='DisplayOverlayingFrame';
+display_overlaying_frame_function.FunctionHandle=@displayVariable;
+display_overlaying_frame_function.FunctionArgs.Variable.FunctionInstance='ImageOverlayLoop';
+display_overlaying_frame_function.FunctionArgs.Variable.OutputArg='LoopCounter';
+display_overlaying_frame_function.FunctionArgs.VariableName.Value='Overlaying Frame';
+
 display_ancestry_function.InstanceName='DisplayAncestry';
 display_ancestry_function.FunctionHandle=@displayAncestryData;
 display_ancestry_function.FunctionArgs.Image.FunctionInstance='ReadImagesInOverlayLoop';
@@ -737,7 +743,7 @@ display_ancestry_function.FunctionArgs.AncestryLayout.Value=ancestry_layout;
 
 
 image_overlay_loop.LoopFunctions=[{make_file_name2_function};{read_image2_function};{get_cur_tracks2_function};{make_mat_name_function};...
-    {load_cells_label_function};{load_colormap_function};{display_ancestry_function}];
+    {load_cells_label_function};{load_colormap_function};{display_overlaying_frame_function};{display_ancestry_function}];
 
 save_ancestry_spreadsheets.InstanceName='SaveAncestrySpreadsheets';
 save_ancestry_spreadsheets.FunctionHandle=@saveAncestrySpreadsheets;
