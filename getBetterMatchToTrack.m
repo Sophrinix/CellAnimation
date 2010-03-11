@@ -1,19 +1,16 @@
 function best_match_id=getBetterMatchToTrack(cur_track,cells_shape_params,cells_centroids,cells_ids,prev_tracks,matching_groups,...
-    track_struct, cells_lbl, prev_cells_lbl,relevant_params_idx)
+    tracks_layout, cells_lbl, prev_cells_lbl,relevant_params_idx,param_weights,unknown_param_weights,unknown_ranking_order)
 %figure out which cell of a pair is a better match for the track this
 %should only be used with cell pairs otherwise is meaningless
 assert(size(cells_shape_params,1)==2);
 %figure out which cell is a better match for this track
 
-tracks_layout=track_struct.TracksLayout;
 areaCol=tracks_layout.AreaCol;
 centroid1Col=tracks_layout.Centroid1Col;
 centroid2Col=tracks_layout.Centroid2Col;
 trackIDCol=tracks_layout.TrackIDCol;
 groupIDCol=tracks_layout.MatchGroupIDCol;
 solCol=tracks_layout.SolCol;
-param_weights=track_struct.DefaultParamWeights;
-unknown_param_weights=track_struct.UnknownParamWeights;
 
 
 track_centroid=cur_track(centroid1Col:centroid2Col);
@@ -37,7 +34,7 @@ end
 
 group_idx=cur_track(:,groupIDCol);
 if (group_idx==0)
-    ranking_order=track_struct.UnknownRankingOrder;    
+    ranking_order=unknown_ranking_order;    
 else
     ranking_order=matching_groups(group_idx,:);
 end

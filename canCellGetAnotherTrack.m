@@ -1,10 +1,10 @@
 function b_cell_can_get_another_track=canCellGetAnotherTrack(cur_id,nearby_tracks_sorted,prev_cells_lbl,cells_lbl,...
-    track_struct,trackAssignments,shape_params,cells_centroids,prev_tracks,matching_groups,b_bumping_allowed,relevant_params_idx)
+    tracks_layout,trackAssignments,shape_params,cells_centroids,prev_tracks,matching_groups,b_bumping_allowed,relevant_params_idx,...
+    param_weights,unknown_param_weights,unknown_ranking_order)
 if (isempty(nearby_tracks_sorted))
     b_cell_can_get_another_track=false;
     return;
 end
-tracks_layout=track_struct.TracksLayout;
 centroid1Col=tracks_layout.Centroid1Col;
 centroid2Col=tracks_layout.Centroid2Col;
 trackIDCol=tracks_layout.TrackIDCol;
@@ -34,7 +34,8 @@ for i=1:size(nearby_tracks_sorted,1)
         %sort the two cells with respect of their goodness-of-fit to the
         %track
         preferred_cell_id=getBetterMatchToTrack(nearby_tracks_sorted(i,:),test_shape_params,test_cells_centroids,...
-            [cur_id;test_id],prev_tracks,matching_groups,track_struct,cells_lbl,prev_cells_lbl,relevant_params_idx);
+            [cur_id;test_id],prev_tracks,matching_groups,tracks_layout,cells_lbl,prev_cells_lbl,relevant_params_idx,param_weights,...
+            unknown_param_weights,unknown_ranking_order);
         if (isempty(preferred_cell_id)||(preferred_cell_id==test_id))
             continue;
         else

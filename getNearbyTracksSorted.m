@@ -1,22 +1,19 @@
-function [nearby_tracks_sorted group_idx matching_groups]=getNearbyTracksSorted(cur_id,cells_centroids,shape_params,track_struct...
-    ,cur_tracks,prev_tracks,search_radius_pct,matching_groups,params_coeff_var,relevant_params_idx,...
-    matching_group_stats)
+function [nearby_tracks_sorted group_idx matching_groups]=getNearbyTracksSorted(cur_id,cells_centroids,shape_params,tracks_layout...
+    ,cur_tracks,prev_tracks,search_radius_pct,matching_groups,params_coeff_var,relevant_params_idx,matching_group_stats,...
+    params_for_sure_match,param_weights,unknown_param_weights,distance_ranking_order,direction_ranking_order,unknown_ranking_order,...
+    min_second_distance,max_dist_ratio,max_angle_diff)
 %get the tracks in the local nhood of this cell sorted by matching scores
 hugeNbr=1e6;
 cur_cell_centroid=cells_centroids(cur_id,:);
-tracks_layout=track_struct.TracksLayout;
 areaCol=tracks_layout.AreaCol;
 solCol=tracks_layout.SolCol;
 centroid1Col=tracks_layout.Centroid1Col;
 centroid2Col=tracks_layout.Centroid2Col;
 trackIDCol=tracks_layout.TrackIDCol;
-params_for_sure_match=track_struct.NrParamsForSureMatch;
 min_reliable_params=params_for_sure_match;
 group_idx=0;
 
 cur_shape_params=shape_params(cur_id,:);
-param_weights=track_struct.DefaultParamWeights;
-unknown_param_weights=track_struct.UnknownParamWeights;
 dist_to_tracks=hypot(cur_tracks(:,centroid1Col)-cur_cell_centroid(1),...
     cur_tracks(:,centroid2Col)-cur_cell_centroid(2));
 dist_to_tracks_sorted=sort(dist_to_tracks);
@@ -69,7 +66,8 @@ else
         %all tracks at once. this prevents false best matching tracks.
         tracks_ranks=rankParams(cell_ranking_params,tracks_ranking_params);
         ranking_order=getRankingOrder(cell_ranking_params,tracks_ranking_params,tracks_ranks,...
-            matching_groups,track_struct,b_use_direction,matching_group_stats);        
+            matching_groups,tracks_layout,b_use_direction,matching_group_stats,min_second_distance,max_dist_ratio,max_angle_diff,...
+            unknown_ranking_order,distance_ranking_order,direction_ranking_order);        
         group_idx=0;
         [tracks_params_sorted sort_idx]=sortManyToOneUsingPairs(cell_ranking_params,tracks_ranking_params,...
             b_use_direction,unknown_param_weights,param_weights,ranking_order,group_idx,relevant_params_idx);
@@ -88,7 +86,8 @@ else
         tracks_ranking_params=[dist_to_tracks directions_diff nearby_tracks(:,areaCol:solCol)];
         tracks_ranks=rankParams(cell_ranking_params,tracks_ranking_params);
         [ranking_order group_idx]=getRankingOrder(cell_ranking_params,tracks_ranking_params,tracks_ranks...
-            ,matching_groups,track_struct,b_use_direction,matching_group_stats);
+            ,matching_groups,tracks_layout,b_use_direction,matching_group_stats,min_second_distance,max_dist_ratio,max_angle_diff,...
+            unknown_ranking_order,distance_ranking_order,direction_ranking_order);
         %sort the tracks by ranking tracks in pairs to the cell instead of
         %all tracks at once. this prevents false best matching tracks.
         [tracks_params_sorted sort_idx]=sortManyToOneUsingPairs(cell_ranking_params,tracks_ranking_params,...
@@ -113,19 +112,21 @@ else
             if (length(sort_idx)==1)
                 [dummy matching_groups group_idx]=addToMatchingGroups(matching_groups,cell_ranking_params,...
                     tracks_params_sorted,params_coeff_var,1,min_reliable_params,pair_ranks,...
-                    track_struct,relevant_params_idx);
+                    relevant_params_idx,max_angle_diff,min_second_distance,max_dist_ratio);
             else
                 [dummy matching_groups group_idx]=addToMatchingGroups(matching_groups,cell_ranking_params,...
                     tracks_params_sorted(1:2,:),params_coeff_var,1,min_reliable_params,pair_ranks,...
-                    track_struct,relevant_params_idx);
+                    relevant_params_idx,max_angle_diff,min_second_distance,max_dist_ratio);
             end
         else
             if (length(sort_idx)==1)
                 [dummy group_idx]=getRankingOrder(cell_ranking_params,tracks_params_sorted,pair_ranks,...
-                    matching_groups,track_struct,true,matching_group_stats);
+                    matching_groups,tracks_layout,true,matching_group_stats,min_second_distance,max_dist_ratio,max_angle_diff,...
+                    unknown_ranking_order,distance_ranking_order,direction_ranking_order);
             else
                     [dummy group_idx]=getRankingOrder(cell_ranking_params,tracks_params_sorted(1:2,:),pair_ranks,...
-                    matching_groups,track_struct,true,matching_group_stats);
+                    matching_groups,tracks_layout,true,matching_group_stats,min_second_distance,max_dist_ratio,max_angle_diff,...
+                    unknown_ranking_order,distance_ranking_order,direction_ranking_order);
             end
         end                
     end

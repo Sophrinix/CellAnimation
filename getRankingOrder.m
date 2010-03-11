@@ -1,12 +1,12 @@
 function [ranking_order group_idx]=getRankingOrder(cur_shape_params,nearby_shape_params,nearby_ranks,...
-    matching_groups,track_struct,bUseDirection,matching_group_stats)
+    matching_groups,tracks_layout,bUseDirection,matching_group_stats,min_second_distance,max_dist_ratio,max_angle_diff,unknown_ranking_order,...
+    distance_ranking_order,direction_ranking_order)
 %we need to figure out which parameters to use first when trying to match
 %this cell to a track - this can be done if the cell can be assigned to a
 %matching group. if not we'll assign a default ranking_order. determine if
 %we need a distance-biased or direction-biased ranking order
 distanceCol=1;
 angleCol=2;
-tracks_layout=track_struct.TracksLayout;
 start_params_col=tracks_layout.AreaCol;
 end_params_col=tracks_layout.SolCol;
 group_id_col=tracks_layout.MatchGroupIDCol;
@@ -59,7 +59,7 @@ if (closest_angle_idx~=closest_distance_idx)
         %if one of the cells is a lot closer than the others use distance
         distances_sorted=sort(nearby_shape_params(:,distanceCol));
         dist_ratio=distances_sorted(1)/distances_sorted(2);
-        if ((distances_sorted(2)>track_struct.MinSecondDistance)&&(dist_ratio<track_struct.MaxDistRatio))
+        if ((distances_sorted(2)>min_second_distance)&&(dist_ratio<max_dist_ratio))
             %use distance
             %use distance matching groups
             if (~isempty(matching_groups))
@@ -75,7 +75,6 @@ if (closest_angle_idx~=closest_distance_idx)
         %all other angles are further than 20 degrees from our angle use
         %direction
         angle_diffs_sorted=sort(nearby_shape_params(:,2));
-        max_angle_diff=track_struct.MaxAngleDiff;
         if ((angle_diffs_sorted(1)<max_angle_diff)&&(abs(angle_diffs_sorted(1)-angle_diffs_sorted(2))>max_angle_diff)&&bUseDirection)
             %use direction matching groups            
             if (~isempty(matching_groups))
@@ -92,15 +91,15 @@ end
 
 if (isempty(matching_group_stats)||(size(cur_shape_params,2)<(end_params_col-start_params_col+3)))
     if (bDistance)
-        ranking_order=track_struct.DistanceRankingOrder;
+        ranking_order=distance_ranking_order;
     elseif (bDirection)
         if (bDistance)
-            ranking_order=track_struct.UnknownRankingOrder;
+            ranking_order=unknown_ranking_order;
         else
-            ranking_order=track_struct.DirectionRankingOrder;
+            ranking_order=direction_ranking_order;
         end
     else
-        ranking_order=track_struct.UnknownRankingOrder;
+        ranking_order=unknown_ranking_order;
     end    
     group_idx=0;
     return;

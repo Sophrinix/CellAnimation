@@ -1,5 +1,5 @@
 function [ranking_order matching_groups group_idx]=addToMatchingGroups(matching_groups,cur_shape_params,nearby_params,...
-    params_coeff_var,best_fit_idx,min_reliable_params, track_ranks, track_struct, relevant_params_idx)
+    params_coeff_var,best_fit_idx,min_reliable_params, track_ranks,relevant_params_idx,max_angle_diff,min_second_distance,max_dist_ratio)
 %we need to rank parameters by how near they are to their former values
 %then once a ranking order is determined assign it to a matching_group. if
 %none exists with the same ranking order create a new one. the first two
@@ -53,12 +53,11 @@ else
             angle_diffs_sorted=sort(nearby_params(:,2));
             distances_sorted=sort(nearby_params(:,1));
             dist_ratio=distances_sorted(1)/distances_sorted(2);
-            max_angle_diff=track_struct.MaxAngleDiff;
             if ((angle_diffs_sorted(1)<max_angle_diff)&&(abs(angle_diffs_sorted(1)-angle_diffs_sorted(2))>max_angle_diff))
                 %direction is most significant
                 reliable_params_col=[2 reliable_params_col];
                 ranking_order=[2 ranking_order 1];
-            elseif ((distances_sorted(2)>track_struct.MinSecondDistance)&&(dist_ratio<track_struct.MaxDistRatio))
+            elseif ((distances_sorted(2)>min_second_distance)&&(dist_ratio<max_dist_ratio))
                 %distance is most significant
                 reliable_params_col=[1 reliable_params_col 2];
                 ranking_order=[1 ranking_order 2];
