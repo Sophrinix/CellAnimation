@@ -13,13 +13,22 @@ for i=1:size(dependent_functions,1)
     dependent_args=cur_function.DependentArgs;
     for j=1:size(dependent_args,1)
         args_struct=dependent_args{j};
+        args_fields=fieldnames(args_struct);
         switch(update_name)
             case {'input'}
-                this_arg_name=args_struct.InputArg;
-                update_type=2;
+                if max(strcmp(args_fields,'InputArg'))
+                    this_arg_name=args_struct.InputArg;
+                    update_type=2;
+                else
+                    continue;
+                end
             case {'output'}
-                this_arg_name=args_struct.OutputArg;
-                update_type=1;
+                if max(strcmp(args_fields,'OutputArg'))
+                    this_arg_name=args_struct.OutputArg;
+                    update_type=1;
+                else
+                    continue;
+                end
         end
         if (~strcmp(var_name,this_arg_name))
             continue;
