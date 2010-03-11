@@ -745,7 +745,9 @@ save_ancestry_spreadsheets.FunctionArgs.Tracks.FunctionInstance='SplitTracks';
 save_ancestry_spreadsheets.FunctionArgs.Tracks.OutputArg='Tracks';
 save_ancestry_spreadsheets.FunctionArgs.CellsAncestry.FunctionInstance='ImageOverlayLoop';
 save_ancestry_spreadsheets.FunctionArgs.CellsAncestry.InputArg='CellsAncestry';
-save_ancestry_spreadsheets.FunctionArgs.TrackStruct.Value=TrackStruct;
+save_ancestry_spreadsheets.FunctionArgs.TracksLayout.Value=tracks_layout;
+save_ancestry_spreadsheets.FunctionArgs.ShapesXlsFile.Value=TrackStruct.ShapesXlsFile;
+save_ancestry_spreadsheets.FunctionArgs.ProlXlsFile.Value=TrackStruct.ProlXlsFile;
 
 
 functions_list=[{display_trackstruct_function};{image_read_loop};{save_tracks_function};{save_matching_groups_function};...
