@@ -13,8 +13,11 @@ max_split_area=input_args.MaxSplitArea.Value;
 min_split_ecc=input_args.MinSplitEccentricity.Value;
 max_split_ecc=input_args.MaxSplitEccentricity.Value;
 max_split_dist=input_args.MaxSplitDistance.Value;
+min_time_for_split=input_args.MinTimeForSplit.Value;
 untested_ids=input_args.UntestedIDs.Value;
 split_cells=[];
+%these are the cells that have a known parent therefore a known age
+cells_with_known_split_frames=java.util.Hashtable;
 
 while (~isempty(untested_ids))
     curID=untested_ids(1);
@@ -71,7 +74,17 @@ while (~isempty(untested_ids))
     for j=1:candidates_nr
         candidateID=split_candidates(j);
         candidate_track=tracks(tracks(:,trackIDCol)==candidateID,:);
-        candidate_start_time=candidate_track(1,timeCol);
+        candidate_birth_time=cells_with_known_split_frames.get(candidateID);
+        if isempty(candidate_birth_time)
+            candidate_start_time=candidate_track(1,timeCol);
+        else
+            cell_life_span=track_start_time-candidate_birth_time;
+            if (cell_life_span<min_time_for_split)
+                %this cell has split too recently to be splitting again
+                continue;
+            end
+            candidate_start_time=candidate_birth_frame;
+        end
         if (candidate_start_time>=track_start_time)
             %this track cannot be a parent of our track
             continue;
@@ -111,6 +124,8 @@ while (~isempty(untested_ids))
             continue;
         end
         split_cells=[split_cells; [candidateID curID track_start_time track_end_time]];
+        cells_with_known_split_frames.put(candidateID,track_start_time);
+        cells_with_known_split_frames.put(curID,track_start_time);
         break;
     end
     untested_ids(1)=[];   
