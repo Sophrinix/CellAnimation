@@ -83,7 +83,7 @@ while (~isempty(untested_ids))
                 %this cell has split too recently to be splitting again
                 continue;
             end
-            candidate_start_time=candidate_birth_frame;
+            candidate_start_time=candidate_birth_time;
         end
         if (candidate_start_time>=track_start_time)
             %this track cannot be a parent of our track
