@@ -659,16 +659,25 @@ split_tracks_function.FunctionArgs.TracksLayout.Value=tracks_layout;
 split_tracks_function.FunctionArgs.AncestryLayout.Value=ancestry_layout;
 split_tracks_function.FunctionArgs.TimeFrame.Value=TrackStruct.TimeFrame;
 
+remove_short_tracks_function.InstanceName='RemoveShortTracks';
+remove_short_tracks_function.FunctionHandle=@removeShortTracks;
+remove_short_tracks_function.FunctionArgs.Tracks.FunctionInstance='SplitTracks';
+remove_short_tracks_function.FunctionArgs.Tracks.OutputArg='Tracks';
+remove_short_tracks_function.FunctionArgs.CellsAncestry.FunctionInstance='SplitTracks';
+remove_short_tracks_function.FunctionArgs.CellsAncestry.OutputArg='CellsAncestry';
+remove_short_tracks_function.FunctionArgs.TracksLayout.Value=tracks_layout;
+remove_short_tracks_function.FunctionArgs.AncestryLayout.Value=ancestry_layout;
+remove_short_tracks_function.FunctionArgs.MinLifespan.Value=30; %minutes
 
 save_updated_tracks_function.InstanceName='SaveUpdatedTracks';
 save_updated_tracks_function.FunctionHandle=@saveTracks;
-save_updated_tracks_function.FunctionArgs.Tracks.FunctionInstance='SplitTracks';
+save_updated_tracks_function.FunctionArgs.Tracks.FunctionInstance='RemoveShortTracks';
 save_updated_tracks_function.FunctionArgs.Tracks.OutputArg='Tracks';
 save_updated_tracks_function.FunctionArgs.TracksFileName.Value=[TrackStruct.ProlDir ds 'tracks.mat'];
 
 save_ancestry_function.InstanceName='SaveAncestry';
 save_ancestry_function.FunctionHandle=@saveAncestry;
-save_ancestry_function.FunctionArgs.CellsAncestry.FunctionInstance='SplitTracks';
+save_ancestry_function.FunctionArgs.CellsAncestry.FunctionInstance='RemoveShortTracks';
 save_ancestry_function.FunctionArgs.CellsAncestry.OutputArg='CellsAncestry';
 save_ancestry_function.FunctionArgs.AncestryFileName.Value=[TrackStruct.ProlDir ds 'ancestry.mat'];
 
@@ -677,9 +686,9 @@ image_overlay_loop.FunctionHandle=@forLoop;
 image_overlay_loop.FunctionArgs.StartLoop.Value=TrackStruct.StartFrame;
 image_overlay_loop.FunctionArgs.EndLoop.Value=(TrackStruct.StartFrame+TrackStruct.FrameCount-1)*TrackStruct.FrameStep;
 image_overlay_loop.FunctionArgs.IncrementLoop.Value=TrackStruct.FrameStep;
-image_overlay_loop.FunctionArgs.Tracks.FunctionInstance='SplitTracks';
+image_overlay_loop.FunctionArgs.Tracks.FunctionInstance='RemoveShortTracks';
 image_overlay_loop.FunctionArgs.Tracks.OutputArg='Tracks';
-image_overlay_loop.FunctionArgs.CellsAncestry.FunctionInstance='SplitTracks';
+image_overlay_loop.FunctionArgs.CellsAncestry.FunctionInstance='RemoveShortTracks';
 image_overlay_loop.FunctionArgs.CellsAncestry.OutputArg='CellsAncestry';
 
 make_file_name2_function.InstanceName='MakeImageNamesInOverlayLoop';
@@ -758,10 +767,10 @@ image_overlay_loop.LoopFunctions=[{make_file_name2_function};{read_image2_functi
 
 save_ancestry_spreadsheets.InstanceName='SaveAncestrySpreadsheets';
 save_ancestry_spreadsheets.FunctionHandle=@saveAncestrySpreadsheets;
-save_ancestry_spreadsheets.FunctionArgs.Tracks.FunctionInstance='SplitTracks';
+save_ancestry_spreadsheets.FunctionArgs.Tracks.FunctionInstance='RemoveShortTracks';
 save_ancestry_spreadsheets.FunctionArgs.Tracks.OutputArg='Tracks';
-save_ancestry_spreadsheets.FunctionArgs.CellsAncestry.FunctionInstance='ImageOverlayLoop';
-save_ancestry_spreadsheets.FunctionArgs.CellsAncestry.InputArg='CellsAncestry';
+save_ancestry_spreadsheets.FunctionArgs.CellsAncestry.FunctionInstance='RemoveShortTracks';
+save_ancestry_spreadsheets.FunctionArgs.CellsAncestry.OutputArg='CellsAncestry';
 save_ancestry_spreadsheets.FunctionArgs.TracksLayout.Value=tracks_layout;
 save_ancestry_spreadsheets.FunctionArgs.ShapesXlsFile.Value=TrackStruct.ShapesXlsFile;
 save_ancestry_spreadsheets.FunctionArgs.ProlXlsFile.Value=TrackStruct.ProlXlsFile;
@@ -770,7 +779,8 @@ save_ancestry_spreadsheets.FunctionArgs.ProlXlsFile.Value=TrackStruct.ProlXlsFil
 functions_list=[{display_trackstruct_function};{image_read_loop};{save_tracks_function};{save_matching_groups_function};...
     {get_track_ids_function};{detect_merge_candidates_function};{merge_tracks_function};{get_track_ids_after_merge_function};...
     {make_ancestry_for_first_frame_cells_function};{detect_mitotic_events_function};{make_ancestry_for_cells_entering_frames_function};...
-    {split_tracks_function};{save_updated_tracks_function};{save_ancestry_function};{image_overlay_loop};{save_ancestry_spreadsheets}];
+    {split_tracks_function};{remove_short_tracks_function};{save_updated_tracks_function};{save_ancestry_function};{image_overlay_loop};...
+    {save_ancestry_spreadsheets}];
 
 global dependencies_list;
 global dependencies_index;
