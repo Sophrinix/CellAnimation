@@ -92,7 +92,7 @@ TrackStruct.MaxMergeDist=23;
 TrackStruct.MaxSplitDist=45;
 TrackStruct.MaxSplitArea=400;
 TrackStruct.MinSplitEcc=0.5;
-TrackStruct.MaxSplitEcc=0.91;
+TrackStruct.MaxSplitEcc=0.95;
 TrackStruct.MinTimeForSplit=900; %minutes
 
 display_trackstruct_function.InstanceName='DisplayTrackStruct';
@@ -461,6 +461,7 @@ assign_cell_to_track_function.FunctionArgs.CellsCentroids.FunctionInstance='Assi
 assign_cell_to_track_function.FunctionArgs.CellsCentroids.InputArg='CellsCentroids';
 assign_cell_to_track_function.FunctionArgs.CurrentTracks.FunctionInstance='AssignCellsToTracksLoop';
 assign_cell_to_track_function.FunctionArgs.CurrentTracks.InputArg='CurrentTracks';
+assign_cell_to_track_function.FunctionArgs.CheckCellPath.Value=true;
 %how far from the nearest future cell we should look for possible matches
 %to our present cell. ie 1.5 means we should look one and a half times the
 %distance between the current cell and the nearest future cell

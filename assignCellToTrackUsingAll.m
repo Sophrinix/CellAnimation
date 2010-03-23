@@ -25,6 +25,7 @@ unknown_ranking_order=input_args.UnknownRankingOrder.Value;
 min_second_distance=input_args.MinSecondDistance.Value;
 max_dist_ratio=input_args.MaxDistRatio.Value;
 max_angle_diff=input_args.MaxAngleDiff.Value;
+b_check_path=input_args.CheckCellPath.Value;
 
 %assign current cell to a track
 cur_id=unassignedIDs(1);
@@ -52,10 +53,12 @@ for i=1:nearby_tracks_nr
         %can't get this track
         continue;
     end
-%     if (pathGoesThroughACell(cells_lbl, prev_cells_lbl,cur_id,track_lbl_id,0))
-%         %resulting path would go through another cell - this track cannot match this cell
-%         continue;
-%     end    
+    if (b_check_path)
+        if (pathGoesThroughACell(cells_lbl, prev_cells_lbl,cur_id,track_lbl_id,0))
+            %resulting path would go through another cell - this track cannot match this cell
+            continue;
+        end
+    end
     if (isempty(trackAssignments))
         track_idx=[];
         competing_id=[];
@@ -95,7 +98,7 @@ for i=1:nearby_tracks_nr
             available_tracks_sorted(excluded_tracks_idx,:)=[];            
             if (canCellGetAnotherTrack(cur_id,available_tracks_sorted,prev_cells_lbl,cells_lbl,...
                     tracks_layout,trackAssignments,shape_params,cells_centroids,prev_tracks,matching_groups,true,relevant_params_idx,...
-                    param_weights,unknown_param_weights,unknown_ranking_order))            
+                    param_weights,unknown_param_weights,unknown_ranking_order,b_check_path))            
                %it does. we'll have to leave this track to the
                 %cell with the stronger claim
                 continue;
@@ -113,7 +116,7 @@ for i=1:nearby_tracks_nr
             other_tracks_sorted(excluded_tracks_idx,:)=[];
             if (isempty(other_tracks_sorted)||(~canCellGetAnotherTrack(competing_id,other_tracks_sorted,prev_cells_lbl,cells_lbl,...
                     tracks_layout,trackAssignments,shape_params,cells_centroids,prev_tracks,matching_groups,false,relevant_params_idx,...
-                    param_weights,unknown_param_weights,unknown_ranking_order)))            
+                    param_weights,unknown_param_weights,unknown_ranking_order,b_check_path)))            
                %this track is the last option for the competing cell
                 %as well. we'll have to leave it to it since it is
                 %preferred by the track
@@ -137,7 +140,7 @@ for i=1:nearby_tracks_nr
             available_tracks_sorted(excluded_tracks_idx,:)=[];
             if (isempty(available_tracks_sorted)||(~canCellGetAnotherTrack(cur_id,available_tracks_sorted,prev_cells_lbl,cells_lbl,...
                     tracks_layout,trackAssignments,shape_params,cells_centroids,prev_tracks,matching_groups,false,relevant_params_idx,...
-                    param_weights,unknown_param_weights,unknown_ranking_order)))
+                    param_weights,unknown_param_weights,unknown_ranking_order,b_check_path)))
                %this cell has no other tracks it can get
                 %bump the cell with the weaker claim
                 unassignedIDs(1)=trackAssignments(track_idx,2);
@@ -162,7 +165,7 @@ for i=1:nearby_tracks_nr
             other_tracks_sorted(excluded_tracks_idx,:)=[];            
             if (canCellGetAnotherTrack(competing_id,other_tracks_sorted,prev_cells_lbl,cells_lbl,tracks_layout,trackAssignments,shape_params,...
                     cells_centroids,prev_tracks,matching_groups,false,relevant_params_idx,param_weights,unknown_param_weights,...
-                    unknown_ranking_order))            
+                    unknown_ranking_order,b_check_path))            
                 %yes relinquish the track to this cell with the stronger
                 %claim
                 unassignedIDs(1)=trackAssignments(track_idx,2);

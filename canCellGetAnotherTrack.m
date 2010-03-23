@@ -1,6 +1,6 @@
 function b_cell_can_get_another_track=canCellGetAnotherTrack(cur_id,nearby_tracks_sorted,prev_cells_lbl,cells_lbl,...
     tracks_layout,trackAssignments,shape_params,cells_centroids,prev_tracks,matching_groups,b_bumping_allowed,relevant_params_idx,...
-    param_weights,unknown_param_weights,unknown_ranking_order)
+    param_weights,unknown_param_weights,unknown_ranking_order,b_check_path)
 if (isempty(nearby_tracks_sorted))
     b_cell_can_get_another_track=false;
     return;
@@ -11,8 +11,10 @@ trackIDCol=tracks_layout.TrackIDCol;
 b_found_track=false;
 for i=1:size(nearby_tracks_sorted,1)
     track_lbl_id=getLabelId(prev_cells_lbl,nearby_tracks_sorted(i,centroid1Col:centroid2Col));
-    if (pathGoesThroughACell(cells_lbl,prev_cells_lbl,cur_id,track_lbl_id,0))
-        continue;
+    if (b_check_path)
+        if (pathGoesThroughACell(cells_lbl,prev_cells_lbl,cur_id,track_lbl_id,0))
+            continue;
+        end
     end
     if (isempty(trackAssignments))
         track_idx=[];
