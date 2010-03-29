@@ -10,9 +10,9 @@ TrackStruct.ImageFileBase=[well_folder ds TrackStruct.ImageFileName];
 %hepsin overexpressing
 % TrackStruct.ImageFileBase=[well_folder ds 'llh_hep_lm7_t'];
 TrackStruct.StartFrame=1;
-TrackStruct.FrameCount=72;
+TrackStruct.FrameCount=8;
 TrackStruct.TimeFrame=15; %minutes
-TrackStruct.FrameStep=1; %read every x frames
+TrackStruct.FrameStep=10; %read every x frames
 TrackStruct.NumberFormat='%06d';
 TrackStruct.MaxFramesMissing=6; %how many frames a cell can disappear before we end its track
 
@@ -45,9 +45,9 @@ TrackStruct.MinSecondDistance=5; % minimum distance the second cell has to be fr
 TrackStruct.MaxAngleDiff=0.35; % radians - max difference between previous and current direction at which direction may still be most significant
 TrackStruct.MaxDistRatio=0.6; %how close the first cell may be from the second cell and stiil have distance be most significant
 
-TrackStruct.UnknownRankingOrder=[1 2 3 4 5 6 7 8 9];
-TrackStruct.DistanceRankingOrder=[1 3 4 5 6 7 8 9 2];
-TrackStruct.DirectionRankingOrder=[2 3 4 5 6 7 8 9 1];
+TrackStruct.UnknownRankingOrder=[3 4 5 6 7 8 9 1 2];
+TrackStruct.DistanceRankingOrder=[3 4 5 6 7 8 9 1 2];
+TrackStruct.DirectionRankingOrder=[3 4 5 6 7 8 9 1 2];
 TrackStruct.DefaultParamWeights=[34 21 13 8 5 3 2 2 2];
 TrackStruct.UnknownParamWeights=[5 3 1 1 1 1 1 1 1];
 %tracks grid layout
@@ -446,9 +446,8 @@ get_current_unassigned_cell_function.InstanceName='GetCurrentUnassignedCell';
 get_current_unassigned_cell_function.FunctionHandle=@getCurrentUnassignedCell;
 get_current_unassigned_cell_function.FunctionArgs.UnassignedCells.FunctionInstance='AssignCellsToTracksLoop';
 get_current_unassigned_cell_function.FunctionArgs.UnassignedCells.InputArg='UnassignedCells';
-
 assign_cell_to_track_function.InstanceName='AssignCellToTrackUsingAll';
-assign_cell_to_track_function.FunctionHandle=@assignCellToTrackUsingNN;
+assign_cell_to_track_function.FunctionHandle=@assignCellToTrackUsingAll;
 assign_cell_to_track_function.FunctionArgs.UnassignedCells.FunctionInstance='AssignCellsToTracksLoop';
 assign_cell_to_track_function.FunctionArgs.UnassignedCells.InputArg='UnassignedCells';
 assign_cell_to_track_function.FunctionArgs.ExcludedTracks.FunctionInstance='AssignCellsToTracksLoop';
@@ -484,7 +483,7 @@ assign_cell_to_track_function.FunctionArgs.PreviousTracks.FunctionInstance='Assi
 assign_cell_to_track_function.FunctionArgs.PreviousTracks.InputArg='PreviousTracks';
 assign_cell_to_track_function.FunctionArgs.TracksLayout.Value=tracks_layout;
 assign_cell_to_track_function.FunctionArgs.RelevantParametersIndex.Value=...
-    [true true true false true false true true false];
+    [false true true false true false true true false];
 assign_cell_to_track_function.FunctionArgs.NrParamsForSureMatch.Value=TrackStruct.NrParamsForSureMatch;
 assign_cell_to_track_function.FunctionArgs.DefaultParamWeights.Value=TrackStruct.DefaultParamWeights;
 assign_cell_to_track_function.FunctionArgs.UnknownParamWeights.Value=TrackStruct.UnknownParamWeights;

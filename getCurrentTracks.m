@@ -2,7 +2,10 @@ function output_args=getCurrentTracks(input_args)
 
 %get tracks that existed in the previous max_missing_frames
 tracks=input_args.Tracks.Value;
-startframe=input_args.CurFrame.Value+input_args.OffsetFrame.Value;
+frame_step=input_args.FrameStep.Value;
+offset_frame=input_args.OffsetFrame.Value;
+startframe=input_args.CurFrame.Value+frame_step*offset_frame;
+offset_dir=sign(offset_frame);
 timeframe=input_args.TimeFrame.Value;
 timeCol=input_args.TimeCol.Value;
 max_missing_frames=input_args.MaxMissingFrames.Value;
@@ -10,8 +13,8 @@ track_id_col=input_args.TrackIDCol.Value;
 cur_tracks=tracks(tracks(:,timeCol)==(startframe-1)*timeframe,:);
 track_ids=cur_tracks(:,track_id_col);
 min_time=min(tracks(:,timeCol));
-for i=1:max_missing_frames
-    cur_time=(startframe-1-i)*timeframe;
+for i=frame_step:frame_step:(frame_step*max_missing_frames)
+    cur_time=(startframe+offset_dir*i-1)*timeframe;
     if (cur_time<min_time)
         break;
     end

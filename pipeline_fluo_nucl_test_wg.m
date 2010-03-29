@@ -356,6 +356,7 @@ get_cur_tracks_function.FunctionArgs.TimeFrame.Value=TrackStruct.TimeFrame;
 get_cur_tracks_function.FunctionArgs.TimeCol.Value=tracks_layout.TimeCol;
 get_cur_tracks_function.FunctionArgs.TrackIDCol.Value=tracks_layout.TrackIDCol;
 get_cur_tracks_function.FunctionArgs.MaxMissingFrames.Value=TrackStruct.MaxFramesMissing;
+get_cur_tracks_function.FunctionArgs.FrameStep.Value=TrackStruct.FrameStep;
 
 get_prev_tracks_function=get_cur_tracks_function;
 get_prev_tracks_function.InstanceName='GetPreviousTracks';
@@ -717,6 +718,7 @@ get_cur_tracks2_function.FunctionArgs.TimeFrame.Value=TrackStruct.TimeFrame;
 get_cur_tracks2_function.FunctionArgs.TimeCol.Value=tracks_layout.TimeCol;
 get_cur_tracks2_function.FunctionArgs.TrackIDCol.Value=tracks_layout.TrackIDCol;
 get_cur_tracks2_function.FunctionArgs.MaxMissingFrames.Value=0;
+get_cur_tracks2_function.FunctionArgs.FrameStep.Value=TrackStruct.FrameStep;
 
 make_mat_name_function.InstanceName='MakeMatNamesInOverlayLoop';
 make_mat_name_function.FunctionHandle=@makeImgFileName;
