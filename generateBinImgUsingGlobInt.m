@@ -15,6 +15,8 @@ if (input_args.ClearBorder.Value)
         img_bw(1:end,end-clear_border_dist+1:end)=1;
     end
     output_args.Image=imclearborder(img_bw);
+else
+    output_args.Image=img_bw;
 end
 
 %end generateBinImgUsingGlobInt
