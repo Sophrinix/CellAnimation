@@ -1,7 +1,7 @@
 function [nearby_tracks_sorted group_idx matching_groups]=getNearbyTracksSorted(cur_id,cells_centroids,shape_params,tracks_layout...
     ,cur_tracks,prev_tracks,search_radius_pct,matching_groups,params_coeff_var,relevant_params_idx,matching_group_stats,...
     params_for_sure_match,param_weights,unknown_param_weights,distance_ranking_order,direction_ranking_order,unknown_ranking_order,...
-    min_second_distance,max_dist_ratio,max_angle_diff)
+    min_second_distance,max_dist_ratio,max_angle_diff,max_search_dist,min_search_dist)
 %get the tracks in the local nhood of this cell sorted by matching scores
 hugeNbr=1e6;
 cur_cell_centroid=cells_centroids(cur_id,:);
@@ -19,6 +19,12 @@ dist_to_tracks=hypot(cur_tracks(:,centroid1Col)-cur_cell_centroid(1),...
 dist_to_tracks_sorted=sort(dist_to_tracks);
 nearest_distance=dist_to_tracks_sorted(1);
 search_radius=search_radius_pct*nearest_distance;
+if (search_radius>max_search_dist)
+    search_radius=max_search_dist;
+end
+if (search_radius<min_search_dist)
+    search_radius=min_search_dist;
+end
 nearby_tracks_idx=(dist_to_tracks<search_radius);
 %keep only tracks in the current search nhood
 dist_to_tracks=dist_to_tracks(nearby_tracks_idx);
@@ -47,7 +53,9 @@ else
             %match order of tracks
             [dummy sort_cur_tracks_idx]=sort(preexisting_tracks(:,trackIDCol));
             [dummy sort_prev_tracks_idx]=sort(prev_nearby_tracks(:,trackIDCol));
-            match_tracks_idx=sort_prev_tracks_idx(sort_cur_tracks_idx);
+            %key to match the previous tracks with the current tracks
+            key(sort_cur_tracks_idx)=[1:length(sort_cur_tracks_idx)];
+            match_tracks_idx=sort_prev_tracks_idx(key);
             prev_nearby_tracks=prev_nearby_tracks(match_tracks_idx,:);
             prev_nearby_tracks_centroids=prev_nearby_tracks(:,centroid1Col:centroid2Col);
             cur_nearby_tracks_centroids=preexisting_tracks(:,centroid1Col:centroid2Col);
@@ -74,10 +82,10 @@ else
         %rank the best and second best matching track        
     else
         b_use_direction=true;
-        prev_tracks_directions=atan2(abs(cur_nearby_tracks_centroids(:,2)-prev_nearby_tracks_centroids(:,2)),...
-            abs(cur_nearby_tracks_centroids(:,1)-prev_nearby_tracks_centroids(:,1)));
-        cur_possible_track_directions=atan2(abs(cur_cell_centroid(2)-cur_nearby_tracks_centroids(:,2)),...
-            abs(cur_cell_centroid(1)-cur_nearby_tracks_centroids(:,1)));
+        prev_tracks_directions=atan2((cur_nearby_tracks_centroids(:,2)-prev_nearby_tracks_centroids(:,2)),...
+            (cur_nearby_tracks_centroids(:,1)-prev_nearby_tracks_centroids(:,1)));
+        cur_possible_track_directions=atan2((cur_cell_centroid(2)-cur_nearby_tracks_centroids(:,2)),...
+            (cur_cell_centroid(1)-cur_nearby_tracks_centroids(:,1)));
         directions_diff=zeros(nr_cur_tracks,1);
         directions_diff(preexisting_tracks_idx)=abs(cur_possible_track_directions-prev_tracks_directions);
         directions_diff(~preexisting_tracks_idx)=hugeNbr;
