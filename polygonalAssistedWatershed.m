@@ -38,52 +38,17 @@ for i=1:nuclei_nr
         nr_clusters=length(ws_cluster_ids);
         [blob_1 blob_2]=find(cur_obj);
         segmentation_idx=clusterdata([blob_1 blob_2], 'maxclust', nr_clusters, 'linkage', 'average');
-        %get the areas of the newly segmented blobs
-        new_blob_areas=accumarray(segmentation_idx, 1);
-        %blobs smaller than our min threshold have to be unsegmented by assigning
-        %them to the nearest blob that is larger than minimum blob area
-        segmentation_ids=[1:length(new_blob_areas)];
-        valid_new_blobs_idx=(new_blob_areas>min_nucl_area);
-        valid_areas=new_blob_areas(valid_new_blobs_idx);
-        valid_segmentation_ids=segmentation_ids(valid_new_blobs_idx);
-        if isempty(valid_segmentation_ids)
-            %no valid split
+        %the segmentation might create objects that are smaller than our
+        %minimum object size - we need to unsegment those
+        [valid_segmentation_ids valid_len new_segmentation_idx]=determineValidObjects(segmentation_idx,...
+            min_nucl_area,blob_1,blob_2);
+        if (valid_len<2)
+            %splitting this blob results in objects that are all or all-but-one smaller
+            %than our minimum object size - so no split
             continue;
         end
-        valid_len=length(valid_segmentation_ids);
-        if (valid_len==1)
-            %only one of the blobs will be large enough so we can't split
-            continue;
-        end
-        invalid_segmentation_ids=segmentation_ids(~valid_new_blobs_idx);
-        if (~isempty(invalid_segmentation_ids))
-            invalid_areas=new_blob_areas(~valid_new_blobs_idx);
-            %calculate the centroids of the new valid blobs
-            valid_centroids=zeros(valid_len,2);
-            for i=1:valid_len
-                cur_segmentation_id=valid_segmentation_ids(i);
-                cur_area=valid_areas(i);
-                cur_segmentation_idx=segmentation_idx==cur_segmentation_id;
-                segmented_idx_1=blob_1(cur_segmentation_idx);
-                segmented_idx_2=blob_2(cur_segmentation_idx);
-                valid_centroids(i,:)=[sum(segmented_idx_1./cur_area) sum(segmented_idx_2./cur_area)];
-            end
-            invalid_len=length(invalid_segmentation_ids);
-            %calculate the centroids of the new invalid blobs
-            %reassign the invalid segmentations to their nearest valid neighbors
-            for i=1:invalid_len
-                cur_segmentation_id=invalid_segmentation_ids(i);
-                cur_area=invalid_areas(i);
-                cur_segmentation_idx=segmentation_idx==cur_segmentation_id;
-                segmented_idx_1=blob_1(cur_segmentation_idx);
-                segmented_idx_2=blob_2(cur_segmentation_idx);
-                cur_centroid=[sum(segmented_idx_1./cur_area) sum(segmented_idx_2./cur_area)];
-                dist_to_valid_centroids=hypot(valid_centroids(:,1)-cur_centroid(1),...
-                    valid_centroids(:,2)-cur_centroid(2));
-                [dummy closest_valid_centroid_idx]=min(dist_to_valid_centroids);
-                nearest_valid_id=valid_segmentation_ids(closest_valid_centroid_idx);
-                segmentation_idx(segmentation_idx==cur_segmentation_id)=nearest_valid_id;
-            end
+        if (~isempty(new_segmentation_idx))
+            segmentation_idx=new_segmentation_idx;
         end
         nr_clusters=valid_len;        
         cur_max=max(nuclei_lbl(:));        
