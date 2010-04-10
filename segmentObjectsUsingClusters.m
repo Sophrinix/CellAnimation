@@ -36,7 +36,7 @@ for i=1:obj_nr
         %use nearest neighbor to assign all the pixels in the blob to 
         %the clusters
         segmentation_idx=knnclassify([blob_1 blob_2],[cluster_1 cluster_2],linkage_clusters);
-    else
+    else        
         segmentation_idx=linkage_clusters;
     end
      %the segmentation might create objects that are smaller than our
@@ -53,10 +53,16 @@ for i=1:obj_nr
     end
     nr_clusters=valid_len;
     cur_max=max(cells_lbl(:));
+    nr_points=accumarray(segmentation_idx,1);
+    centroid_1=accumarray(segmentation_idx,blob_1)./nr_points;
+    centroid_2=accumarray(segmentation_idx,blob_2)./nr_points;
+    training=[[centroid_1; centroid_1-1; centroid_1+1] [centroid_2; centroid_2-1; centroid_2+1]];
+    groups=repmat(valid_segmentation_ids',3,1);
+    segmentation_idx=classify([blob_1 blob_2],training,groups,'diaglinear');
     for j=2:nr_clusters
         cur_idx=segmentation_idx==valid_segmentation_ids(j);
         cell_coord_1=blob_1(cur_idx);
-        cell_coord_2=blob_2(cur_idx);
+        cell_coord_2=blob_2(cur_idx);        
         cell_coord_lin=sub2ind(img_sz,cell_coord_1,cell_coord_2);
         cells_lbl(cell_coord_lin)=cur_max+j-1;
     end    
