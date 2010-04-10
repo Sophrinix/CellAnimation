@@ -10,11 +10,11 @@ TrackStruct.ImageFileBase=[well_folder ds TrackStruct.ImageFileName];
 %hepsin overexpressing
 % TrackStruct.ImageFileBase=[well_folder ds 'llh_hep_lm7_t'];
 TrackStruct.StartFrame=1;
-TrackStruct.FrameCount=60;
+TrackStruct.FrameCount=12;
 TrackStruct.TimeFrame=15; %minutes
-TrackStruct.FrameStep=1; %read every x frames
+TrackStruct.FrameStep=2; %read every x frames
 TrackStruct.NumberFormat='%03d';
-TrackStruct.MaxFramesMissing=6; %how many frames a cell can disappear before we end its track
+TrackStruct.MaxFramesMissing=0; %how many frames a cell can disappear before we end its track
 
 
 name_idx=find(well_folder==ds,2,'last');
@@ -45,13 +45,14 @@ TrackStruct.MinSecondDistance=5; % minimum distance the second cell has to be fr
 TrackStruct.MaxAngleDiff=0.35; % radians - max difference between previous and current direction at which direction may still be most significant
 TrackStruct.MaxDistRatio=0.6; %how close the first cell may be from the second cell and stiil have distance be most significant
 
-TrackStruct.UnknownRankingOrder=[2 1 3 4 5 6 7 8 9];
-TrackStruct.DistanceRankingOrder=[2 1 3 4 5 6 7 8 9];
-TrackStruct.DirectionRankingOrder=[2 1 3 4 5 6 7 8 9];
+TrackStruct.FrontParams=[2 3]; %include any params that should always be at the front in rankings here
+TrackStruct.UnknownRankingOrder=[2 3 4 5 6 7 8 9 1];
+TrackStruct.DistanceRankingOrder=[2 3 4 5 6 7 8 9 1];
+TrackStruct.DirectionRankingOrder=[2 3 4 5 6 7 8 9 1];
 % TrackStruct.DefaultParamWeights=[34 21 13 8 5 3 2 2 2];
 % TrackStruct.UnknownParamWeights=[5 3 1 1 1 1 1 1 1];
-TrackStruct.DefaultParamWeights=[2 0 0 0 0 0 0 0 0];
-TrackStruct.UnknownParamWeights=[2 0 0 0 0 0 0 0 0];
+TrackStruct.DefaultParamWeights=[3 2 0 0 0 0 0 0 0];
+TrackStruct.UnknownParamWeights=[3 2 0 0 0 0 0 0 0];
 %tracks grid layout
 tracks_layout.TrackIDCol=1;
 tracks_layout.TimeCol=2;
@@ -85,7 +86,7 @@ TrackStruct.MinNuclArea=200;
 TrackStruct.bContourLink=false;
 TrackStruct.LinkDist=1;
 TrackStruct.ObjectReduce=1;
-TrackStruct.ClusterDist=20;
+TrackStruct.ClusterDist=21.5;
 TrackStruct.bClearBorder=true;
 TrackStruct.ApproxDist=2.5;
 TrackStruct.ClearBorderDist=2;
@@ -468,13 +469,14 @@ assign_cell_to_track_function.FunctionArgs.CellsCentroids.FunctionInstance='Assi
 assign_cell_to_track_function.FunctionArgs.CellsCentroids.InputArg='CellsCentroids';
 assign_cell_to_track_function.FunctionArgs.CurrentTracks.FunctionInstance='AssignCellsToTracksLoop';
 assign_cell_to_track_function.FunctionArgs.CurrentTracks.InputArg='CurrentTracks';
-assign_cell_to_track_function.FunctionArgs.CheckCellPath.Value=true;
+assign_cell_to_track_function.FunctionArgs.CheckCellPath.Value=false;
+assign_cell_to_track_function.FunctionArgs.FrontParams.Value=TrackStruct.FrontParams;
 %how far from the nearest future cell we should look for possible matches
 %to our present cell. ie 1.5 means we should look one and a half times the
 %distance between the current cell and the nearest future cell
-assign_cell_to_track_function.FunctionArgs.MaxSearchRadius.Value=100;
+assign_cell_to_track_function.FunctionArgs.SearchRadiusPct.Value=3;
+assign_cell_to_track_function.FunctionArgs.MaxSearchRadius.Value=200;
 assign_cell_to_track_function.FunctionArgs.MinSearchRadius.Value=50;
-assign_cell_to_track_function.FunctionArgs.SearchRadiusPct.Value=2;
 assign_cell_to_track_function.FunctionArgs.TrackAssignments.FunctionInstance='AssignCellsToTracksLoop';
 assign_cell_to_track_function.FunctionArgs.TrackAssignments.InputArg='TrackAssignments';
 assign_cell_to_track_function.FunctionArgs.MaxTrackID.FunctionInstance='AssignCellsToTracksLoop';
@@ -491,7 +493,7 @@ assign_cell_to_track_function.FunctionArgs.PreviousTracks.FunctionInstance='Assi
 assign_cell_to_track_function.FunctionArgs.PreviousTracks.InputArg='PreviousTracks';
 assign_cell_to_track_function.FunctionArgs.TracksLayout.Value=tracks_layout;
 assign_cell_to_track_function.FunctionArgs.RelevantParametersIndex.Value=...
-    [true true true true true false true true true];
+    [false true true true true true true true true];
 assign_cell_to_track_function.FunctionArgs.NrParamsForSureMatch.Value=TrackStruct.NrParamsForSureMatch;
 assign_cell_to_track_function.FunctionArgs.DefaultParamWeights.Value=TrackStruct.DefaultParamWeights;
 assign_cell_to_track_function.FunctionArgs.UnknownParamWeights.Value=TrackStruct.UnknownParamWeights;
