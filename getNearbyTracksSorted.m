@@ -1,7 +1,7 @@
 function [nearby_tracks_sorted group_idx matching_groups]=getNearbyTracksSorted(cur_id,cells_centroids,shape_params,tracks_layout...
     ,cur_tracks,prev_tracks,search_radius_pct,matching_groups,params_coeff_var,relevant_params_idx,matching_group_stats,...
     params_for_sure_match,param_weights,unknown_param_weights,distance_ranking_order,direction_ranking_order,unknown_ranking_order,...
-    min_second_distance,max_dist_ratio,max_angle_diff,max_search_dist,min_search_dist)
+    min_second_distance,max_dist_ratio,max_angle_diff,max_search_dist,min_search_dist,front_params)
 %get the tracks in the local nhood of this cell sorted by matching scores
 hugeNbr=1e6;
 cur_cell_centroid=cells_centroids(cur_id,:);
@@ -41,25 +41,33 @@ else
         if isempty(prev_nearby_tracks)
             prev_tracks_centroids=[];
         else
-            nr_prev_tracks=size(prev_nearby_tracks,1);
             nr_cur_tracks=size(nearby_tracks,1);
             prev_tracks_centroids=zeros(nr_cur_tracks,2);
-            if (nr_prev_tracks==nr_cur_tracks)
-                preexisting_tracks_idx=true(nr_cur_tracks,1);
-            else
-                preexisting_tracks_idx=ismember(nearby_tracks(:,trackIDCol),prev_nearby_tracks(:,trackIDCol));
-            end
+            preexisting_tracks_idx=ismember(nearby_tracks(:,trackIDCol),prev_nearby_tracks(:,trackIDCol));
+            nr_preexisting_tracks=sum(preexisting_tracks_idx);
             preexisting_tracks=nearby_tracks(preexisting_tracks_idx,:);
-            %match order of tracks
-            [dummy sort_cur_tracks_idx]=sort(preexisting_tracks(:,trackIDCol));
-            [dummy sort_prev_tracks_idx]=sort(prev_nearby_tracks(:,trackIDCol));
-            %key to match the previous tracks with the current tracks
-            key(sort_cur_tracks_idx)=[1:length(sort_cur_tracks_idx)];
-            match_tracks_idx=sort_prev_tracks_idx(key);
-            prev_nearby_tracks=prev_nearby_tracks(match_tracks_idx,:);
-            prev_nearby_tracks_centroids=prev_nearby_tracks(:,centroid1Col:centroid2Col);
             cur_nearby_tracks_centroids=preexisting_tracks(:,centroid1Col:centroid2Col);
-            prev_tracks_centroids(preexisting_tracks_idx,:)=prev_nearby_tracks_centroids;            
+            if (nr_preexisting_tracks==nr_cur_tracks)
+                %easy situation - all tracks are more than a frame old so
+                %we have directional information for all of them               
+                %match order of tracks
+                [dummy sort_cur_tracks_idx]=sort(preexisting_tracks(:,trackIDCol));
+                [dummy sort_prev_tracks_idx]=sort(prev_nearby_tracks(:,trackIDCol));
+                %key to match the previous tracks with the current tracks
+                key(sort_cur_tracks_idx)=[1:length(sort_cur_tracks_idx)];
+                match_tracks_idx=sort_prev_tracks_idx(key);
+                prev_nearby_tracks=prev_nearby_tracks(match_tracks_idx,:);
+                prev_nearby_tracks_centroids=prev_nearby_tracks(:,centroid1Col:centroid2Col);                
+                prev_tracks_centroids(preexisting_tracks_idx,:)=prev_nearby_tracks_centroids;
+            else                
+                prev_nearby_tracks_centroids=zeros(nr_preexisting_tracks,2);                
+                for i=1:nr_preexisting_tracks                    
+                    track_id=preexisting_tracks(i,trackIDCol);
+                    track_idx=prev_nearby_tracks(:,trackIDCol)==track_id;
+                    prev_nearby_tracks_centroids(i,:)=prev_nearby_tracks(track_idx,centroid1Col:centroid2Col);
+                end
+            end
+                        
         end
     else
         prev_tracks_centroids=[];
@@ -120,11 +128,11 @@ else
             if (length(sort_idx)==1)
                 [dummy matching_groups group_idx]=addToMatchingGroups(matching_groups,cell_ranking_params,...
                     tracks_params_sorted,params_coeff_var,1,min_reliable_params,pair_ranks,...
-                    relevant_params_idx,max_angle_diff,min_second_distance,max_dist_ratio);
+                    relevant_params_idx,max_angle_diff,min_second_distance,max_dist_ratio,front_params);
             else
                 [dummy matching_groups group_idx]=addToMatchingGroups(matching_groups,cell_ranking_params,...
                     tracks_params_sorted(1:2,:),params_coeff_var,1,min_reliable_params,pair_ranks,...
-                    relevant_params_idx,max_angle_diff,min_second_distance,max_dist_ratio);
+                    relevant_params_idx,max_angle_diff,min_second_distance,max_dist_ratio,front_params);
             end
         else
             if (length(sort_idx)==1)
