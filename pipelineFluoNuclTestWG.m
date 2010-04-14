@@ -1,4 +1,4 @@
-function []=darren_fl_20091007_track(well_folder)
+function []=pipelineFluoNuclTestWG(well_folder)
 TrackStruct=[];
 TrackStruct.ImgExt='.tif';
 ds='\'  %directory symbol
@@ -39,7 +39,7 @@ mkdir(xls_folder);
 TrackStruct.ProlXlsFile=[xls_folder ds well_name '.csv'];
 TrackStruct.ShapesXlsFile=[xls_folder ds well_name '_shapes.csv'];
 TrackStruct.NegligibleDistance=30; %distance below which distance ranking becomes unreliable
-TrackStruct.NrParamsForSureMatch=6; %nr of params that need to match between a previous cell and an unidentified cell for a sure match
+TrackStruct.NrParamsForSureMatch=5; %nr of params that need to match between a previous cell and an unidentified cell for a sure match
 TrackStruct.MinPctDiff=0.1; %minimum significant difference bet two parameters (0-1)
 TrackStruct.MinSecondDistance=5; % minimum distance the second cell has to be from the first to pick distance as most significant
 TrackStruct.MaxAngleDiff=0.35; % radians - max difference between previous and current direction at which direction may still be most significant
