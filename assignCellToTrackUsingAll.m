@@ -26,6 +26,8 @@ min_second_distance=input_args.MinSecondDistance.Value;
 max_dist_ratio=input_args.MaxDistRatio.Value;
 max_angle_diff=input_args.MaxAngleDiff.Value;
 b_check_path=input_args.CheckCellPath.Value;
+max_search_dist=input_args.MaxSearchRadius.Value;
+min_search_dist=input_args.MinSearchRadius.Value;
 
 %assign current cell to a track
 cur_id=unassignedIDs(1);
@@ -33,11 +35,12 @@ cur_id=unassignedIDs(1);
 centroid1Col=tracks_layout.Centroid1Col;
 centroid2Col=tracks_layout.Centroid2Col;
 trackIDCol=tracks_layout.TrackIDCol;
+front_params=input_args.FrontParams.Value;
 
 [nearby_tracks_sorted group_idx matching_groups]=getNearbyTracksSorted(cur_id, cells_centroids,shape_params,tracks_layout,cur_tracks...
     ,prev_tracks,search_radius_pct,matching_groups,params_coeff_var,relevant_params_idx,matching_groups_stats,params_for_sure_match,...
     param_weights,unknown_param_weights,distance_ranking_order,direction_ranking_order,unknown_ranking_order,min_second_distance,...
-    max_dist_ratio,max_angle_diff);
+    max_dist_ratio,max_angle_diff,max_search_dist,min_search_dist,front_params);
 if (isempty(nearby_tracks_sorted))    
     nearby_tracks_nr=0;
 else
@@ -108,7 +111,7 @@ for i=1:nearby_tracks_nr
             other_tracks_sorted=getNearbyTracksSorted(competing_id, cells_centroids,shape_params,tracks_layout,cur_tracks,...
                 prev_tracks,search_radius_pct,matching_groups,params_coeff_var,relevant_params_idx,matching_groups_stats,params_for_sure_match,...
                 param_weights,unknown_param_weights,distance_ranking_order,direction_ranking_order,unknown_ranking_order,...
-                min_second_distance,max_dist_ratio,max_angle_diff);
+                min_second_distance,max_dist_ratio,max_angle_diff,max_search_dist,min_search_dist,front_params);
             %remove the current track
             other_tracks_sorted(other_tracks_sorted(:,trackIDCol)==nearby_tracks_sorted(i,trackIDCol),:)=[];
             %remove any tracks that have already been excluded
@@ -157,7 +160,7 @@ for i=1:nearby_tracks_nr
             other_tracks_sorted=getNearbyTracksSorted(competing_id, cells_centroids,shape_params,tracks_layout,cur_tracks,...
                 prev_tracks,search_radius_pct,matching_groups,params_coeff_var,relevant_params_idx,matching_groups_stats,params_for_sure_match,...
                 param_weights,unknown_param_weights,distance_ranking_order,direction_ranking_order,unknown_ranking_order,min_second_distance,...
-                max_dist_ratio,max_angle_diff);
+                max_dist_ratio,max_angle_diff,max_search_dist,min_search_dist,front_params);
             %remove the current track
             other_tracks_sorted(other_tracks_sorted(:,trackIDCol)==nearby_tracks_sorted(i,trackIDCol),:)=[];
             %remove any tracks that have already been excluded

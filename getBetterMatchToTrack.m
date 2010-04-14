@@ -25,8 +25,8 @@ if isempty(prev_track_centroid)
     cells_params=[dist_to_cells cells_shape_params(:,1:solCol-areaCol+1)];
     b_use_direction=false;
 else
-    prev_angle=atan2(abs(track_centroid(2)-prev_track_centroid(2)), abs(track_centroid(1)-prev_track_centroid(1)));
-    possible_angles=atan2(abs(track_centroid(2)-cells_centroids(:,2)), abs(track_centroid(1)-cells_centroids(:,1)));
+    prev_angle=atan2((track_centroid(2)-prev_track_centroid(2)), (track_centroid(1)-prev_track_centroid(1)));
+    possible_angles=atan2((cells_centroids(:,2)-track_centroid(2)), (cells_centroids(:,1)-track_centroid(1)));
     track_params=[min(dist_to_cells) prev_angle cur_track(areaCol:solCol)];
     cells_params=[dist_to_cells possible_angles cells_shape_params(:,1:solCol-areaCol+1)];
     b_use_direction=true;
