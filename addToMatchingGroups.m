@@ -80,8 +80,10 @@ irrelevant_params_idx=ismember(ranking_order,irrelevant_params_col);
 ranking_order(irrelevant_params_idx)=[];
 %add them back at the end
 ranking_order=[ranking_order irrelevant_params_col];
+reliable_params_idx=ismember(reliable_params_col,irrelevant_params_col);
+reliable_params_nr=sum(~(reliable_params_idx));
 
-if (length(reliable_params_col)<min_reliable_params)
+if (reliable_params_nr<min_reliable_params)
     %not enough reliable params to create a matching group
     group_idx=0;
     return;
