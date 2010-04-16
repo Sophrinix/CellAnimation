@@ -89,7 +89,6 @@ if (~isempty(front_params))
     ranking_order=[front_params ranking_order];
 end
 
-if (reliable_params_nr<min_reliable_params)
 if (length(reliable_params_col)<min_reliable_params)
     %not enough reliable params to create a matching group
     group_idx=0;
