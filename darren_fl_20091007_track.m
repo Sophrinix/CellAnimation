@@ -10,11 +10,12 @@ TrackStruct.ImageFileBase=[well_folder ds TrackStruct.ImageFileName];
 %hepsin overexpressing
 % TrackStruct.ImageFileBase=[well_folder ds 'llh_hep_lm7_t'];
 TrackStruct.StartFrame=1;
-TrackStruct.FrameCount=72;
+TrackStruct.FrameCount=10;
 TrackStruct.TimeFrame=15; %minutes
 TrackStruct.FrameStep=1; %read every x frames
 TrackStruct.NumberFormat='%06d';
 TrackStruct.MaxFramesMissing=6; %how many frames a cell can disappear before we end its track
+TrackStruct.FrontParams=[];
 
 
 name_idx=find(well_folder==ds,2,'last');
@@ -484,6 +485,7 @@ assign_cell_to_track_function.FunctionArgs.ParamsCoeffOfVariation.InputArg='Para
 assign_cell_to_track_function.FunctionArgs.PreviousTracks.FunctionInstance='AssignCellsToTracksLoop';
 assign_cell_to_track_function.FunctionArgs.PreviousTracks.InputArg='PreviousTracks';
 assign_cell_to_track_function.FunctionArgs.TracksLayout.Value=tracks_layout;
+assign_cell_to_track_function.FunctionArgs.FrontParams.Value=TrackStruct.FrontParams;
 assign_cell_to_track_function.FunctionArgs.RelevantParametersIndex.Value=...
     [true true true false true false true true false];
 assign_cell_to_track_function.FunctionArgs.NrParamsForSureMatch.Value=TrackStruct.NrParamsForSureMatch;
