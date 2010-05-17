@@ -56,6 +56,9 @@ for i=1:obj_nr
     nr_points=accumarray(segmentation_idx,1);
     centroid_1=accumarray(segmentation_idx,blob_1)./nr_points;
     centroid_2=accumarray(segmentation_idx,blob_2)./nr_points;
+    invalid_ids_idx=(nr_points==0);
+    centroid_1(invalid_ids_idx)=[];
+    centroid_2(invalid_ids_idx)=[];
     training=[[centroid_1; centroid_1-1; centroid_1+1] [centroid_2; centroid_2-1; centroid_2+1]];
     groups=repmat(valid_segmentation_ids',3,1);
     segmentation_idx=classify([blob_1 blob_2],training,groups,'diaglinear');
