@@ -1,6 +1,5 @@
 function output_args=manualSegmentationReview(input_args)
 global msr_gui_struct;
-msr_gui_struct=[];
 objects_lbl=input_args.ObjectsLabel.Value;
 msr_gui_struct.CurrentAction='';
 msr_gui_struct.ObjectsLabel=objects_lbl;
@@ -8,7 +7,13 @@ msr_gui_struct.BlobsLabel=bwlabeln(objects_lbl>0);
 msr_gui_struct.OriginalObjectsLabel=objects_lbl;
 msr_gui_struct.OriginalBlobsLabel=msr_gui_struct.BlobsLabel;
 %initialize the gui
-msr_gui_struct.GuiHandle=manualSegmentationReviewGUI;
+field_names=fieldnames(msr_gui_struct);
+
+if (max(strcmp('FigurePosition',field_names)))
+    msr_gui_struct.GuiHandle=manualSegmentationReviewGUI('Position',msr_gui_struct.FigurePosition);
+else
+    msr_gui_struct.GuiHandle=manualSegmentationReviewGUI;    
+end
 gui_handle=msr_gui_struct.GuiHandle;
 children_handles=get(gui_handle,'children');
 objects_rgb=label2rgb(objects_lbl); 
