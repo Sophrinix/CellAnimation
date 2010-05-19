@@ -14,9 +14,8 @@ if (button_value==1)
     %enable object action buttons
     set(msr_gui_struct.JoinObjectsButtonHandle,'Enable','on');
     set(msr_gui_struct.RemoveObjectButtonHandle,'Enable','on');
-    msr_gui_struct.CurrentAction='SelectObject';
-    msr_gui_struct.SelectedBlobID=[];
-    msr_gui_struct.SelectedObjectID=[];
+    updateReviewSegGUIStatus('SelectObject');
+    msr_gui_struct.SelectedBlobID=[];    
 else
     %disable object action buttons
     set(msr_gui_struct.JoinObjectsButtonHandle,'Enable','off');
@@ -24,6 +23,7 @@ else
     msr_gui_struct.CurrentAction='';
     msr_gui_struct.SelectedBlobID=[];
     msr_gui_struct.SelectedObjectID=[];
+    updateReviewSegGUIStatus('InitialStatus');
 end
 
 %end selectBlobButtonPressed

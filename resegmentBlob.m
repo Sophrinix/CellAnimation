@@ -21,7 +21,7 @@ end
 msr_gui_struct.CurrentResegmentationIndex=1;
 msr_gui_struct.SegmentationTrainingPoints=[];
 msr_gui_struct.SegmentationGroups=[];
-msr_gui_struct.CurrentAction='ResegmentBlob';
+updateReviewSegGUIStatus('ResegmentBlob');
 
 %end intializeResegmentBlob
 end
@@ -63,8 +63,7 @@ msr_gui_struct.ObjectsLabel=cells_lbl;
 image_handle=msr_gui_struct.ImageHandle;
 image_data=label2rgb(cells_lbl);
 set(image_handle,'CData',image_data);
-msr_gui_struct.CurrentAction='SelectBlob';
-msr_gui_struct.SelectedBlobID=[];
+updateReviewSegGUIStatus('SelectBlob');
 
 %end completeResegmentBlob
 end

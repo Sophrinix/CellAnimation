@@ -26,6 +26,7 @@ msr_gui_struct.RemoveBlobButtonHandle=findobj(children_handles,'tag','removeBlob
 msr_gui_struct.RestoreBlobButtonHandle=findobj(children_handles,'tag','restoreBlobButton');
 msr_gui_struct.JoinObjectsButtonHandle=findobj(children_handles,'tag','joinObjectsButton');
 msr_gui_struct.RemoveObjectButtonHandle=findobj(children_handles,'tag','removeObjectButton');
+msr_gui_struct.StatusTextHandle=findobj(children_handles,'tag','statusText');
 
 %display objects image in the objectAxes
 msr_gui_struct.ImageHandle=image(objects_rgb,'Parent',objects_axes_handle);

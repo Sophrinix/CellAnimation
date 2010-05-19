@@ -14,9 +14,8 @@ if (button_value==1)
     set(msr_gui_struct.ResegmentBlobButtonHandle,'Enable','on');
     set(msr_gui_struct.RemoveBlobButtonHandle,'Enable','on');
     set(msr_gui_struct.RestoreBlobButtonHandle,'Enable','on');
-    msr_gui_struct.CurrentAction='SelectBlob';
-    msr_gui_struct.SelectedObjectID=[];
-    msr_gui_struct.SelectedBlobID=[];
+    updateReviewSegGUIStatus('SelectBlob');
+    msr_gui_struct.SelectedObjectID=[];    
 else
     %disable blob action buttons
     set(msr_gui_struct.ResegmentBlobButtonHandle,'Enable','off');
@@ -25,6 +24,7 @@ else
     msr_gui_struct.CurrentAction='';
     msr_gui_struct.SelectedBlobID=[];
     msr_gui_struct.SelectedObjectID=[];
+    updateReviewSegGUIStatus('InitialStatus');
 end
 
 %end selectBlobButtonPressed
