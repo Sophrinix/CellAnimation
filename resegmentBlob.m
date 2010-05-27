@@ -42,10 +42,13 @@ img_sz=size(cells_lbl);
 if (new_objects_nr>old_objects_nr)
     max_id=max(cells_lbl(:));
     new_object_ids=[old_object_ids max_id+(1:(new_objects_nr-old_objects_nr))];
+    error_type='Undersegmentation';
 elseif (new_objects_nr<old_objects_nr)
     new_object_ids=old_object_ids(1:new_objects_nr);
+    error_type='Oversegmentation';
 else
     new_object_ids=old_object_ids;
+    error_type='Distribution';
 end
 training=[[training_points(:,1); training_points(:,1)-1; training_points(:,1)+1]...
     [training_points(:,2); training_points(:,2)-1; training_points(:,2)+1]];
@@ -63,6 +66,7 @@ msr_gui_struct.ObjectsLabel=cells_lbl;
 image_handle=msr_gui_struct.ImageHandle;
 image_data=label2rgb(cells_lbl);
 set(image_handle,'CData',image_data);
+addSegmentationError(error_type,blob_id);
 updateReviewSegGUIStatus('SelectBlob');
 
 %end completeResegmentBlob

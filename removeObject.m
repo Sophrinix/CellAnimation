@@ -10,6 +10,7 @@ cells_lbl=msr_gui_struct.ObjectsLabel;
 object_idx=cells_lbl==selected_object_id;
 cells_lbl(object_idx)=0;
 msr_gui_struct.ObjectsLabel=cells_lbl;
+addSegmentationError('ObjectThresholding',msr_gui_struct.SelectedBlobID);
 msr_gui_struct.BlobsLabel=bwlabeln(cells_lbl);
 image_data=label2rgb(cells_lbl);
 image_handle=msr_gui_struct.ImageHandle;

@@ -43,6 +43,8 @@ image_data(blob_mask)=0;
 set(image_handle,'CData',image_data);
 msr_gui_struct.SelectedObjectID=[];
 msr_gui_struct.SelectedBlobID=blob_id;
+original_blobs_lbl=msr_gui_struct.OriginalBlobsLabel;
+msr_gui_struct.OriginalBlobID=original_blobs_lbl(round(click_point(1,2)),round(click_point(1,1)));
 
 %end selectBlob
 end
@@ -64,8 +66,9 @@ cur_obj=objects_lbl==obj_id;
 obj_mask=repmat(cur_obj,[1 1 3]);
 image_data(obj_mask)=0;
 set(image_handle,'CData',image_data);
+blobs_lbl=msr_gui_struct.BlobsLabel;
 msr_gui_struct.SelectedObjectID=obj_id;
-msr_gui_struct.SelectedBlobID=[];
+msr_gui_struct.SelectedBlobID=blobs_lbl(round(click_point(1,2)),round(click_point(1,1)));
 
 %end selectObject
 end
@@ -113,6 +116,18 @@ if (blob_id~=0)
     msr_gui_struct.CurrentAction='SelectBlob';
     return;
 end
+%remove the blob errors
+error_blob_ids=msr_gui_struct.ErrorBlobIDs;
+blob_errors_idx=(error_blob_ids==original_blob_id);
+other_errors_nr=sum(blob_errors_idx);
+if (other_errors_nr)
+    msr_gui_struct.TotalErrors=msr_gui_struct.TotalErrors-other_errors_nr;
+    error_types=msr_gui_struct.ErrorTypes;
+    error_types(blob_errors_idx)=[];
+    msr_gui_struct.ErrorTypes=error_types;
+    error_blob_ids(blob_errors_idx)=[];
+    msr_gui_struct.ErrorBlobIDs=error_blob_ids;
+end 
 
 %restore the blob
 original_blob=(original_blobs_lbl==original_blob_id);

@@ -8,6 +8,9 @@ switch(button_pressed)
         objects_lbl=msr_gui_struct.OriginalObjectsLabel;
         msr_gui_struct.ObjectsLabel=objects_lbl;
         msr_gui_struct.BlobsLabel=bwlabeln(objects_lbl);
+        msr_gui_struct.ErrorTypes=[];
+        msr_gui_struct.ErrorBlobIDs=[];
+        msr_gui_struct.TotalErrors=0;
         image_handle=msr_gui_struct.ImageHandle;
         image_data=label2rgb(objects_lbl);
         set(image_handle,'CData',image_data);

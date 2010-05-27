@@ -1,6 +1,10 @@
 function output_args=manualSegmentationReview(input_args)
 global msr_gui_struct;
+
 objects_lbl=input_args.ObjectsLabel.Value;
+msr_gui_struct.ErrorTypes=[];
+msr_gui_struct.ErrorBlobIDs=[];
+msr_gui_struct.TotalErrors=0;
 msr_gui_struct.CurrentAction='';
 msr_gui_struct.ObjectsLabel=objects_lbl;
 msr_gui_struct.BlobsLabel=bwlabeln(objects_lbl>0);
