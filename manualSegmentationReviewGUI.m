@@ -22,7 +22,7 @@ function varargout = manualSegmentationReviewGUI(varargin)
 
 % Edit the above text to modify the response to help manualSegmentationReviewGUI
 
-% Last Modified by GUIDE v2.5 17-May-2010 13:13:20
+% Last Modified by GUIDE v2.5 27-May-2010 22:00:10
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -138,3 +138,11 @@ function saveChangesButton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 saveChanges(hObject, eventdata, handles);
+
+
+% --- Executes on button press in joinObjectsButton.
+function joinObjectsButton_Callback(hObject, eventdata, handles)
+% hObject    handle to joinObjectsButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+joinObjects('initialize');

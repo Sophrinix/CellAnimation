@@ -6,6 +6,9 @@ switch (gui_status)
     case 'InitialStatus'
         msr_gui_struct.CurrentAction='';
         set(status_text_handle,'String','Click on "Select Blob" or "Select Object" to begin.');
+    case 'JoinObjects'
+        msr_gui_struct.CurrentAction='JoinObjects';
+        set(status_text_handle,'String','Click on objects to be joined. Click again to remove them from the join list. Type "d" when done.');
     case 'SelectBlob'
         msr_gui_struct.CurrentAction='SelectBlob';
         msr_gui_struct.SelectedBlobID=[];
