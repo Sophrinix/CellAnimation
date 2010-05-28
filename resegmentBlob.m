@@ -29,18 +29,18 @@ end
 function completeResegmentBlob()
 global msr_gui_struct;
 
-cells_lbl=msr_gui_struct.ObjectsLabel;
+objects_lbl=msr_gui_struct.ObjectsLabel;
 blobs_lbl=msr_gui_struct.BlobsLabel;
 blob_id=msr_gui_struct.SelectedBlobID;
 [blob_1 blob_2]=find(blobs_lbl==blob_id);
-old_object_ids=unique(cells_lbl(blobs_lbl==blob_id));
+old_object_ids=unique(objects_lbl(blobs_lbl==blob_id));
 old_objects_nr=length(old_object_ids);
 training_points=msr_gui_struct.SegmentationTrainingPoints;
 groups=msr_gui_struct.SegmentationGroups;
 new_objects_nr=length(unique(groups));
-img_sz=size(cells_lbl);
+img_sz=size(objects_lbl);
 if (new_objects_nr>old_objects_nr)
-    max_id=max(cells_lbl(:));
+    max_id=max(objects_lbl(:));
     new_object_ids=[old_object_ids max_id+(1:(new_objects_nr-old_objects_nr))];
     error_type='Undersegmentation';
 elseif (new_objects_nr<old_objects_nr)
@@ -56,15 +56,33 @@ groups=repmat(new_object_ids(groups),3,1);
 segmentation_idx=knnclassify([blob_1 blob_2],training,groups);
 for i=1:new_objects_nr
     cur_idx=segmentation_idx==new_object_ids(i);
-    cell_coord_1=blob_1(cur_idx);
-    cell_coord_2=blob_2(cur_idx);
-    cell_coord_lin=sub2ind(img_sz,cell_coord_1,cell_coord_2);
-    cells_lbl(cell_coord_lin)=new_object_ids(i);
+    obj_coord_1=blob_1(cur_idx);
+    obj_coord_2=blob_2(cur_idx);
+    obj_coord_lin=sub2ind(img_sz,obj_coord_1,obj_coord_2);
+    objects_lbl(obj_coord_lin)=new_object_ids(i);
 end
 
-msr_gui_struct.ObjectsLabel=cells_lbl;
+if (new_objects_nr<old_objects_nr)
+    %there are some unused ids in the middle. reassign the ids so they are
+    %continuous
+    unused_ids=old_object_ids((new_objects_nr+1):end);
+    unused_ids_len=length(unused_ids);
+    max_id=max(objects_lbl(:));
+    k=2;
+    for i=(unused_ids(1)+1):max_id
+        if (k<=unused_ids_len)
+            if (i==unused_ids(k))
+                k=k+1;
+                continue;
+            end
+        end
+        objects_lbl(objects_lbl==i)=i-k+1;
+    end
+end
+
+msr_gui_struct.ObjectsLabel=objects_lbl;
 image_handle=msr_gui_struct.ImageHandle;
-image_data=label2rgb(cells_lbl);
+image_data=label2rgb(objects_lbl);
 set(image_handle,'CData',image_data);
 addSegmentationError(error_type,blob_id);
 updateReviewSegGUIStatus('SelectBlob');
