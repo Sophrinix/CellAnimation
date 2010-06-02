@@ -12,7 +12,7 @@ switch(button_pressed)
         msr_gui_struct.ErrorBlobIDs=[];
         msr_gui_struct.TotalErrors=0;
         image_handle=msr_gui_struct.ImageHandle;
-        image_data=label2rgb(objects_lbl);
+        image_data=label2rgb(objects_lbl,msr_gui_struct.ColorMap,msr_gui_struct.BkgColor,'shuffle');
         set(image_handle,'CData',image_data);
     case 'No'
         return;

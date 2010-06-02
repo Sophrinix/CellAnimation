@@ -2,6 +2,8 @@ function output_args=manualSegmentationReview(input_args)
 global msr_gui_struct;
 
 objects_lbl=input_args.ObjectsLabel.Value;
+msr_gui_struct.ColorMap='colorcube';
+msr_gui_struct.BkgColor=[0.7 0.7 0];
 msr_gui_struct.ErrorTypes=[];
 msr_gui_struct.ErrorBlobIDs=[];
 msr_gui_struct.TotalErrors=0;
@@ -20,7 +22,7 @@ else
 end
 gui_handle=msr_gui_struct.GuiHandle;
 children_handles=get(gui_handle,'children');
-objects_rgb=label2rgb(objects_lbl); 
+objects_rgb=label2rgb(objects_lbl,msr_gui_struct.ColorMap,msr_gui_struct.BkgColor,'shuffle'); 
 objects_axes_handle=findobj(children_handles,'tag','objectsAxes');
 msr_gui_struct.AxesHandle=objects_axes_handle;
 msr_gui_struct.SelectBlobButtonHandle=findobj(children_handles,'tag','selectBlobButton');

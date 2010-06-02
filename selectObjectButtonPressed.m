@@ -1,8 +1,8 @@
 function selectObjectButtonPressed(hObject,eventdata,handles)
 global msr_gui_struct;
 button_value=get(hObject,'Value');
-cells_lbl=msr_gui_struct.ObjectsLabel;
-image_data=label2rgb(cells_lbl);
+objects_lbl=msr_gui_struct.ObjectsLabel;
+image_data=label2rgb(objects_lbl,msr_gui_struct.ColorMap,msr_gui_struct.BkgColor,'shuffle');
 set(msr_gui_struct.ImageHandle,'CData',image_data);
 if (button_value==1)
     %toggle select blob button off

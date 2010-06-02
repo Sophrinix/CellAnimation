@@ -40,7 +40,7 @@ for i=2:join_ids_len
     objects_lbl(objects_lbl==join_ids(i))=join_ids(1);    
 end
 image_handle=msr_gui_struct.ImageHandle;
-image_data=label2rgb(objects_lbl);
+image_data=label2rgb(objects_lbl,msr_gui_struct.ColorMap,msr_gui_struct.BkgColor,'shuffle');
 set(image_handle,'CData',image_data);
 msr_gui_struct.ObjectsLabel=objects_lbl;
 updateReviewSegGUIStatus('SelectObject');
