@@ -62,24 +62,6 @@ for i=1:new_objects_nr
     objects_lbl(obj_coord_lin)=new_object_ids(i);
 end
 
-if (new_objects_nr<old_objects_nr)
-    %there are some unused ids in the middle. reassign the ids so they are
-    %continuous
-    unused_ids=old_object_ids((new_objects_nr+1):end);
-    unused_ids_len=length(unused_ids);
-    max_id=max(objects_lbl(:));
-    k=2;
-    for i=(unused_ids(1)+1):max_id
-        if (k<=unused_ids_len)
-            if (i==unused_ids(k))
-                k=k+1;
-                continue;
-            end
-        end
-        objects_lbl(objects_lbl==i)=i-k+1;
-    end
-end
-
 msr_gui_struct.ObjectsLabel=objects_lbl;
 image_handle=msr_gui_struct.ImageHandle;
 image_data=label2rgb(objects_lbl);
