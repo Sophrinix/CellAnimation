@@ -14,7 +14,10 @@ msr_gui_struct.OriginalObjectsLabel=objects_lbl;
 msr_gui_struct.OriginalBlobsLabel=msr_gui_struct.BlobsLabel;
 %initialize the gui
 field_names=fieldnames(msr_gui_struct);
-
+gui_handle=findall(0,'Tag','ManualResegmentation');
+if (~isempty(gui_handle))    
+    close(gui_handle);    
+end
 if (max(strcmp('FigurePosition',field_names)))
     msr_gui_struct.GuiHandle=manualSegmentationReviewGUI('Position',msr_gui_struct.FigurePosition);
 else
