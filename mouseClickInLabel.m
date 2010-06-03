@@ -48,7 +48,7 @@ if (max(join_ids==obj_id))
     join_ids(join_ids==obj_id)=[];
 else
     %add object to join list    
-    image_data(obj_mask)=0;
+    image_data(obj_mask)=createCheckerBoardPattern(cur_obj);
     join_ids=[join_ids; obj_id];
 end
 msr_gui_struct.JoinIDs=join_ids;
@@ -76,7 +76,7 @@ if (blob_id==0)
 end
 cur_blob=blobs_lbl==blob_id;
 blob_mask=repmat(cur_blob,[1 1 3]);
-image_data(blob_mask)=0;
+image_data(blob_mask)=createCheckerBoardPattern(cur_blob);
 set(image_handle,'CData',image_data);
 msr_gui_struct.SelectedObjectID=[];
 msr_gui_struct.SelectedBlobID=blob_id;
@@ -101,7 +101,7 @@ if (obj_id==0)
 end
 cur_obj=objects_lbl==obj_id;
 obj_mask=repmat(cur_obj,[1 1 3]);
-image_data(obj_mask)=0;
+image_data(obj_mask)=createCheckerBoardPattern(cur_obj);
 set(image_handle,'CData',image_data);
 blobs_lbl=msr_gui_struct.BlobsLabel;
 msr_gui_struct.SelectedObjectID=obj_id;
@@ -185,4 +185,16 @@ msr_gui_struct.BlobsLabel=bwlabeln(objects_lbl);
 msr_gui_struct.CurrentAction='SelectBlob';
 
 %end selectBlobAndRestore
+end
+
+function checkerboard_pattern=createCheckerBoardPattern(selected_object)
+
+cur_obj_size=sum(selected_object(:));
+checkerboard_pattern=repmat([0;intmax('uint8')],floor(cur_obj_size/2),1);
+if (rem(cur_obj_size,2))
+    checkerboard_pattern=[checkerboard_pattern;0];  
+end
+checkerboard_pattern=repmat(checkerboard_pattern,3,1);
+
+%end createCheckerBoardPattern
 end
