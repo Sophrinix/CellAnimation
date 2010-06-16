@@ -41,7 +41,7 @@ new_objects_nr=length(unique(groups));
 img_sz=size(objects_lbl);
 if (new_objects_nr>old_objects_nr)
     max_id=max(objects_lbl(:));
-    new_object_ids=[old_object_ids max_id+(1:(new_objects_nr-old_objects_nr))];
+    new_object_ids=[old_object_ids; max_id+(1:(new_objects_nr-old_objects_nr))'];
     error_type='Undersegmentation';
 elseif (new_objects_nr<old_objects_nr)
     new_object_ids=old_object_ids(1:new_objects_nr);
