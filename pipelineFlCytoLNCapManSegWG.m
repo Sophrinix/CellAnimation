@@ -9,8 +9,8 @@ TrackStruct.ImageFileName='Cell Tracker Green - Confocal - n';
 TrackStruct.ImageFileBase=[well_folder ds TrackStruct.ImageFileName];
 %hepsin overexpressing
 % TrackStruct.ImageFileBase=[well_folder ds 'llh_hep_lm7_t'];
-TrackStruct.StartFrame=1;
-TrackStruct.FrameCount=60;
+TrackStruct.StartFrame=13;
+TrackStruct.FrameCount=48;
 TrackStruct.TimeFrame=8; %minutes
 TrackStruct.FrameStep=1; %read every x frames
 TrackStruct.NumberFormat='%06d';
@@ -84,7 +84,7 @@ TrackStruct.MinNuclArea=30;
 TrackStruct.bContourLink=false;
 TrackStruct.LinkDist=1;
 TrackStruct.ObjectReduce=1;
-TrackStruct.ClusterDist=7.5;
+TrackStruct.ClusterDist=20;
 TrackStruct.bClearBorder=false;
 TrackStruct.ApproxDist=2.4;
 TrackStruct.ClearBorderDist=0;
@@ -235,44 +235,44 @@ label_cyto_function.FunctionArgs.Image.FunctionInstance='ReconstructCytoplasmIma
 label_cyto_function.FunctionArgs.Image.OutputArg='Image';
 
 %segment images
-% get_convex_objects_function.InstanceName='GetConvexObjects';
-% get_convex_objects_function.FunctionHandle=@getConvexObjects;
-% get_convex_objects_function.FunctionArgs.Image.FunctionInstance='ClearSmallNuclei';
-% get_convex_objects_function.FunctionArgs.Image.OutputArg='Image';
-% get_convex_objects_function.FunctionArgs.ApproximationDistance.Value=TrackStruct.ApproxDist;
-% distance_watershed_function.InstanceName='DistanceWatershed';
-% distance_watershed_function.FunctionHandle=@distanceWatershed;
-% distance_watershed_function.FunctionArgs.Image.FunctionInstance='ClearSmallNuclei';
-% distance_watershed_function.FunctionArgs.Image.OutputArg='Image';
-% distance_watershed_function.FunctionArgs.MedianFilterNhood.Value=TrackStruct.WatershedMed;
-% polygonal_assisted_watershed_function.InstanceName='PolygonalAssistedWatershed';
-% polygonal_assisted_watershed_function.FunctionHandle=@polygonalAssistedWatershed;
-% polygonal_assisted_watershed_function.FunctionArgs.ImageLabel.FunctionInstance='LabelNuclei';
-% polygonal_assisted_watershed_function.FunctionArgs.ImageLabel.OutputArg='LabelMatrix';
-% polygonal_assisted_watershed_function.FunctionArgs.WatershedLabel.FunctionInstance='DistanceWatershed';
-% polygonal_assisted_watershed_function.FunctionArgs.WatershedLabel.OutputArg='WatershedLabel';
-% polygonal_assisted_watershed_function.FunctionArgs.ConvexObjectsIndex.FunctionInstance='GetConvexObjects';
-% polygonal_assisted_watershed_function.FunctionArgs.ConvexObjectsIndex.OutputArg='ConvexObjectsIndex';
-% polygonal_assisted_watershed_function.FunctionArgs.MinBlobArea.Value=TrackStruct.MinNuclArea;
+get_convex_objects_function.InstanceName='GetConvexObjects';
+get_convex_objects_function.FunctionHandle=@getConvexObjects;
+get_convex_objects_function.FunctionArgs.Image.FunctionInstance='ClearSmallNuclei';
+get_convex_objects_function.FunctionArgs.Image.OutputArg='Image';
+get_convex_objects_function.FunctionArgs.ApproximationDistance.Value=TrackStruct.ApproxDist;
+distance_watershed_function.InstanceName='DistanceWatershed';
+distance_watershed_function.FunctionHandle=@distanceWatershed;
+distance_watershed_function.FunctionArgs.Image.FunctionInstance='ClearSmallNuclei';
+distance_watershed_function.FunctionArgs.Image.OutputArg='Image';
+distance_watershed_function.FunctionArgs.MedianFilterNhood.Value=TrackStruct.WatershedMed;
+polygonal_assisted_watershed_function.InstanceName='PolygonalAssistedWatershed';
+polygonal_assisted_watershed_function.FunctionHandle=@polygonalAssistedWatershed;
+polygonal_assisted_watershed_function.FunctionArgs.ImageLabel.FunctionInstance='LabelNuclei';
+polygonal_assisted_watershed_function.FunctionArgs.ImageLabel.OutputArg='LabelMatrix';
+polygonal_assisted_watershed_function.FunctionArgs.WatershedLabel.FunctionInstance='DistanceWatershed';
+polygonal_assisted_watershed_function.FunctionArgs.WatershedLabel.OutputArg='WatershedLabel';
+polygonal_assisted_watershed_function.FunctionArgs.ConvexObjectsIndex.FunctionInstance='GetConvexObjects';
+polygonal_assisted_watershed_function.FunctionArgs.ConvexObjectsIndex.OutputArg='ConvexObjectsIndex';
+polygonal_assisted_watershed_function.FunctionArgs.MinBlobArea.Value=TrackStruct.MinNuclArea;
 
-% segment_objects_using_markers_function.InstanceName='SegmentObjectsUsingMarkers';
-% segment_objects_using_markers_function.FunctionHandle=@segmentObjectsUsingMarkers;
-% segment_objects_using_markers_function.FunctionArgs.MarkersLabel.FunctionInstance='PolygonalAssistedWatershed';
-% segment_objects_using_markers_function.FunctionArgs.MarkersLabel.OutputArg='LabelMatrix';
-% segment_objects_using_markers_function.FunctionArgs.ObjectsLabel.FunctionInstance='LabelCytoplasm';
-% segment_objects_using_markers_function.FunctionArgs.ObjectsLabel.OutputArg='LabelMatrix';
+segment_objects_using_markers_function.InstanceName='SegmentObjectsUsingMarkers';
+segment_objects_using_markers_function.FunctionHandle=@segmentObjectsUsingMarkers;
+segment_objects_using_markers_function.FunctionArgs.MarkersLabel.FunctionInstance='PolygonalAssistedWatershed';
+segment_objects_using_markers_function.FunctionArgs.MarkersLabel.OutputArg='LabelMatrix';
+segment_objects_using_markers_function.FunctionArgs.ObjectsLabel.FunctionInstance='LabelCytoplasm';
+segment_objects_using_markers_function.FunctionArgs.ObjectsLabel.OutputArg='LabelMatrix';
 
-segment_objects_using_clusters_function.InstanceName='SegmentObjectsUsingClusters';
-segment_objects_using_clusters_function.FunctionHandle=@segmentObjectsUsingClusters;
-segment_objects_using_clusters_function.FunctionArgs.ObjectsLabel.FunctionInstance='LabelNuclei';
-segment_objects_using_clusters_function.FunctionArgs.ObjectsLabel.OutputArg='LabelMatrix';
-segment_objects_using_clusters_function.FunctionArgs.ObjectReduce.Value=TrackStruct.ObjectReduce;
-segment_objects_using_clusters_function.FunctionArgs.MinimumObjectArea.Value=TrackStruct.MinNuclArea;
-segment_objects_using_clusters_function.FunctionArgs.ClusterDistance.Value=TrackStruct.ClusterDist;
+% segment_objects_using_clusters_function.InstanceName='SegmentObjectsUsingClusters';
+% segment_objects_using_clusters_function.FunctionHandle=@segmentObjectsUsingClusters;
+% segment_objects_using_clusters_function.FunctionArgs.ObjectsLabel.FunctionInstance='LabelNuclei';
+% segment_objects_using_clusters_function.FunctionArgs.ObjectsLabel.OutputArg='LabelMatrix';
+% segment_objects_using_clusters_function.FunctionArgs.ObjectReduce.Value=TrackStruct.ObjectReduce;
+% segment_objects_using_clusters_function.FunctionArgs.MinimumObjectArea.Value=TrackStruct.MinNuclArea;
+% segment_objects_using_clusters_function.FunctionArgs.ClusterDistance.Value=TrackStruct.ClusterDist;
 
 review_segmentation_function.InstanceName='ReviewSegmentation';
 review_segmentation_function.FunctionHandle=@manualSegmentationReview;
-review_segmentation_function.FunctionArgs.ObjectsLabel.FunctionInstance='SegmentObjectsUsingClusters';
+review_segmentation_function.FunctionArgs.ObjectsLabel.FunctionInstance='SegmentObjectsUsingMarkers';
 review_segmentation_function.FunctionArgs.ObjectsLabel.OutputArg='LabelMatrix';
 
 
@@ -295,10 +295,10 @@ save_cells_label_function.FunctionArgs.NumberFormat.Value=TrackStruct.NumberForm
 image_read_loop.LoopFunctions=[{display_curtrackframe_function};{make_file_name_function};{read_image_function};...
     {normalize_image_to_16bit_function};{resize_image_function};{cyto_local_avg_filter_function};...
     {fill_holes_cyto_images_function};{clear_small_cells_function};{nucl_local_avg_filter_function};...
-    {fill_holes_nucl_images_function};{clear_small_nuclei_function};...
+    {fill_holes_nucl_images_function};{clear_small_nuclei_function};{get_convex_objects_function};{distance_watershed_function};...
     {combine_nucl_plus_cyto_function};{reconstruct_cyto_function};{label_nuclei_function};{label_cyto_function};...
-    {segment_objects_using_clusters_function};{review_segmentation_function};{resize_cyto_label_function};...
-    {save_cells_label_function}];
+    {polygonal_assisted_watershed_function};{segment_objects_using_markers_function};{review_segmentation_function};...
+    {resize_cyto_label_function};{save_cells_label_function}];
 
 
 functions_list=[{display_trackstruct_function};{image_read_loop}];
