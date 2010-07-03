@@ -30,7 +30,7 @@ for i=1:nr_blobs-1
     join_polygon=getJoinPolygon(blob_boundaries{i},...
         blob_boundaries{j}, intersets_edge_indexes{i,j}, min_distance_indexes(i,j));
     %create the image of the join
-    img_join=poly2mask(join_polygon(1,:),join_polygon(2,:),blob_sz(1),blob_sz(2));
+    img_join=poly2mask(join_polygon(2,:),join_polygon(1,:),blob_sz(1),blob_sz(2));
     %merge it with the blob image
     joined_blob=joined_blob|img_join;
 end
