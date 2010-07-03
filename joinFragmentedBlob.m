@@ -1,7 +1,6 @@
 function joined_blob=joinFragmentedBlob(fragmented_blob)
 joined_blob=fragmented_blob;
 blob_boundaries=bwboundaries(fragmented_blob);
-points_cloud=cell2mat(blob_boundaries);
 nr_blobs=length(blob_boundaries);
 %calculate the minimum sampling distance
 %we want the crust algorithm to close edges around the disjointed blobs
