@@ -10,8 +10,8 @@ nr_blobs=length(blob_boundaries);
 min_distances=ones(nr_blobs)*Inf;
 intersets_edge_indexes=cell(nr_blobs);
 min_distance_indexes=zeros(nr_blobs);
-for i=1:nr_blobs
-    for j=2:nr_blobs
+for i=1:(nr_blobs-1)
+    for j=(i+1):nr_blobs
         if (i==j)
             continue;
         end
@@ -122,19 +122,32 @@ if (~b_found_edges)
     else
         y_max_idx=set_b_y_max_idx;
     end
-    y_max_edge_indexes=[set_a_select_edges(y_max_idx) set_b_select_edges(y_max_idx)];
-    edge_points=[set_a(y_max_edge_indexes(1),:)' set_b(y_max_edge_indexes(2),:)'];
-    edge_2_points=edge_points;    
+    if (sum(edge_1_points-edge_points))
+        b_found_edges=true;
+        y_max_edge_indexes=[set_a_select_edges(y_max_idx) set_b_select_edges(y_max_idx)];
+        edge_points=[set_a(y_max_edge_indexes(1),:)' set_b(y_max_edge_indexes(2),:)'];
+        edge_2_points=edge_points;
+    else
+        %connection is only a line
+        edge_2_points=edge_1_points;
+    end
+    
 end
-join_polygon=[edge_1_points edge_2_points(:,2) edge_2_points(:,1) edge_1_points(:,1)];
-%need to subtract and add half a pixel or polymask will not included the
-%edge of the polygon
-x_lower_half_idx=join_polygon(1,:)<median(join_polygon(1,1:(end-1)));
-join_polygon(1,x_lower_half_idx)=join_polygon(1,x_lower_half_idx)-0.5;
-join_polygon(1,~x_lower_half_idx)=join_polygon(1,~x_lower_half_idx)+0.5;
-y_lower_half_idx=join_polygon(2,:)<median(join_polygon(2,1:(end-1)));
-join_polygon(2,y_lower_half_idx)=join_polygon(2,y_lower_half_idx)-0.5;
-join_polygon(2,~y_lower_half_idx)=join_polygon(2,~y_lower_half_idx)+0.5;
+if (b_found_edges)
+    join_polygon=[edge_1_points edge_2_points(:,2) edge_2_points(:,1) edge_1_points(:,1)];
+    %need to subtract and add half a pixel or polymask will not included the
+    %edge of the polygon
+    x_lower_half_idx=join_polygon(1,:)<median(join_polygon(1,1:(end-1)));
+    join_polygon(1,x_lower_half_idx)=join_polygon(1,x_lower_half_idx)-0.5;
+    join_polygon(1,~x_lower_half_idx)=join_polygon(1,~x_lower_half_idx)+0.5;
+    y_lower_half_idx=join_polygon(2,:)<median(join_polygon(2,1:(end-1)));
+    join_polygon(2,y_lower_half_idx)=join_polygon(2,y_lower_half_idx)-0.5;
+    join_polygon(2,~y_lower_half_idx)=join_polygon(2,~y_lower_half_idx)+0.5;
+else
+    %connection is only a line so we'll make a very narrow polygon
+    %offset half a pixel on each side of the line
+    join_polygon=[edge_1_points+1 edge_2_points(:,2)-1 edge_2_points(:,1)-1 edge_1_points(:,1)+1];
+end
 
 %end preparePointSetPairsForJoin
 end
