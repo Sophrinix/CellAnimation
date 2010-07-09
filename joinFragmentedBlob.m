@@ -1,6 +1,6 @@
 function joined_blob=joinFragmentedBlob(fragmented_blob)
 joined_blob=fragmented_blob;
-blob_boundaries=bwboundaries(fragmented_blob);
+blob_boundaries=bwboundaries(fragmented_blob,8,'noholes');
 nr_blobs=length(blob_boundaries);
 %calculate the minimum sampling distance
 %we want the crust algorithm to close edges around the disjointed blobs
@@ -64,12 +64,22 @@ min_distance_angle=atan2(point_a(:,2)-point_b(:,2),point_a(:,1)-point_b(:,1));
 edge_angles=atan2(set_a(set_a_indexes,2)-set_b(set_b_indexes,2),set_a(set_a_indexes,1)-set_b(set_b_indexes,1));
 %get all the edges that have the same orientation
 same_orientation_idx=(edge_angles==min_distance_angle);
+new_min_distance_index=find(same_orientation_idx)==min_distance_index;
 %select edges of the same orientation with the min
 %distance line as this is where the join will be made
 set_a_select_edges=set_a_indexes(same_orientation_idx);
 set_b_select_edges=set_b_indexes(same_orientation_idx);
+set_a_selected_points=set_a(set_a_select_edges,:);
+set_b_selected_points=set_b(set_b_select_edges,:);
+a_clusters=getPointsClusters(set_a_selected_points);
+b_clusters=getPointsClusters(set_b_selected_points);
+%find out which clusters contains the min distance points
+min_distance_a_cluster_idx=a_clusters(new_min_distance_index);
+min_distance_b_cluster_idx=b_clusters(new_min_distance_index);
+edges_to_keep_idx=(a_clusters==min_distance_a_cluster_idx)&(b_clusters==min_distance_b_cluster_idx);
+set_a_select_edges=set_a_select_edges(edges_to_keep_idx);
+set_b_select_edges=set_b_select_edges(edges_to_keep_idx);
 %get the min and max points
-
 %xmin
 [set_a_x_min set_a_x_min_idx]=min(set_a(set_a_select_edges,1));
 [set_b_x_min set_b_x_min_idx]=min(set_b(set_b_select_edges,1));
@@ -138,16 +148,26 @@ if (b_found_edges)
     %need to subtract and add half a pixel or polymask will not included the
     %edge of the polygon
     x_lower_half_idx=join_polygon(1,:)<median(join_polygon(1,1:(end-1)));
-    join_polygon(1,x_lower_half_idx)=join_polygon(1,x_lower_half_idx)-0.5;
-    join_polygon(1,~x_lower_half_idx)=join_polygon(1,~x_lower_half_idx)+0.5;
+    join_polygon(1,x_lower_half_idx)=join_polygon(1,x_lower_half_idx)-1;
+    join_polygon(1,~x_lower_half_idx)=join_polygon(1,~x_lower_half_idx)+1;
     y_lower_half_idx=join_polygon(2,:)<median(join_polygon(2,1:(end-1)));
-    join_polygon(2,y_lower_half_idx)=join_polygon(2,y_lower_half_idx)-0.5;
-    join_polygon(2,~y_lower_half_idx)=join_polygon(2,~y_lower_half_idx)+0.5;
+    join_polygon(2,y_lower_half_idx)=join_polygon(2,y_lower_half_idx)-1;
+    join_polygon(2,~y_lower_half_idx)=join_polygon(2,~y_lower_half_idx)+1;
 else
     %connection is only a line so we'll make a very narrow polygon
     %offset half a pixel on each side of the line
-    join_polygon=[edge_1_points+1 edge_2_points(:,2)-1 edge_2_points(:,1)-1 edge_1_points(:,1)+1];
+    join_polygon=[edge_1_points+2 edge_2_points(:,2)-2 edge_2_points(:,1)-2 edge_1_points(:,1)+2];
 end
 
 %end preparePointSetPairsForJoin
+end
+
+function linkage_clusters=getPointsClusters(point_set)
+
+blob_dist=pdist(point_set);
+%tested all linkage params - this works best
+blob_linkage=linkage(blob_dist,'average');
+linkage_clusters=cluster(blob_linkage,'criterion','distance','cutoff',5);
+
+%end getPointsClusters
 end
