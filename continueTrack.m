@@ -1,0 +1,10 @@
+function continueTrack()
+global mtr_gui_struct;
+
+mtr_gui_struct.TrackToContinueID=mtr_gui_struct.SelectedCellID;
+mtr_gui_struct.TrackToContinueRecord=mtr_gui_struct.CurrentTrackRecord;
+mtr_gui_struct.TrackToContinueAncestry=mtr_gui_struct.CurrentAncestryRecord;
+mtr_gui_struct.ContinueTrack=true;
+
+%end continueTrack
+end
