@@ -40,6 +40,7 @@ mtr_gui_struct.EditStatus3Handle=findobj(children_handles,'tag','editStatus3');
 mtr_gui_struct.EditCellStatusHandle=findobj(children_handles,'tag','editStatusCell');
 mtr_gui_struct.CheckBoxLabelsHandle=findobj(children_handles,'tag','checkboxLabels');
 mtr_gui_struct.ButtonContinueTrackHandle=findobj(children_handles,'tag','buttonContinueTrack');
+mtr_gui_struct.ButtonRemoveSplitHandle=findobj(children_handles,'tag','buttonRemoveSplit');
 cur_frame=1;
 mtr_gui_struct.CurFrame=cur_frame;
 mtr_gui_struct.SelectedCellID=0;

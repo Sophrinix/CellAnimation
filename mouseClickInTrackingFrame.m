@@ -16,6 +16,7 @@ if ((cur_cell_lbl_id==0)||(mtr_gui_struct.SelectedCellLabelID==cur_cell_lbl_id))
     %set the function handle for a mouse click in the objects image
     set(mtr_gui_struct.ImageHandle,'buttondownfcn','mouseClickInTrackingFrame');
     set(mtr_gui_struct.ButtonContinueTrackHandle,'Enable','off');
+    set(mtr_gui_struct.ButtonRemoveSplitHandle,'Enable','off');
 else
     selectCell(cur_cell_lbl_id);
     mtr_gui_struct.SelectedCellLabelID=cur_cell_lbl_id;
@@ -40,6 +41,7 @@ else
         completeContinueTrack();
     else
         set(mtr_gui_struct.ButtonContinueTrackHandle,'Enable','on');
+        set(mtr_gui_struct.ButtonRemoveSplitHandle,'Enable','on');
     end
 end
 

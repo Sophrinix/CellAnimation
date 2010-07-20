@@ -234,6 +234,7 @@ function buttonAddSplit_Callback(hObject, eventdata, handles)
 % hObject    handle to buttonAddSplit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+addSplit();
 
 
 % --- Executes on button press in buttonRemoveSplit.
@@ -241,6 +242,7 @@ function buttonRemoveSplit_Callback(hObject, eventdata, handles)
 % hObject    handle to buttonRemoveSplit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+removeSplit();
 
 
 % --- Executes on button press in buttonAddSelectionLayer.
