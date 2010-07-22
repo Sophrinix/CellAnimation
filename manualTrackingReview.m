@@ -41,12 +41,14 @@ mtr_gui_struct.EditCellStatusHandle=findobj(children_handles,'tag','editStatusCe
 mtr_gui_struct.CheckBoxLabelsHandle=findobj(children_handles,'tag','checkboxLabels');
 mtr_gui_struct.ButtonContinueTrackHandle=findobj(children_handles,'tag','buttonContinueTrack');
 mtr_gui_struct.ButtonRemoveSplitHandle=findobj(children_handles,'tag','buttonRemoveSplit');
+mtr_gui_struct.ButtonAddSplitHandle=findobj(children_handles,'tag','buttonAddSplit');
 cur_frame=1;
 mtr_gui_struct.CurFrame=cur_frame;
 mtr_gui_struct.SelectedCellID=0;
 mtr_gui_struct.SelectedCellLabelID=0;
 mtr_gui_struct.ShowLabels=get(mtr_gui_struct.CheckBoxLabelsHandle,'Value');
 mtr_gui_struct.ContinueTrack=false;
+mtr_gui_struct.SplitTrack=false;
 
 set(mtr_gui_struct.SliderHandle,'Min',cur_frame);
 set(mtr_gui_struct.SliderHandle,'Max',mtr_gui_struct.FrameCount);

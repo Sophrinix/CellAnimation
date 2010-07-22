@@ -17,6 +17,7 @@ if ((cur_cell_lbl_id==0)||(mtr_gui_struct.SelectedCellLabelID==cur_cell_lbl_id))
     set(mtr_gui_struct.ImageHandle,'buttondownfcn','mouseClickInTrackingFrame');
     set(mtr_gui_struct.ButtonContinueTrackHandle,'Enable','off');
     set(mtr_gui_struct.ButtonRemoveSplitHandle,'Enable','off');
+    set(mtr_gui_struct.ButtonAddSplitHandle,'Enable','off');
 else
     selectCell(cur_cell_lbl_id);
     mtr_gui_struct.SelectedCellLabelID=cur_cell_lbl_id;
@@ -36,17 +37,82 @@ else
             mtr_gui_struct.TrackToContinueRecord=[];
             mtr_gui_struct.TrackToContinueAncestry=[];
             mtr_gui_struct.ContinueTrack=false;
-            warndlg('You cannot continue the track using this track.  The overlap between the tracks is incorrect!');            
+            warndlg('You cannot continue the track using this track!');            
         end
         completeContinueTrack();
+    elseif (mtr_gui_struct.SplitTrack)
+        split_id=mtr_gui_struct.TrackToSplitID;
+        if (cell_id==split_id)
+            mtr_gui_struct.TrackToSplitID=[];
+            mtr_gui_struct.TrackToSplitRecord=[];
+            mtr_gui_struct.TrackToSplitAncestry=[];
+            mtr_gui_struct.SplitTrack=false;
+            warndlg('You cannot complete the split with this track!');            
+        end
+        completeSplitTrack();        
     else
         set(mtr_gui_struct.ButtonContinueTrackHandle,'Enable','on');
         set(mtr_gui_struct.ButtonRemoveSplitHandle,'Enable','on');
+        set(mtr_gui_struct.ButtonAddSplitHandle,'Enable','on');
     end
 end
 
 
 %end mouseClickInTrackingFrame
+end
+
+function completeSplitTrack()
+global mtr_gui_struct;
+
+ancestry_layout=mtr_gui_struct.AncestryLayout;
+new_cell_ancestry=mtr_gui_struct.CurrentAncestryRecord;
+new_cell_start_frame=(new_cell_ancestry(ancestry_layout.StartTimeCol)./mtr_gui_struct.TimeFrame)+1;
+if (new_cell_start_frame~=mtr_gui_struct.CurFrame)
+    mtr_gui_struct.TrackToSplitID=[];
+    mtr_gui_struct.TrackToSplitRecord=[];
+    mtr_gui_struct.TrackToSplitAncestry=[];
+    mtr_gui_struct.SplitTrack=false;
+    warndlg('This is not a new track in this frame!');
+end
+parent_id=new_cell_ancestry(ancestry_layout.ParentIDCol);
+if (parent_id~=0)
+    mtr_gui_struct.TrackToSplitID=[];
+    mtr_gui_struct.TrackToSplitRecord=[];
+    mtr_gui_struct.TrackToSplitAncestry=[];
+    mtr_gui_struct.SplitTrack=false;
+    warndlg('This track is the result of a split. You need to remove that split first!');
+end
+parent_ancestry=mtr_gui_struct.TrackToSplitAncestry;
+parent_id=parent_ancestry(ancestry_layout.TrackIDCol);
+new_cell_ancestry(ancestry_layout.ParentIDCol)=parent_id;
+second_new_cell_ancestry=parent_ancestry;
+second_new_cell_ancestry(ancestry_layout.ParentIDCol)=parent_id;
+cur_time=new_cell_ancestry(ancestry_layout.StartTimeCol);
+second_new_cell_ancestry(ancestry_layout.StartTimeCol)=cur_time;    
+ancestry_records=mtr_gui_struct.CellsAncestry;
+max_cell_id=max(ancestry_records(:,ancestry_layout.TrackIDCol));
+second_new_cell_ancestry(ancestry_layout.TrackIDCol)=(max_cell_id+1);
+parent_ancestry(ancestry_layout.StopTimeCol)=...
+    cur_time-mtr_gui_struct.TimeFrame;
+ancestry_records=mtr_gui_struct.CellsAncestry;
+parent_ancestry_idx=ancestry_records(:,ancestry_layout.TrackIDCol)==parent_id;
+ancestry_records(parent_ancestry_idx,:)=parent_ancestry;
+new_cell_ancestry_idx=ancestry_records(:,ancestry_layout.TrackIDCol)...
+    ==mtr_gui_struct.SelectedCellID;
+ancestry_records(new_cell_ancestry_idx,:)=new_cell_ancestry;
+ancestry_records=[ancestry_records; second_new_cell_ancestry];
+mtr_gui_struct.CellsAncestry=ancestry_records;
+tracks_layout=mtr_gui_struct.TracksLayout;
+tracks=mtr_gui_struct.Tracks;
+second_new_track_idx=(tracks(:,tracks_layout.TrackIDCol)==parent_id)&...
+    (tracks(:,tracks_layout.TimeCol)>=cur_time);
+tracks(second_new_track_idx,tracks_layout.TrackIDCol)=(max_cell_id+1);
+mtr_gui_struct.Tracks=tracks;
+%increase the generation number of the daughter cells and all their
+%proginy
+offsetGenerationNumber(parent_id,1);
+
+%end completeSplitTrack
 end
 
 function completeContinueTrack()
@@ -85,6 +151,8 @@ mtr_gui_struct.TrackToContinueID=[];
 mtr_gui_struct.TrackToContinueRecord=[];
 mtr_gui_struct.TrackToContinueAncestry=[];
 mtr_gui_struct.ContinueTrack=false;
+mtr_gui_struct.SelectedCellStart=(track_to_continue_ancestry(ancestry_layout.StartTimeCol)...
+    ./mtr_gui_struct.TimeFrame)+1;
 mtr_gui_struct.SelectedCellID=track_to_continue_id;
 updateCellStatus();
 

@@ -22,7 +22,7 @@ function varargout = manualTrackingReviewGUI(varargin)
 
 % Edit the above text to modify the response to help manualTrackingReviewGUI
 
-% Last Modified by GUIDE v2.5 19-Jul-2010 13:03:48
+% Last Modified by GUIDE v2.5 21-Jul-2010 12:50:25
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -266,3 +266,11 @@ function checkboxShowOutlines_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkboxShowOutlines
+
+
+% --- Executes on button press in buttonSwitchTracks.
+function buttonSwitchTracks_Callback(hObject, eventdata, handles)
+% hObject    handle to buttonSwitchTracks (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+switchTracks();
