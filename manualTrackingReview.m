@@ -49,6 +49,7 @@ mtr_gui_struct.SelectedCellLabelID=0;
 mtr_gui_struct.ShowLabels=get(mtr_gui_struct.CheckBoxLabelsHandle,'Value');
 mtr_gui_struct.ContinueTrack=false;
 mtr_gui_struct.SplitTrack=false;
+mtr_gui_struct.SwitchTrack=false;
 
 set(mtr_gui_struct.SliderHandle,'Min',cur_frame);
 set(mtr_gui_struct.SliderHandle,'Max',mtr_gui_struct.FrameCount);
