@@ -22,7 +22,7 @@ function varargout = manualTrackingReviewGUI(varargin)
 
 % Edit the above text to modify the response to help manualTrackingReviewGUI
 
-% Last Modified by GUIDE v2.5 21-Jul-2010 12:50:25
+% Last Modified by GUIDE v2.5 23-Jul-2010 17:31:12
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -245,12 +245,12 @@ function buttonRemoveSplit_Callback(hObject, eventdata, handles)
 removeSplit();
 
 
-% --- Executes on button press in buttonAddSelectionLayer.
-function buttonAddSelectionLayer_Callback(hObject, eventdata, handles)
-% hObject    handle to buttonAddSelectionLayer (see GCBO)
+% --- Executes on button press in buttonManageSelectionLayers.
+function buttonManageSelectionLayers_Callback(hObject, eventdata, handles)
+% hObject    handle to buttonManageSelectionLayers (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+manageSelectionLayers();
 
 % --- Executes on button press in buttonRemoveSelectionLayer.
 function buttonRemoveSelectionLayer_Callback(hObject, eventdata, handles)

@@ -52,6 +52,7 @@ mtr_gui_struct.ImageHandle=image(overlay_ancestry_struct.Image,'Parent',mtr_gui_
 set(mtr_gui_struct.ImageHandle,'buttondownfcn','mouseClickInTrackingFrame');
 %update the cells label
 mtr_gui_struct.CellsLabel=label_struct.cells_lbl;
+mtr_gui_struct.FrameTracks=cur_tracks_struct.Tracks;
 
 %end updateTrackImage
 end

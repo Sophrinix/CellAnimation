@@ -30,6 +30,9 @@ status_text=[status_text 'Perimeter: ' num2str(cell_per) ' \n'];
 cell_sol=cell_track_record(tracks_layout.SolCol);
 status_text=[status_text 'Solidity: ' num2str(cell_sol) ' \n'];
 status_text=sprintf(status_text);
+cell_speed=mtr_gui_struct.CurrentSpeed;
+status_text=[status_text 'Speed: ' num2str(cell_speed) ' \n'];
+status_text=sprintf(status_text);
 set(mtr_gui_struct.EditCellStatusHandle,'String',status_text);
 
 %end updateCellStatus

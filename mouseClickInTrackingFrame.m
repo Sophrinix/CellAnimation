@@ -12,7 +12,7 @@ if ((cur_cell_lbl_id==0)||(mtr_gui_struct.SelectedCellLabelID==cur_cell_lbl_id))
     hold off;
     mtr_gui_struct.SelectedCellID=0;
     mtr_gui_struct.SelectedCellLabelID=0;
-    mtr_gui_struct.ImageHandle=image(mtr_gui_struct.ImageData,'Parent',mtr_gui_struct.TracksHandle);
+%     mtr_gui_struct.ImageHandle=image(mtr_gui_struct.ImageData,'Parent',mtr_gui_struct.TracksHandle);
     %set the function handle for a mouse click in the objects image
     set(mtr_gui_struct.ImageHandle,'buttondownfcn','mouseClickInTrackingFrame');
     set(mtr_gui_struct.ButtonContinueTrackHandle,'Enable','off');
@@ -219,10 +219,13 @@ tracks=mtr_gui_struct.Tracks;
 cur_time=(mtr_gui_struct.CurFrame-1)*mtr_gui_struct.TimeFrame;
 cur_tracks_idx=(tracks(:,tracks_layout.TimeCol)==cur_time);
 cur_tracks=tracks(cur_tracks_idx,:);
+cell_speeds=mtr_gui_struct.CellSpeeds;
+cur_speeds=cell_speeds(cur_tracks_idx,2);
 cur_centroids=tracks(cur_tracks_idx,tracks_layout.Centroid1Col:tracks_layout.Centroid2Col);
 cur_dist=hypot(cur_cell_centroid(1)-cur_centroids(:,1),cur_cell_centroid(2)-cur_centroids(:,2));
 [dummy cell_idx]=min(cur_dist);
 cur_track_record=cur_tracks(cell_idx,:);
+mtr_gui_struct.CurrentSpeed=cur_speeds(cell_idx);
 mtr_gui_struct.CurrentTrackRecord=cur_track_record;
 cell_id=cur_track_record(tracks_layout.TrackIDCol);
 

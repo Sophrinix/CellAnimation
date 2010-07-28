@@ -12,12 +12,13 @@ status_text=['Other New Cells In Frame: ' num2str(other_new_cells_ids')];
 set(mtr_gui_struct.EditStatus2Handle,'String', status_text);
 updateTrackImage(cur_frame,mtr_gui_struct.ShowLabels);
 mtr_gui_struct.CurCentroids=getApproximateCentroids(mtr_gui_struct.CellsLabel);
+addSelectionLayers();
 
 if (mtr_gui_struct.SelectedCellID&&(cur_frame>=mtr_gui_struct.SelectedCellStart)...
         &&(cur_frame<=mtr_gui_struct.SelectedCellEnd))
     updateTrackRecord();    
     mtr_gui_struct.SelectedCellLabelID=getCurLabelID();
-    selectCell(mtr_gui_struct.SelectedCellLabelID);
+    selectCell(mtr_gui_struct.SelectedCellLabelID);    
     updateCellStatus();
 end
 
@@ -31,9 +32,14 @@ global mtr_gui_struct;
 tracks_layout=mtr_gui_struct.TracksLayout;
 tracks=mtr_gui_struct.Tracks;
 cur_time=(mtr_gui_struct.CurFrame-1)*mtr_gui_struct.TimeFrame;
-cur_tracks=tracks(tracks(:,tracks_layout.TimeCol)==cur_time,:);
-cur_track_record=cur_tracks(cur_tracks(:,tracks_layout.TrackIDCol)==mtr_gui_struct.SelectedCellID,:);
+cur_tracks_idx=tracks(:,tracks_layout.TimeCol)==cur_time;
+cur_tracks=tracks(cur_tracks_idx,:);
+cur_cell_idx=cur_tracks(:,tracks_layout.TrackIDCol)==mtr_gui_struct.SelectedCellID;
+cur_track_record=cur_tracks(cur_cell_idx,:);
 mtr_gui_struct.CurrentTrackRecord=cur_track_record;
+cell_speeds=mtr_gui_struct.CellSpeeds;
+cur_speeds=cell_speeds(cur_tracks_idx,2);
+mtr_gui_struct.CurrentSpeed=cur_speeds(cur_cell_idx);
 
 %end updateTrackRecord
 end
@@ -59,6 +65,10 @@ global mtr_gui_struct;
 
 tracks_layout=mtr_gui_struct.TracksLayout;
 cur_track_record=mtr_gui_struct.CurrentTrackRecord;
+if (isempty(cur_track_record))
+    label_id=-1;
+    return;
+end
 cell_centroid=cur_track_record(:,tracks_layout.Centroid1Col:tracks_layout.Centroid2Col);
 cur_centroids=mtr_gui_struct.CurCentroids;
 cur_dist=hypot(cell_centroid(1)-cur_centroids(:,1),cell_centroid(2)-cur_centroids(:,2));
