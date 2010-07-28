@@ -57,26 +57,42 @@ global mtr_gui_struct;
 selected_ids=getCellsInSelectionLayer(selection_layer);
 label_ids=getSelectedCellsLabelIDs(selected_ids);
 cells_lbl=mtr_gui_struct.CellsLabel;
+lbl_sz=size(cells_lbl);
 selected_cells_mask=ismember(cells_lbl,label_ids);
 max_pxl=intmax('uint8');
 rgb_triple=getRGBTriple(selection_layer.Color);
 if isempty(existing_red_color)
     red_color=(max_pxl.*rgb_triple(1).*uint8(selected_cells_mask));
 else
-    red_color=existing_red_color+(max_pxl.*rgb_triple(1).*uint8(selected_cells_mask));
+    red_color_mask=existing_red_color>0;
+    red_color=zeros(lbl_sz,'uint8');
+    intersect_mask=red_color_mask & selected_cells_mask;
+    new_red_color=(max_pxl.*rgb_triple(1).*uint8(selected_cells_mask));
+    red_color(~intersect_mask)=existing_red_color(~intersect_mask)+new_red_color(~intersect_mask);
+    red_color(intersect_mask)=existing_red_color(intersect_mask)./2+new_red_color(intersect_mask)./2;
 end
 if isempty(existing_green_color)
     green_color=(max_pxl.*rgb_triple(2).*uint8(selected_cells_mask));
 else
-    green_color=existing_green_color+(max_pxl.*rgb_triple(2).*uint8(selected_cells_mask));
+    green_color_mask=existing_green_color>0;
+    green_color=zeros(lbl_sz,'uint8');
+    intersect_mask=green_color_mask & selected_cells_mask;
+    new_green_color=(max_pxl.*rgb_triple(2).*uint8(selected_cells_mask));
+    green_color(~intersect_mask)=existing_green_color(~intersect_mask)+new_green_color(~intersect_mask);
+    green_color(intersect_mask)=existing_green_color(intersect_mask)./2+new_green_color(intersect_mask)./2;
 end
 if isempty(existing_blue_color)
     blue_color=(max_pxl.*rgb_triple(3).*uint8(selected_cells_mask));
 else
-    blue_color=existing_blue_color+(max_pxl.*rgb_triple(3).*uint8(selected_cells_mask));
+    blue_color_mask=existing_blue_color>0;
+    blue_color=zeros(lbl_sz,'uint8');
+    intersect_mask=blue_color_mask & selected_cells_mask;
+    new_blue_color=(max_pxl.*rgb_triple(3).*uint8(selected_cells_mask));
+    blue_color(~intersect_mask)=existing_blue_color(~intersect_mask)+new_blue_color(~intersect_mask);
+    blue_color(intersect_mask)=existing_blue_color(intersect_mask)./2+new_blue_color(intersect_mask)./2;
 end
 
-%end applySelectionLayer
+%end addSelectionLayer
 end
 
 function rgb_triple=getRGBTriple(color_string)
