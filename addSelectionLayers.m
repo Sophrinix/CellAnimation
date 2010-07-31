@@ -27,6 +27,10 @@ cur_speeds_idx=cell_speeds(:,3)==((mtr_gui_struct.CurFrame-1).*mtr_gui_struct.Ti
 [dummy sort_idx]=sort(cell_speeds(cur_speeds_idx,1));
 frame_speeds=cell_speeds(cur_speeds_idx,:);
 mtr_gui_struct.FrameSpeeds=frame_speeds(sort_idx,2);
+cell_sq_disps=mtr_gui_struct.CellSquareDisplacements;
+[dummy sort_idx]=sort(cell_sq_disps(cur_speeds_idx,1));
+frame_sq_disps=cell_speeds(cur_speeds_idx,:);
+mtr_gui_struct.FrameSquareDisplacements=frame_sq_disps(sort_idx,2);
 existing_red_color=[];
 existing_green_color=[];
 existing_blue_color=[];
@@ -140,6 +144,7 @@ layer_conditions=selection_layer.Conditions;
 frame_tracks=mtr_gui_struct.FrameTracks;
 frame_ancestries=mtr_gui_struct.FrameAncestries;
 frame_speeds=mtr_gui_struct.FrameSpeeds;
+frame_sq_disps=mtr_gui_struct.FrameSquareDisplacements;
 tracks_layout=mtr_gui_struct.TracksLayout;
 ancestry_layout=mtr_gui_struct.AncestryLayout;
 cell_ids=frame_tracks(:,tracks_layout.TrackIDCol);
@@ -167,6 +172,7 @@ for i=1:length(layer_conditions)
         case 'Perimeter'
             property_vals=frame_tracks(:,tracks_layout.PerCol);
         case 'RMS'
+            property_vals=frame_sq_disps;
         case 'Solidity'
             property_vals=frame_tracks(:,tracks_layout.SolCol);
     end

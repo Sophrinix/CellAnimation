@@ -13,7 +13,7 @@ set(mtr_gui_struct.EditStatus2Handle,'String', status_text);
 updateTrackImage(cur_frame,mtr_gui_struct.ShowLabels);
 mtr_gui_struct.CurCentroids=getApproximateCentroids(mtr_gui_struct.CellsLabel);
 addSelectionLayers();
-
+displayFrameMSD();
 if (mtr_gui_struct.SelectedCellID&&(cur_frame>=mtr_gui_struct.SelectedCellStart)...
         &&(cur_frame<=mtr_gui_struct.SelectedCellEnd))
     updateTrackRecord();    
@@ -39,7 +39,11 @@ cur_track_record=cur_tracks(cur_cell_idx,:);
 mtr_gui_struct.CurrentTrackRecord=cur_track_record;
 cell_speeds=mtr_gui_struct.CellSpeeds;
 cur_speeds=cell_speeds(cur_tracks_idx,2);
+cell_sq_disps=mtr_gui_struct.CellSquareDisplacements;
+cur_sq_disps=cell_sq_disps(cur_tracks_idx,2);
+
 mtr_gui_struct.CurrentSpeed=cur_speeds(cur_cell_idx);
+mtr_gui_struct.CurrentSquareDisplacement=cur_sq_disps(cur_cell_idx);
 
 %end updateTrackRecord
 end

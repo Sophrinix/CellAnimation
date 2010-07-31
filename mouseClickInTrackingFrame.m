@@ -220,12 +220,15 @@ cur_time=(mtr_gui_struct.CurFrame-1)*mtr_gui_struct.TimeFrame;
 cur_tracks_idx=(tracks(:,tracks_layout.TimeCol)==cur_time);
 cur_tracks=tracks(cur_tracks_idx,:);
 cell_speeds=mtr_gui_struct.CellSpeeds;
+cell_sq_disps=mtr_gui_struct.CellSquareDisplacements;
 cur_speeds=cell_speeds(cur_tracks_idx,2);
+cur_sq_disps=cell_sq_disps(cur_tracks_idx,2);
 cur_centroids=tracks(cur_tracks_idx,tracks_layout.Centroid1Col:tracks_layout.Centroid2Col);
 cur_dist=hypot(cur_cell_centroid(1)-cur_centroids(:,1),cur_cell_centroid(2)-cur_centroids(:,2));
 [dummy cell_idx]=min(cur_dist);
 cur_track_record=cur_tracks(cell_idx,:);
 mtr_gui_struct.CurrentSpeed=cur_speeds(cell_idx);
+mtr_gui_struct.CurrentSquareDisplacement=cur_sq_disps(cell_idx);
 mtr_gui_struct.CurrentTrackRecord=cur_track_record;
 cell_id=cur_track_record(tracks_layout.TrackIDCol);
 

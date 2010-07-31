@@ -33,6 +33,9 @@ status_text=sprintf(status_text);
 cell_speed=mtr_gui_struct.CurrentSpeed;
 status_text=[status_text 'Speed: ' num2str(cell_speed) ' \n'];
 status_text=sprintf(status_text);
+cell_sq_disp=mtr_gui_struct.CurrentSquareDisplacement;
+status_text=[status_text 'Square Displacement: ' num2str(cell_sq_disp) ' \n'];
+status_text=sprintf(status_text);
 set(mtr_gui_struct.EditCellStatusHandle,'String',status_text);
 
 %end updateCellStatus

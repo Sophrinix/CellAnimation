@@ -33,8 +33,11 @@ mtr_gui_struct.ImageFileBase=input_args.ImageFileBase.Value;
 mtr_gui_struct.NumberFormat=input_args.NumberFormat.Value;
 mtr_gui_struct.ImgExt=input_args.ImgExt.Value;
 mtr_gui_struct.SegFileRoot=input_args.SegFileRoot.Value;
-mtr_gui_struct.CellSpeeds=getCellSpeeds(mtr_gui_struct.Tracks,mtr_gui_struct.TracksLayout,...
+[cell_speeds cell_sq_disps]=getMotilityParams(mtr_gui_struct.Tracks,mtr_gui_struct.TracksLayout,...
     mtr_gui_struct.CellsAncestry,mtr_gui_struct.AncestryLayout,mtr_gui_struct.TimeFrame);
+mtr_gui_struct.CellSpeeds=cell_speeds;
+mtr_gui_struct.CellSquareDisplacements=cell_sq_disps;
+mtr_gui_struct.FrameMSDs=getFrameMSDs(cell_sq_disps,mtr_gui_struct.TimeFrame);
 mtr_gui_struct.StatusTextHandle=findobj(children_handles,'tag','statusText');
 mtr_gui_struct.EditStatus1Handle=findobj(children_handles,'tag','editStatus1');
 mtr_gui_struct.EditStatus2Handle=findobj(children_handles,'tag','editStatus2');
@@ -44,6 +47,7 @@ mtr_gui_struct.CheckBoxLabelsHandle=findobj(children_handles,'tag','checkboxLabe
 mtr_gui_struct.ButtonContinueTrackHandle=findobj(children_handles,'tag','buttonContinueTrack');
 mtr_gui_struct.ButtonRemoveSplitHandle=findobj(children_handles,'tag','buttonRemoveSplit');
 mtr_gui_struct.ButtonAddSplitHandle=findobj(children_handles,'tag','buttonAddSplit');
+mtr_gui_struct.AveragesTextHandle=findobj(children_handles,'tag','textAverages');
 cur_frame=1;
 mtr_gui_struct.CurFrame=cur_frame;
 mtr_gui_struct.SelectedCellID=0;
@@ -64,7 +68,8 @@ set(mtr_gui_struct.GuiHandle,'DefaultAxesVisible','off');
 set(mtr_gui_struct.StatusTextHandle,'String', ' Frame: 1 Mitotic Events Detected: 0');
 set(mtr_gui_struct.EditStatus1Handle,'String', 'New Cells From Split:');
 set(mtr_gui_struct.EditStatus2Handle,'String', 'Other New Cells In Frame:');
-displayCellAverages(children_handles,mtr_gui_struct.Tracks,mtr_gui_struct.TracksLayout,mtr_gui_struct.CellSpeeds);
+mtr_gui_struct.AveragesText=displayCellAverages();
+displayFrameMSD();
 updateTrackImage(cur_frame,mtr_gui_struct.ShowLabels);
 mtr_gui_struct.CurCentroids=getApproximateCentroids(mtr_gui_struct.CellsLabel);
 %block execution until gui is closed
@@ -74,27 +79,48 @@ output_args.LabelMatrix=msr_gui_struct.ObjectsLabel;
 %end manualTrackingReview
 end
 
-function cell_speeds=getCellSpeeds(tracks,tracks_layout,ancestry_records,ancestry_layout,time_frame)
+function frame_msds=getFrameMSDs(square_disps,time_frame)
+
+max_time_frame=max(square_disps(:,3));
+nr_frames=max_time_frame/time_frame+1;
+frame_msds=zeros(nr_frames,1);
+for i=2:nr_frames
+    cur_time=(i-1)*time_frame;
+    frame_msds(i)=mean(square_disps(square_disps(:,3)==cur_time,2));
+end
+
+%getFrameMSDs
+end
+
+function [cell_speeds square_disps]=getMotilityParams(tracks,tracks_layout,ancestry_records,ancestry_layout,time_frame)
 
 tracks_nr=max(ancestry_records(:,ancestry_layout.TrackIDCol));
 cell_speeds=zeros(size(tracks,1),3);
+square_disps=cell_speeds;
 for i=1:tracks_nr
     cur_track_idx=tracks(:,tracks_layout.TrackIDCol)==i;
     track_centroids=tracks(cur_track_idx,tracks_layout.Centroid1Col:tracks_layout.Centroid2Col);    
     if isempty(track_centroids)
         continue;
     end    
-    cur_speeds=hypot(track_centroids(1:(end-1),1)-track_centroids(2:end,1),track_centroids(1:(end-1),2)-track_centroids(2:end,2));
-    cell_speeds(cur_track_idx,2)=[0; cur_speeds]./time_frame;
+    cur_dist=hypot(track_centroids(1:(end-1),1)-track_centroids(2:end,1),track_centroids(1:(end-1),2)-track_centroids(2:end,2));
+    cell_speeds(cur_track_idx,2)=[0; cur_dist]./time_frame;
     cell_speeds(cur_track_idx,1)=i;
     cell_speeds(cur_track_idx,3)=tracks(cur_track_idx,tracks_layout.TimeCol);
+    square_disps(cur_track_idx,2)=cumsum([0; cur_dist.^2]);
+    square_disps(cur_track_idx,1)=i;
+    square_disps(cur_track_idx,3)=tracks(cur_track_idx,tracks_layout.TimeCol);
 end
 
-%end getCellSpeeds
+%end getMotilityParams
 end
 
-function displayCellAverages(children_handles,tracks,tracks_layout,cell_speeds)
+function averages_text=displayCellAverages()
+global mtr_gui_struct;
 
+tracks=mtr_gui_struct.Tracks;
+tracks_layout=mtr_gui_struct.TracksLayout;
+cell_speeds=mtr_gui_struct.CellSpeeds;
 cell_areas=tracks(:,tracks_layout.AreaCol);
 mean_area=mean(cell_areas);
 averages_text=['Cell Averages: Area ' num2str(mean_area)];
@@ -109,8 +135,7 @@ mean_sol=mean(cell_sol);
 averages_text=[averages_text ' Solidity ' num2str(mean_sol)];
 mean_speed=mean(cell_speeds(cell_speeds(:,2)>0,2));
 averages_text=[averages_text ' Speed ' num2str(mean_speed)];
-text_handle=findobj(children_handles,'tag','textAverages');
-set(text_handle,'String',averages_text);
+set(mtr_gui_struct.AveragesTextHandle,'String',averages_text);
 
 %end displayCellAverages
 end
