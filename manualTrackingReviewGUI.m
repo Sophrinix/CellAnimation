@@ -22,7 +22,7 @@ function varargout = manualTrackingReviewGUI(varargin)
 
 % Edit the above text to modify the response to help manualTrackingReviewGUI
 
-% Last Modified by GUIDE v2.5 23-Jul-2010 17:31:12
+% Last Modified by GUIDE v2.5 30-Jul-2010 20:07:22
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -274,3 +274,18 @@ function buttonSwitchTracks_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 switchTracks();
+
+
+% --------------------------------------------------------------------
+function fileMenu_Callback(hObject, eventdata, handles)
+% hObject    handle to fileMenu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function saveImage_Callback(hObject, eventdata, handles)
+% hObject    handle to saveImage (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+saveTrackingImage();
