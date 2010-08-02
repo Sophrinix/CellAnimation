@@ -50,6 +50,7 @@ mtr_gui_struct.ImageHandle=image(cat(3,red_color,green_color,blue_color),'Parent
 set(mtr_gui_struct.ImageHandle,'AlphaData',0.5);
 %set the function handle for a mouse click in the objects image
 set(mtr_gui_struct.ImageHandle,'buttondownfcn','mouseClickInTrackingFrame');
+hold off;
 
 %end addSelectionLayers
 end
