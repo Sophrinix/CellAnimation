@@ -177,14 +177,40 @@ for i=1:length(layer_conditions)
             property_vals=frame_tracks(:,tracks_layout.SolCol);
     end
     
-    threshold_val=str2num(cur_condition.EditValue);
+    edit_val=cur_condition.EditValue; 
+    if(edit_val(end)=='%')
+        b_pct=true;
+        [dummy sort_idx]=sort(property_vals);
+        nr_of_vals=length(property_vals);
+        select_pct=str2num(edit_val(1:(end-1)))/100;
+        new_selection_idx=false(nr_of_vals,1);
+    else
+        threshold_val=str2num(edit_val);
+    end
+                
     switch cur_condition.ComboOperator
         case '='
-            new_selection_idx=property_vals==threshold_val;
+            if (b_pct)
+                selection_idx=ceil(select_pct.*nr_of_vals);
+                new_selection_idx(sort_idx(selection_idx))=true;                
+            else                
+                new_selection_idx=property_vals==threshold_val;
+                selected_ids=cell_ids(selection_idx);
+            end
         case '>'
-            new_selection_idx=property_vals>threshold_val;
+            if (b_pct)
+                nr_selected_vals=ceil((1-select_pct).*nr_of_vals);                
+                new_selection_idx(sort_idx((end-nr_selected_vals+1):end))=true;                
+            else                
+                new_selection_idx=property_vals>threshold_val;                
+            end            
         case '<'
-            new_selection_idx=property_vals<threshold_val;
+            if (b_pct)                
+                nr_selected_vals=ceil((1-select_pct).*nr_of_vals);                                
+                new_selection_idx(sort_idx(1:nr_selected_vals))=true;
+            else
+                new_selection_idx=property_vals<threshold_val;                
+            end
     end
     switch cur_condition.ComboLogicConnector
         case 'AND'
