@@ -14,6 +14,7 @@ selection_layers(layer_idx)=[];
 sl_gui_struct.SelectionLayers=selection_layers;
 selection_names=sl_gui_struct.SelectionNames;
 selection_names(layer_idx)=[];
+sl_gui_struct.SelectionNames=selection_names;
 set(sl_gui_struct.ListboxSelectionLayersHandle,'String',selection_names);
 
 %end removeLayer
