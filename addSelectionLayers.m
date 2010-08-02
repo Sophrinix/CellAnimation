@@ -186,6 +186,7 @@ for i=1:length(layer_conditions)
         select_pct=str2num(edit_val(1:(end-1)))/100;
         new_selection_idx=false(nr_of_vals,1);
     else
+        b_pct=false;
         threshold_val=str2num(edit_val);
     end
                 
