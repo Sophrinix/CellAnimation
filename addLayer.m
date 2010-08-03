@@ -31,7 +31,7 @@ waitfor(gui_handle);
 
 new_selection_layer=al_gui_struct.NewSelectionLayer;
 clear al_gui_struct;
-selection_names=[selection_names; {new_selection_layer.Name}];
+selection_names=[selection_names {new_selection_layer.Name}];
 sl_gui_struct.SelectionNames=selection_names;
 sl_gui_struct.SelectionLayers=[sl_gui_struct.SelectionLayers; {new_selection_layer}];
 set(sl_gui_struct.ListboxSelectionLayersHandle,'String',selection_names);
