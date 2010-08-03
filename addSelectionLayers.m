@@ -163,11 +163,11 @@ for i=1:length(layer_conditions)
         case 'Eccentricity'
             property_vals=frame_tracks(:,tracks_layout.EccCol);
         case 'End Frame'
-            property_vals=frame_ancestries(:,ancestry_layout.EndFrameCol);
+            property_vals=frame_ancestries(:,ancestry_layout.StopTimeCol);
         case 'Speed'
             property_vals=frame_speeds;
         case 'Start Frame'
-            property_vals=frame_ancestries(:,ancestry_layout.StartFrameCol);
+            property_vals=frame_ancestries(:,ancestry_layout.StartTimeCol);
         case 'Parent ID'
             property_vals=frame_ancestries(:,ancestry_layout.ParentIDCol);
         case 'Perimeter'
