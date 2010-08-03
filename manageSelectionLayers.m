@@ -13,7 +13,7 @@ waitfor(gui_handle);
 
 mtr_gui_struct.SelectionLayers=sl_gui_struct.SelectionLayers;
 clear sl_gui_struct;
-updateTrackImage(mtr_gui_struct.CurFrame,mtr_gui_struct.ShowLabels);
+updateTrackImage(mtr_gui_struct.CurFrame,mtr_gui_struct.ShowLabels,mtr_gui_struct.ShowOutlines);
 addSelectionLayers();
 
 %end manageSelectionLayers

@@ -24,34 +24,37 @@ trackIDCol=tracks_layout.TrackIDCol;
 ancestry_layout=input_args.AncestryLayout.Value;
 ancestryIDCol=ancestry_layout.TrackIDCol;
 generationCol=ancestry_layout.GenerationCol;
-bShowLabels=input_args.ShowLabels.Value;
+b_show_labels=input_args.ShowLabels.Value;
+b_show_outlines=input_args.ShowOutlines.Value;
 
 cur_cell_number=size(cur_tracks,1);
-cell_lbl_id=zeros(cur_cell_number,1);
-%i need to get the outlines of each individual cell since more than one
-%cell might be in a blob
-avg_filt=fspecial('average',[3 3]);
-lbl_avg=imfilter(cells_lbl,avg_filt,'replicate');
-lbl_avg=double(lbl_avg).*double(cells_lbl>0);
-img_bounds=abs(double(cells_lbl)-lbl_avg);
-img_bounds=img_bounds>0.1;
-bounds_lbl=zeros(img_sz);
-bounds_lbl(img_bounds)=cells_lbl(img_bounds);
 
-%draw the cell boundaries
-for j=1:cur_cell_number
-    cur_centroid=cur_tracks(j,centroid1Col:centroid2Col);
-    cell_id=cur_tracks(j,trackIDCol);
-    cell_lbl_id=getLabelId(cells_lbl,cur_centroid);        
-    cell_generation=cells_ancestry(cells_ancestry(:,ancestryIDCol)==cell_id,generationCol);
-    cell_bounds_idx=(bounds_lbl==cell_lbl_id);
-    %draw in the red channel
-    red_color(cell_bounds_idx)=max_pxl*cmap(cell_generation,1);
-    green_color(cell_bounds_idx)=max_pxl*cmap(cell_generation,2);
-    blue_color(cell_bounds_idx)=max_pxl*cmap(cell_generation,3);    
+if (b_show_outlines)
+    %i need to get the outlines of each individual cell since more than one
+    %cell might be in a blob
+    avg_filt=fspecial('average',[3 3]);
+    lbl_avg=imfilter(cells_lbl,avg_filt,'replicate');
+    lbl_avg=double(lbl_avg).*double(cells_lbl>0);
+    img_bounds=abs(double(cells_lbl)-lbl_avg);
+    img_bounds=img_bounds>0.1;
+    bounds_lbl=zeros(img_sz);
+    bounds_lbl(img_bounds)=cells_lbl(img_bounds);
+    
+    %draw the cell boundaries
+    for j=1:cur_cell_number
+        cur_centroid=cur_tracks(j,centroid1Col:centroid2Col);
+        cell_id=cur_tracks(j,trackIDCol);
+        cell_lbl_id=getLabelId(cells_lbl,cur_centroid);
+        cell_generation=cells_ancestry(cells_ancestry(:,ancestryIDCol)==cell_id,generationCol);
+        cell_bounds_idx=(bounds_lbl==cell_lbl_id);
+        %draw in the red channel
+        red_color(cell_bounds_idx)=max_pxl*cmap(cell_generation,1);
+        green_color(cell_bounds_idx)=max_pxl*cmap(cell_generation,2);
+        blue_color(cell_bounds_idx)=max_pxl*cmap(cell_generation,3);
+    end
 end
 
-if (bShowLabels)
+if (b_show_labels)
     %draw the cell labels
     for j=1:cur_cell_number
         cur_centroid=cur_tracks(j,centroid1Col:centroid2Col);

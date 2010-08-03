@@ -1,4 +1,4 @@
-function []=updateTrackImage(frame_nr,bShowLabels)
+function []=updateTrackImage(frame_nr,b_show_labels,b_show_outlines)
 global mtr_gui_struct;
 
 file_name_args.FileBase.Value=mtr_gui_struct.ImageFileBase;
@@ -42,7 +42,8 @@ overlay_ancestry_args.CurFrame.Value=frame_nr;
 overlay_ancestry_args.ColorMap.Value=mtr_gui_struct.ColorMap;
 overlay_ancestry_args.TracksLayout.Value=mtr_gui_struct.TracksLayout;
 overlay_ancestry_args.AncestryLayout.Value=mtr_gui_struct.AncestryLayout;
-overlay_ancestry_args.ShowLabels.Value=bShowLabels;
+overlay_ancestry_args.ShowLabels.Value=b_show_labels;
+overlay_ancestry_args.ShowOutlines.Value=b_show_outlines;
 overlay_ancestry_struct=overlayAncestry(overlay_ancestry_args);
 
 %display objects image in the objectAxes

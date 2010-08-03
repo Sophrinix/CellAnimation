@@ -10,7 +10,7 @@ status_text=['New Cells From Split: ' num2str(mitotic_cells_ids')];
 set(mtr_gui_struct.EditStatus1Handle,'String', status_text);
 status_text=['Other New Cells In Frame: ' num2str(other_new_cells_ids')];
 set(mtr_gui_struct.EditStatus2Handle,'String', status_text);
-updateTrackImage(cur_frame,mtr_gui_struct.ShowLabels);
+updateTrackImage(cur_frame,mtr_gui_struct.ShowLabels,mtr_gui_struct.ShowOutlines);
 mtr_gui_struct.CurCentroids=getApproximateCentroids(mtr_gui_struct.CellsLabel);
 addSelectionLayers();
 displayFrameMSD();

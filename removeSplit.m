@@ -41,7 +41,7 @@ mtr_gui_struct.SelectedCellID=parent_id;
 mtr_gui_struct.SelectedCellStart=(ancestry_records(parent_ancestry_idx,ancestry_layout.StartTimeCol)...
     ./mtr_gui_struct.TimeFrame)+1;
 updateCellStatus();
-updateTrackImage(mtr_gui_struct.CurFrame,mtr_gui_struct.ShowLabels);
+updateTrackImage(mtr_gui_struct.CurFrame,mtr_gui_struct.ShowLabels,mtr_gui_struct.ShowOutlines);
 selectCell(mtr_gui_struct.SelectedCellLabelID);
 
 %end removeSplit
