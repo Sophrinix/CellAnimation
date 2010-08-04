@@ -28,8 +28,9 @@ cur_speeds_idx=cell_speeds(:,3)==((mtr_gui_struct.CurFrame-1).*mtr_gui_struct.Ti
 frame_speeds=cell_speeds(cur_speeds_idx,:);
 mtr_gui_struct.FrameSpeeds=frame_speeds(sort_idx,2);
 cell_sq_disps=mtr_gui_struct.CellSquareDisplacements;
-[dummy sort_idx]=sort(cell_sq_disps(cur_speeds_idx,1));
-frame_sq_disps=cell_speeds(cur_speeds_idx,:);
+cur_sq_disps_idx=cell_sq_disps(:,3)==((mtr_gui_struct.CurFrame-1).*mtr_gui_struct.TimeFrame);
+[dummy sort_idx]=sort(cell_sq_disps(cur_sq_disps_idx,1));
+frame_sq_disps=cell_sq_disps(cur_sq_disps_idx,:);
 mtr_gui_struct.FrameSquareDisplacements=frame_sq_disps(sort_idx,2);
 existing_red_color=[];
 existing_green_color=[];
