@@ -1,5 +1,6 @@
 function output_args=manualTrackingReview(input_args)
 global mtr_gui_struct;
+mtr_gui_struct=[];
 mtr_gui_struct.TotalErrors=0;
 
 %initialize the gui

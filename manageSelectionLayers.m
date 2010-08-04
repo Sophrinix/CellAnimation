@@ -1,6 +1,7 @@
 function manageSelectionLayers()
 global sl_gui_struct;
 global mtr_gui_struct;
+sl_gui_struct=[];
 
 selection_names=getSelectionNames();
 sl_gui_struct.SelectionNames=selection_names;
