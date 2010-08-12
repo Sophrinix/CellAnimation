@@ -132,22 +132,22 @@ manual_tracks_review_function.FunctionArgs.FrameCount.Value=TrackStruct.FrameCou
 
 save_updated_tracks_function.InstanceName='SaveUpdatedTracks';
 save_updated_tracks_function.FunctionHandle=@saveTracks;
-save_updated_tracks_function.FunctionArgs.Tracks.FunctionInstance='RemoveShortTracks';
+save_updated_tracks_function.FunctionArgs.Tracks.FunctionInstance='ManualTracksReview';
 save_updated_tracks_function.FunctionArgs.Tracks.OutputArg='Tracks';
 save_updated_tracks_function.FunctionArgs.TracksFileName.Value=[TrackStruct.ProlDir ds 'tracks.mat'];
 
 save_ancestry_function.InstanceName='SaveAncestry';
 save_ancestry_function.FunctionHandle=@saveAncestry;
-save_ancestry_function.FunctionArgs.CellsAncestry.FunctionInstance='RemoveShortTracks';
+save_ancestry_function.FunctionArgs.CellsAncestry.FunctionInstance='ManualTracksReview';
 save_ancestry_function.FunctionArgs.CellsAncestry.OutputArg='CellsAncestry';
 save_ancestry_function.FunctionArgs.AncestryFileName.Value=[TrackStruct.ProlDir ds 'ancestry.mat'];
 
 
 save_ancestry_spreadsheets.InstanceName='SaveAncestrySpreadsheets';
 save_ancestry_spreadsheets.FunctionHandle=@saveAncestrySpreadsheets;
-save_ancestry_spreadsheets.FunctionArgs.Tracks.FunctionInstance='RemoveShortTracks';
+save_ancestry_spreadsheets.FunctionArgs.Tracks.FunctionInstance='ManualTracksReview';
 save_ancestry_spreadsheets.FunctionArgs.Tracks.OutputArg='Tracks';
-save_ancestry_spreadsheets.FunctionArgs.CellsAncestry.FunctionInstance='RemoveShortTracks';
+save_ancestry_spreadsheets.FunctionArgs.CellsAncestry.FunctionInstance='ManualTracksReview';
 save_ancestry_spreadsheets.FunctionArgs.CellsAncestry.OutputArg='CellsAncestry';
 save_ancestry_spreadsheets.FunctionArgs.TracksLayout.Value=tracks_layout;
 save_ancestry_spreadsheets.FunctionArgs.ShapesXlsFile.Value=TrackStruct.ShapesXlsFile;

@@ -77,7 +77,8 @@ updateTrackImage(cur_frame,mtr_gui_struct.ShowLabels,mtr_gui_struct.ShowOutlines
 mtr_gui_struct.CurCentroids=getApproximateCentroids(mtr_gui_struct.CellsLabel);
 %block execution until gui is closed
 waitfor(gui_handle);
-output_args.LabelMatrix=msr_gui_struct.ObjectsLabel;
+output_args.Tracks=mtr_gui_struct.Tracks;
+output_args.CellsAncestry=mtr_gui_struct.CellsAncestry;
 
 %end manualTrackingReview
 end
