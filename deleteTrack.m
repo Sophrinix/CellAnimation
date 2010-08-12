@@ -2,6 +2,10 @@ function deleteTrack()
 global mtr_gui_struct;
 
 track_id=mtr_gui_struct.SelectedCellID;
+if (track_id==0)
+    warndlg('No cell is selected!');
+    return;
+end
 tracks_layout=mtr_gui_struct.TracksLayout;
 tracks=mtr_gui_struct.Tracks;
 mtr_gui_struct.SelectedCellID=0;
