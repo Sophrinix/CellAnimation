@@ -22,7 +22,7 @@ function varargout = manualTrackingReviewGUI(varargin)
 
 % Edit the above text to modify the response to help manualTrackingReviewGUI
 
-% Last Modified by GUIDE v2.5 12-Aug-2010 12:55:41
+% Last Modified by GUIDE v2.5 12-Aug-2010 14:51:50
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -299,3 +299,11 @@ function buttonDeleteTrack_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 deleteTrack();
+
+
+% --- Executes on button press in buttonBreakTrack.
+function buttonBreakTrack_Callback(hObject, eventdata, handles)
+% hObject    handle to buttonBreakTrack (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+breakTrack();
