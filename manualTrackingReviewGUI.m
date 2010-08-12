@@ -22,7 +22,7 @@ function varargout = manualTrackingReviewGUI(varargin)
 
 % Edit the above text to modify the response to help manualTrackingReviewGUI
 
-% Last Modified by GUIDE v2.5 30-Jul-2010 20:07:22
+% Last Modified by GUIDE v2.5 12-Aug-2010 12:55:41
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -291,3 +291,11 @@ function saveImage_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 saveTrackingImage();
+
+
+% --- Executes on button press in buttonDeleteTrack.
+function buttonDeleteTrack_Callback(hObject, eventdata, handles)
+% hObject    handle to buttonDeleteTrack (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+deleteTrack();
