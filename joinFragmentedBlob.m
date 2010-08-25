@@ -155,8 +155,16 @@ if (b_found_edges)
     join_polygon(2,~y_lower_half_idx)=join_polygon(2,~y_lower_half_idx)+1;
 else
     %connection is only a line so we'll make a very narrow polygon
-    %offset half a pixel on each side of the line
-    join_polygon=[edge_1_points+2 edge_2_points(:,2)-2 edge_2_points(:,1)-2 edge_1_points(:,1)+2];
+    %offset two pixels on each side of the line
+    point_a=edge_1_points(:,1);
+    point_b=edge_1_points(:,2);
+    line_slope=(point_a(1)-point_b(1))/(point_a(2)-point_b(2));
+    if (line_slope>0)
+        line_offset=[2;-2];        
+    else
+        line_offset=[2;2];        
+    end
+    join_polygon=[point_a+line_offset point_b+line_offset point_b-line_offset point_a-line_offset point_a+line_offset];
 end
 
 %end preparePointSetPairsForJoin
