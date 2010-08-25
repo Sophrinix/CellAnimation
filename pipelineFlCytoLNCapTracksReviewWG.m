@@ -9,8 +9,8 @@ TrackStruct.ImageFileName='Cell Tracker Green - Confocal - n';
 TrackStruct.ImageFileBase=[well_folder ds TrackStruct.ImageFileName];
 %hepsin overexpressing
 % TrackStruct.ImageFileBase=[well_folder ds 'llh_hep_lm7_t'];
-TrackStruct.StartFrame=1;
-TrackStruct.FrameCount=30;
+TrackStruct.StartFrame=31;
+TrackStruct.FrameCount=29;
 TrackStruct.TimeFrame=8; %minutes
 TrackStruct.FrameStep=1; %read every x frames
 TrackStruct.NumberFormat='%06d';
@@ -129,6 +129,8 @@ manual_tracks_review_function.FunctionArgs.TracksLayout.Value=tracks_layout;
 manual_tracks_review_function.FunctionArgs.SegFileRoot.Value=TrackStruct.SegFileRoot;
 manual_tracks_review_function.FunctionArgs.AncestryLayout.Value=ancestry_layout;
 manual_tracks_review_function.FunctionArgs.FrameCount.Value=TrackStruct.FrameCount;
+manual_tracks_review_function.FunctionArgs.StartFrame.Value=TrackStruct.StartFrame;
+
 
 save_updated_tracks_function.InstanceName='SaveUpdatedTracks';
 save_updated_tracks_function.FunctionHandle=@saveTracks;

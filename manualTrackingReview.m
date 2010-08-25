@@ -30,6 +30,7 @@ mtr_gui_struct.FrameStep=input_args.FrameStep.Value;
 mtr_gui_struct.ColorMap=input_args.ColorMap.Value;
 mtr_gui_struct.AncestryLayout=input_args.AncestryLayout.Value;
 mtr_gui_struct.FrameCount=input_args.FrameCount.Value;
+mtr_gui_struct.StartFrame=input_args.StartFrame.Value;
 mtr_gui_struct.ImageFileBase=input_args.ImageFileBase.Value;
 mtr_gui_struct.NumberFormat=input_args.NumberFormat.Value;
 mtr_gui_struct.ImgExt=input_args.ImgExt.Value;
@@ -50,7 +51,7 @@ mtr_gui_struct.ButtonContinueTrackHandle=findobj(children_handles,'tag','buttonC
 mtr_gui_struct.ButtonRemoveSplitHandle=findobj(children_handles,'tag','buttonRemoveSplit');
 mtr_gui_struct.ButtonAddSplitHandle=findobj(children_handles,'tag','buttonAddSplit');
 mtr_gui_struct.AveragesTextHandle=findobj(children_handles,'tag','textAverages');
-cur_frame=1;
+cur_frame=mtr_gui_struct.StartFrame;
 mtr_gui_struct.CurFrame=cur_frame;
 mtr_gui_struct.SelectedCellID=0;
 mtr_gui_struct.SelectedCellLabelID=0;
@@ -62,7 +63,7 @@ mtr_gui_struct.SwitchTrack=false;
 mtr_gui_struct.SelectionLayers={};
 
 set(mtr_gui_struct.SliderHandle,'Min',cur_frame);
-set(mtr_gui_struct.SliderHandle,'Max',mtr_gui_struct.FrameCount);
+set(mtr_gui_struct.SliderHandle,'Max',mtr_gui_struct.FrameCount+cur_frame);
 set(mtr_gui_struct.SliderHandle,'Value',cur_frame);
 slider_step_size=1.0/double(mtr_gui_struct.FrameCount);
 set(mtr_gui_struct.SliderHandle,'SliderStep',[slider_step_size min([10*slider_step_size 1])]);
