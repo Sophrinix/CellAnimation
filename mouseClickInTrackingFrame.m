@@ -51,11 +51,11 @@ else
         end
         completeSplitTrack();
     elseif (mtr_gui_struct.SwitchTrack)
-        split_id=mtr_gui_struct.TrackToSplitID;
-        if (cell_id==split_id)
-            mtr_gui_struct.TrackToSwitchID=[];
-            mtr_gui_struct.TrackToSwitchRecord=[];
-            mtr_gui_struct.TrackToSwitchAncestry=[];
+        switch_id=mtr_gui_struct.SwitchTrackID;
+        if (cell_id==switch_id)
+            mtr_gui_struct.SwitchTrackID=[];
+            mtr_gui_struct.SwitchTrackRecord=[];
+            mtr_gui_struct.SwitchTrackAncestry=[];
             mtr_gui_struct.SwitchTrack=false;
             warndlg('You cannot complete the switch with this track!');            
         end
@@ -95,8 +95,9 @@ ancestry_records(track_1_idx,ancestry_layout.StopTimeCol)=...
 track_2_idx=ancestry_records(:,ancestry_layout.TrackIDCol)==track2_id;
 ancestry_records(track_2_idx,ancestry_layout.StopTimeCol)=...
     track1_ancestry_record(ancestry_layout.StopTimeCol);
-track_1_children_idx=ancestry_records(:,ancestry_layout.ParentIDCol)==track1_id;
-track_2_children_idx=ancestry_records(:,ancestry_layout.ParentIDCol)==track2_id;
+affected_times_idx=(ancestry_records(:,ancestry_layout.StartTimeCol)>=cur_time);
+track_1_children_idx=(ancestry_records(:,ancestry_layout.ParentIDCol)==track1_id)&affected_times_idx;
+track_2_children_idx=(ancestry_records(:,ancestry_layout.ParentIDCol)==track2_id)&affected_times_idx;
 ancestry_records(track_1_children_idx,ancestry_layout.ParentIDCol)=track2_id;
 ancestry_records(track_2_children_idx,ancestry_layout.ParentIDCol)=track1_id;
 mtr_gui_struct.CellsAncestry=ancestry_records;
