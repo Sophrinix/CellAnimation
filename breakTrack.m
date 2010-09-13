@@ -13,10 +13,6 @@ if (cur_time==ancestry_record(ancestry_layout.StartTimeCol))
     warndlg('Can''t break a track at its start point!');
     return;
 end
-if (cur_time==ancestry_record(ancestry_layout.StopTimeCol))
-    warndlg('Can''t break a track at its end point!');
-    return;
-end
 ancestry_records=mtr_gui_struct.CellsAncestry;
 new_track_id=max(ancestry_records(:,ancestry_layout.TrackIDCol))+1;
 tracks_layout=mtr_gui_struct.TracksLayout;
