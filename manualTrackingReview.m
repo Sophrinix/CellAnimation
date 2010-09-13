@@ -112,7 +112,7 @@ for i=1:tracks_nr
     cell_speeds(cur_track_idx,2)=[0; cur_dist]./time_frame;
     cell_speeds(cur_track_idx,1)=i;
     cell_speeds(cur_track_idx,3)=tracks(cur_track_idx,tracks_layout.TimeCol);
-    square_disps(cur_track_idx,2)=cumsum([0; cur_dist.^2]);
+    square_disps(cur_track_idx,2)=(track_centroids(:,1)-track_centroids(1,1)).^2+(track_centroids(:,2)-track_centroids(1,2)).^2;
     square_disps(cur_track_idx,1)=i;
     square_disps(cur_track_idx,3)=tracks(cur_track_idx,tracks_layout.TimeCol);
 end
