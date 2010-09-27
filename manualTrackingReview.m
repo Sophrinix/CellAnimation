@@ -109,6 +109,7 @@ for i=1:tracks_nr
         continue;
     end    
     cur_dist=hypot(track_centroids(1:(end-1),1)-track_centroids(2:end,1),track_centroids(1:(end-1),2)-track_centroids(2:end,2));
+    total_dist=cumsum(cur_dist);
     cell_speeds(cur_track_idx,2)=[0; cur_dist]./time_frame;
     cell_speeds(cur_track_idx,1)=i;
     cell_speeds(cur_track_idx,3)=tracks(cur_track_idx,tracks_layout.TimeCol);
