@@ -9,9 +9,9 @@ TrackStruct.ImageFileName='Cell Tracker Green - Confocal - n';
 TrackStruct.ImageFileBase=[well_folder ds TrackStruct.ImageFileName];
 %hepsin overexpressing
 % TrackStruct.ImageFileBase=[well_folder ds 'llh_hep_lm7_t'];
-TrackStruct.StartFrame=13;
-TrackStruct.FrameCount=48;
-TrackStruct.TimeFrame=8; %minutes
+TrackStruct.StartFrame=15;
+TrackStruct.FrameCount=10;
+TrackStruct.TimeFrame=24; %minutes
 TrackStruct.FrameStep=1; %read every x frames
 TrackStruct.NumberFormat='%06d';
 TrackStruct.MaxFramesMissing=6; %how many frames a cell can disappear before we end its track
@@ -262,6 +262,40 @@ segment_objects_using_markers_function.FunctionArgs.MarkersLabel.OutputArg='Labe
 segment_objects_using_markers_function.FunctionArgs.ObjectsLabel.FunctionInstance='LabelCytoplasm';
 segment_objects_using_markers_function.FunctionArgs.ObjectsLabel.OutputArg='LabelMatrix';
 
+get_previous_frame_nr_function.InstanceName='GetPreviousFrameNr';
+get_previous_frame_nr_function.FunctionHandle=@addFunction;
+get_previous_frame_nr_function.FunctionArgs.Number1.FunctionInstance='SegmentationLoop';
+get_previous_frame_nr_function.FunctionArgs.Number1.OutputArg='LoopCounter';
+get_previous_frame_nr_function.FunctionArgs.Number2.Value=-1;
+
+make_mat_name_function.InstanceName='MakeLabelNames';
+make_mat_name_function.FunctionHandle=@makeImgFileName;
+make_mat_name_function.FunctionArgs.FileBase.Value=TrackStruct.SegFileRoot;
+make_mat_name_function.FunctionArgs.CurFrame.FunctionInstance='GetPreviousFrameNr';
+make_mat_name_function.FunctionArgs.CurFrame.OutputArg='Sum';
+make_mat_name_function.FunctionArgs.NumberFmt.Value=TrackStruct.NumberFormat;
+make_mat_name_function.FunctionArgs.FileExt.Value='.mat';
+
+load_previous_label_function.InstanceName='LoadPreviousLabel';
+load_previous_label_function.FunctionHandle=@loadCellsLabel;
+load_previous_label_function.FunctionArgs.MatFileName.FunctionInstance='MakeLabelNames';
+load_previous_label_function.FunctionArgs.MatFileName.OutputArg='FileName';
+
+resize_previous_label_function.InstanceName='ResizePreviousLabel';
+resize_previous_label_function.FunctionHandle=@resizeImage;
+resize_previous_label_function.FunctionArgs.Image.FunctionInstance='LoadPreviousLabel';
+resize_previous_label_function.FunctionArgs.Image.OutputArg='LabelMatrix';
+resize_previous_label_function.FunctionArgs.Scale.Value=0.5;
+resize_previous_label_function.FunctionArgs.Method.Value='nearest';
+
+
+refine_segmentation_function.InstanceName='RefineSegmentation';
+refine_segmentation_function.FunctionHandle=@refineSegmentation;
+refine_segmentation_function.FunctionArgs.CurrentLabel.FunctionInstance='SegmentObjectsUsingMarkers';
+refine_segmentation_function.FunctionArgs.CurrentLabel.OutputArg='LabelMatrix';
+refine_segmentation_function.FunctionArgs.PreviousLabel.FunctionInstance='ResizePreviousLabel';
+refine_segmentation_function.FunctionArgs.PreviousLabel.OutputArg='Image';
+
 % segment_objects_using_clusters_function.InstanceName='SegmentObjectsUsingClusters';
 % segment_objects_using_clusters_function.FunctionHandle=@segmentObjectsUsingClusters;
 % segment_objects_using_clusters_function.FunctionArgs.ObjectsLabel.FunctionInstance='LabelNuclei';
@@ -272,8 +306,10 @@ segment_objects_using_markers_function.FunctionArgs.ObjectsLabel.OutputArg='Labe
 
 review_segmentation_function.InstanceName='ReviewSegmentation';
 review_segmentation_function.FunctionHandle=@manualSegmentationReview;
-review_segmentation_function.FunctionArgs.ObjectsLabel.FunctionInstance='SegmentObjectsUsingMarkers';
+review_segmentation_function.FunctionArgs.ObjectsLabel.FunctionInstance='RefineSegmentation';
 review_segmentation_function.FunctionArgs.ObjectsLabel.OutputArg='LabelMatrix';
+review_segmentation_function.FunctionArgs.RawLabel.FunctionInstance='SegmentObjectsUsingMarkers';
+review_segmentation_function.FunctionArgs.RawLabel.OutputArg='LabelMatrix';
 
 
 resize_cyto_label_function.InstanceName='ResizeCytoLabel';
@@ -297,7 +333,8 @@ image_read_loop.LoopFunctions=[{display_curtrackframe_function};{make_file_name_
     {fill_holes_cyto_images_function};{clear_small_cells_function};{nucl_local_avg_filter_function};...
     {fill_holes_nucl_images_function};{clear_small_nuclei_function};{get_convex_objects_function};{distance_watershed_function};...
     {combine_nucl_plus_cyto_function};{reconstruct_cyto_function};{label_nuclei_function};{label_cyto_function};...
-    {polygonal_assisted_watershed_function};{segment_objects_using_markers_function};{review_segmentation_function};...
+    {polygonal_assisted_watershed_function};{segment_objects_using_markers_function};{get_previous_frame_nr_function};{make_mat_name_function};...
+    {load_previous_label_function};{resize_previous_label_function};{refine_segmentation_function};{review_segmentation_function};...
     {resize_cyto_label_function};{save_cells_label_function}];
 
 

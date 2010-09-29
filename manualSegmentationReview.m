@@ -2,6 +2,7 @@ function output_args=manualSegmentationReview(input_args)
 global msr_gui_struct;
 
 objects_lbl=input_args.ObjectsLabel.Value;
+raw_lbl=input_args.RawLabel.Value;
 msr_gui_struct.ColorMap='colorcube';
 msr_gui_struct.BkgColor=[0.7 0.7 0];
 msr_gui_struct.ErrorTypes=[];
@@ -10,8 +11,8 @@ msr_gui_struct.TotalErrors=0;
 msr_gui_struct.CurrentAction='';
 msr_gui_struct.ObjectsLabel=objects_lbl;
 msr_gui_struct.BlobsLabel=bwlabeln(objects_lbl>0);
-msr_gui_struct.OriginalObjectsLabel=objects_lbl;
-msr_gui_struct.OriginalBlobsLabel=msr_gui_struct.BlobsLabel;
+msr_gui_struct.OriginalObjectsLabel=raw_lbl;
+msr_gui_struct.OriginalBlobsLabel=bwlabeln(raw_lbl>0);
 %initialize the gui
 field_names=fieldnames(msr_gui_struct);
 gui_handle=findall(0,'Tag','ManualResegmentation');
