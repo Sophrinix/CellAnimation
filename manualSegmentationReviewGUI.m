@@ -22,7 +22,7 @@ function varargout = manualSegmentationReviewGUI(varargin)
 
 % Edit the above text to modify the response to help manualSegmentationReviewGUI
 
-% Last Modified by GUIDE v2.5 27-May-2010 22:00:10
+% Last Modified by GUIDE v2.5 29-Sep-2010 23:13:13
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -146,3 +146,41 @@ function joinObjectsButton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 joinObjects('initialize');
+
+
+% --- Executes on button press in checkboxPrevLabel.
+function checkboxPrevLabel_Callback(hObject, eventdata, handles)
+% hObject    handle to checkboxPrevLabel (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+showPreviousLabel();
+
+
+% --- Executes on button press in checkboxOverlayPrevLabel.
+function checkboxOverlayPrevLabel_Callback(hObject, eventdata, handles)
+% hObject    handle to checkboxOverlayPrevLabel (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+overlayPreviousLabel();
+
+% Hint: get(hObject,'Value') returns toggle state of checkboxOverlayPrevLabel
+
+
+% --- Executes on button press in checkboxRawLabel.
+function checkboxRawLabel_Callback(hObject, eventdata, handles)
+% hObject    handle to checkboxRawLabel (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+showRawLabel();
+
+% Hint: get(hObject,'Value') returns toggle state of checkboxRawLabel
+
+
+% --- Executes on button press in checkboxImage.
+function checkboxImage_Callback(hObject, eventdata, handles)
+% hObject    handle to checkboxImage (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+showImage();
+
+% Hint: get(hObject,'Value') returns toggle state of checkboxImage

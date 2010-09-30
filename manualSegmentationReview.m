@@ -3,6 +3,7 @@ global msr_gui_struct;
 
 objects_lbl=input_args.ObjectsLabel.Value;
 raw_lbl=input_args.RawLabel.Value;
+previous_lbl=input_args.PreviousLabel.Value;
 msr_gui_struct.ColorMap='colorcube';
 msr_gui_struct.BkgColor=[0.7 0.7 0];
 msr_gui_struct.ErrorTypes=[];
@@ -13,6 +14,8 @@ msr_gui_struct.ObjectsLabel=objects_lbl;
 msr_gui_struct.BlobsLabel=bwlabeln(objects_lbl>0);
 msr_gui_struct.OriginalObjectsLabel=raw_lbl;
 msr_gui_struct.OriginalBlobsLabel=bwlabeln(raw_lbl>0);
+msr_gui_struct.PreviousLabel=previous_lbl;
+msr_gui_struct.Image=input_args.Image.Value;
 %initialize the gui
 field_names=fieldnames(msr_gui_struct);
 gui_handle=findall(0,'Tag','ManualResegmentation');
@@ -37,6 +40,10 @@ msr_gui_struct.RestoreBlobButtonHandle=findobj(children_handles,'tag','restoreBl
 msr_gui_struct.JoinObjectsButtonHandle=findobj(children_handles,'tag','joinObjectsButton');
 msr_gui_struct.RemoveObjectButtonHandle=findobj(children_handles,'tag','removeObjectButton');
 msr_gui_struct.StatusTextHandle=findobj(children_handles,'tag','statusText');
+msr_gui_struct.CheckBoxPrevLabelHandle=findobj(children_handles,'tag','checkboxPrevLabel');
+msr_gui_struct.CheckBoxOverlayPrevLabelHandle=findobj(children_handles,'tag','checkboxOverlayPrevLabel');
+msr_gui_struct.CheckBoxRawLabelHandle=findobj(children_handles,'tag','checkboxRawLabel');
+msr_gui_struct.CheckBoxImageHandle=findobj(children_handles,'tag','checkboxImage');
 
 %display objects image in the objectAxes
 msr_gui_struct.ImageHandle=image(objects_rgb,'Parent',objects_axes_handle);

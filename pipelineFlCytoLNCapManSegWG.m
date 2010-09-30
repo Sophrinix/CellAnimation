@@ -9,7 +9,7 @@ TrackStruct.ImageFileName='Cell Tracker Green - Confocal - n';
 TrackStruct.ImageFileBase=[well_folder ds TrackStruct.ImageFileName];
 %hepsin overexpressing
 % TrackStruct.ImageFileBase=[well_folder ds 'llh_hep_lm7_t'];
-TrackStruct.StartFrame=15;
+TrackStruct.StartFrame=17;
 TrackStruct.FrameCount=10;
 TrackStruct.TimeFrame=24; %minutes
 TrackStruct.FrameStep=1; %read every x frames
@@ -310,7 +310,10 @@ review_segmentation_function.FunctionArgs.ObjectsLabel.FunctionInstance='RefineS
 review_segmentation_function.FunctionArgs.ObjectsLabel.OutputArg='LabelMatrix';
 review_segmentation_function.FunctionArgs.RawLabel.FunctionInstance='SegmentObjectsUsingMarkers';
 review_segmentation_function.FunctionArgs.RawLabel.OutputArg='LabelMatrix';
-
+review_segmentation_function.FunctionArgs.PreviousLabel.FunctionInstance='ResizePreviousLabel';
+review_segmentation_function.FunctionArgs.PreviousLabel.OutputArg='Image';
+review_segmentation_function.FunctionArgs.Image.FunctionInstance='ResizeImage';
+review_segmentation_function.FunctionArgs.Image.OutputArg='Image';
 
 resize_cyto_label_function.InstanceName='ResizeCytoLabel';
 resize_cyto_label_function.FunctionHandle=@resizeImage;
