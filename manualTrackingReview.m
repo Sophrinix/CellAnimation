@@ -123,24 +123,25 @@ end
 
 function averages_text=displayCellAverages()
 global mtr_gui_struct;
+str_fmt='%1.2f';
 
 tracks=mtr_gui_struct.Tracks;
 tracks_layout=mtr_gui_struct.TracksLayout;
 cell_speeds=mtr_gui_struct.CellSpeeds;
 cell_areas=tracks(:,tracks_layout.AreaCol);
 mean_area=mean(cell_areas);
-averages_text=['Cell Averages: Area ' num2str(mean_area)];
+averages_text=['Cell Averages: Area ' num2str(mean_area,str_fmt)];
 cell_ecc=tracks(:,tracks_layout.EccCol);
 mean_ecc=mean(cell_ecc);
-averages_text=[averages_text ' Eccentricity ' num2str(mean_ecc)];
+averages_text=[averages_text ' Eccentricity ' num2str(mean_ecc,str_fmt)];
 cell_per=tracks(:,tracks_layout.PerCol);
 mean_per=mean(cell_per);
-averages_text=[averages_text ' Perimeter ' num2str(mean_per)];
+averages_text=[averages_text ' Perimeter ' num2str(mean_per,str_fmt)];
 cell_sol=tracks(:,tracks_layout.SolCol);
 mean_sol=mean(cell_sol);
-averages_text=[averages_text ' Solidity ' num2str(mean_sol)];
+averages_text=[averages_text ' Solidity ' num2str(mean_sol,str_fmt)];
 mean_speed=mean(cell_speeds(cell_speeds(:,2)>0,2));
-averages_text=[averages_text ' Speed ' num2str(mean_speed)];
+averages_text=[averages_text ' Speed ' num2str(mean_speed,str_fmt)];
 set(mtr_gui_struct.AveragesTextHandle,'String',averages_text);
 
 %end displayCellAverages
