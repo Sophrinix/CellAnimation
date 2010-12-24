@@ -1,5 +1,5 @@
 function output_args=addFunction(input_args)
-%add two values and return the sum
+%module to add two values and return the sum
 
 arg_1=input_args.Number1.Value;
 arg_2=input_args.Number2.Value;

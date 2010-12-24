@@ -1,4 +1,5 @@
 function breakTrack()
+%used by the manual tracking GUI to break a track in two at the current time
 global mtr_gui_struct;
 
 track_id=mtr_gui_struct.SelectedCellID;

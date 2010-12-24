@@ -1,5 +1,7 @@
 function []=pipelineCellCoverage(img_file_name)
-%determine what percentage of the image is covered by foreground objects
+%assay to determine what percentage of the image is covered by foreground
+%objects
+
 dir_idx=strfind(img_file_name,'\');
 dir_idx=dir_idx(end);
 img_dir=img_file_name(1:dir_idx);

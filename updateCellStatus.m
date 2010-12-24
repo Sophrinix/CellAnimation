@@ -1,4 +1,7 @@
 function []=updateCellStatus()
+%used by the manual tracking review gui to update the properties of the
+%selected cell
+
 global mtr_gui_struct;
 
 num_fmt='%1.2f';

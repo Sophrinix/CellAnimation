@@ -1,4 +1,27 @@
 function output_args=manualTrackingReview(input_args)
+%manual tracking review module
+%The tracking review module can be used to correct any errors in automatic
+%tracking or as a visualization module. One can define selection layers
+%which select cells based on multiple criteria.
+
+%argument list
+%tracks matrix provided in Tracks
+%cell ancestry matrix provided in CellsAncestry
+%time between frames in minutes provided in TimeFrame 
+%layout of the tracks matrix provided in TracksLayout
+%maximum number of frames a cell may disappear before its track has been
+%ended in MaxMissingFrames
+%read every x frame provided in FrameStep
+%colormap to use in outlining cells of different generations in ColorMap
+%cell ancestry matrix layout in AncestryLayout
+%frame count to load in FrameCount
+%frame to start with in StartFrame
+%root of the images file names in ImageFileBase
+%image files numbering format in NumberFormat
+%image file name extension in ImgExt
+%segmentation files root name in SegFileRoot
+
+
 global mtr_gui_struct;
 mtr_gui_struct=[];
 mtr_gui_struct.TotalErrors=0;

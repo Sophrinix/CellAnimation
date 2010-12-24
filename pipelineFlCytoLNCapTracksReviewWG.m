@@ -1,4 +1,6 @@
 function []=pipelineFlCytoLNCapTracksReviewWG(well_folder)
+%assay to review tracking of LNCap cells stained with Cell Tracker
+
 TrackStruct=[];
 TrackStruct.ImgExt='.tif';
 ds='\'  %directory symbol

@@ -1,4 +1,5 @@
 function output_args=loadCellsLabel(input_args)
+%module to load cells/nuclei labels used by many assays
 
 mat_file_name=input_args.MatFileName.Value;
 try
