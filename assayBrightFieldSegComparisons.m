@@ -1,4 +1,5 @@
-function []=pipelineBrightFieldSegComparisons()
+function []=assayBrightFieldSegComparisons()
+%assay for testing different brightfield segmentation modules
 TrackStruct=[];
 ds='\'  %directory symbol
 TrackStruct.DS=ds;

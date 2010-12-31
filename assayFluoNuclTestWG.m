@@ -1,4 +1,5 @@
-function []=pipelineFluoNuclTestWG(well_folder)
+function []=assayFluoNuclTestWG(well_folder)
+%test assay for tracking cells stained with a fluorescent nuclear stain
 TrackStruct=[];
 TrackStruct.ImgExt='.tif';
 ds='\'  %directory symbol

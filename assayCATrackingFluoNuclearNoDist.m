@@ -1,4 +1,6 @@
 function []=assayCATrackingFluoNuclearNoDist(well_folder)
+%assay for nuclear tracking of highly directional cells using CellAnimation
+%algorithm
 TrackStruct=[];
 TrackStruct.ImgExt='.tif';
 ds='\'  %directory symbol

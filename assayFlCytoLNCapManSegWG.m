@@ -1,4 +1,4 @@
-function []=pipelineFlCytoLNCapManSegWG(well_folder)
+function []=assayFlCytoLNCapManSegWG(well_folder)
 %assay to review segmentation of LNCap cells stained with Cell Tracker
 
 TrackStruct=[];

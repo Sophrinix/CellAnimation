@@ -1,5 +1,5 @@
-function []=pipelineDisplayGroups(well_folder)
-
+function []=assayDisplayGroups(well_folder)
+%assay to display matching groups on the original tracked images
 ds='\';
 root_folder='c:\darren';
 track_struct.StartFrame=1;

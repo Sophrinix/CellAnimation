@@ -1,4 +1,5 @@
-function []=pipelineFlCytoLNCapWG(well_folder)
+function []=assayFlCytoLNCapWG(well_folder)
+%assay for flourescent tracking of LNCap cells with a cytoplasm stain
 TrackStruct=[];
 TrackStruct.ImgExt='.tif';
 ds='\'  %directory symbol

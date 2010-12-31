@@ -1,4 +1,4 @@
-function []=pipelineFlCytoLNCapTracksReviewWG(well_folder)
+function []=assayFlCytoLNCapTracksReviewWG(well_folder)
 %assay to review tracking of LNCap cells stained with Cell Tracker
 
 TrackStruct=[];

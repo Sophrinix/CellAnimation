@@ -1,6 +1,5 @@
-function []=pipelineFlCytoLNCapTrackWG(well_folder)
-
-%this pipeline is for tracking ONLY. it assumes the existence of label matrices 
+function []=assayFlCytoLNCapTrackWG(well_folder)
+%assay for tracking ONLY. it assumes the existence of label matrices 
 %that have been manually segmented so it doesn't try to correct the
 %segmentation in any way
 

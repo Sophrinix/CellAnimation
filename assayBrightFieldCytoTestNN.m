@@ -1,4 +1,6 @@
-function []=assayBrightFieldCytoTestCA(well_folder)
+function []=assayBrightFieldCytoTestNN(well_folder)
+%assay for brightfield tracking of highly directional cells using
+%nearest-neighbor algorithm
 TrackStruct=[];
 TrackStruct.ImgExt='.jpg';
 ds='\'  %directory symbol

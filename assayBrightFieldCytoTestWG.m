@@ -1,4 +1,6 @@
-function []=pipelineBrightFieldCytoTestWG(well_folder)
+function []=assayBrightFieldCytoTestWG(well_folder)
+%assay for brightfield tracking of highly directional cells using
+%CellAnimation algorithm
 TrackStruct=[];
 TrackStruct.ImgExt='.jpg';
 ds='\'  %directory symbol
