@@ -1,4 +1,6 @@
 function addLayer()
+%helper function for manual tracking review GUI. Used to start the add
+%layer GUI and save the new selection layer
 global sl_gui_struct;
 global al_gui_struct;
 al_gui_struct=[];

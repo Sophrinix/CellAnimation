@@ -1,4 +1,6 @@
 function function_output=callFunction(instance_name,b_clear_args)
+%CellAnimation core function used to execute the modules and sub-modules in
+%an assay
 global dependencies_list;
 global dependencies_index;
 

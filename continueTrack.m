@@ -1,4 +1,6 @@
 function continueTrack()
+%helper function for the manual tracking review module. use to start the
+%process of continuing a track
 global mtr_gui_struct;
 
 mtr_gui_struct.TrackToContinueID=mtr_gui_struct.SelectedCellID;

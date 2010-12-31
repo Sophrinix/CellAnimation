@@ -1,6 +1,6 @@
 function best_match_id=getBetterMatchToTrack(cur_track,cells_shape_params,cells_centroids,cells_ids,prev_tracks,matching_groups,...
     tracks_layout, cells_lbl, prev_cells_lbl,relevant_params_idx,param_weights,unknown_param_weights,unknown_ranking_order)
-%figure out which cell of a pair is a better match for the track this
+%helper function for CA tracking algorithm. figure out which cell of a pair is a better match for the track this
 %should only be used with cell pairs otherwise is meaningless
 assert(size(cells_shape_params,1)==2);
 %figure out which cell is a better match for this track

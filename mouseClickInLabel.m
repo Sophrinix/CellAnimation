@@ -1,4 +1,6 @@
 function []=mouseClickInLabel()
+%helper function for manual segmentation review. detect mouse clicks and
+%perform various actions
 global msr_gui_struct;
 
 axes_handle=msr_gui_struct.AxesHandle;

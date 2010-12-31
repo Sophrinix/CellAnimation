@@ -1,5 +1,6 @@
 function output_args=segmentObjectsUsingClusters(input_args)
-
+%module used to segment objects in a binary image using hierarchical
+%clustering
 cells_lbl=input_args.ObjectsLabel.Value;
 %should only set obj_reduce to a value smaller than 1 if the
 %getBlobClusters runs out of memory with it set to 1.

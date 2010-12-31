@@ -1,5 +1,6 @@
 function [many_params_sorted sort_idx]=sortManyToOneUsingPairs(single_params, many_params,b_use_direction,unknown_param_weights,...
     param_weights,ranking_order,matching_group_idx,relevant_params_idx)
+%helper function for CA tracking algorithm
 %sort tracks by how well they match a particular cell or cells by how well
 %they match a particular track. look at one pair at a time so each
 %track/cell is pitted against another individually otherwise the best

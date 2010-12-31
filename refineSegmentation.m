@@ -1,5 +1,6 @@
 function output_args=refineSegmentation(input_args)
-
+%module to retain only objects close to objects existing in the previous
+%label matrix
 prev_label=input_args.PreviousLabel.Value;
 cur_label=input_args.CurrentLabel.Value;
 

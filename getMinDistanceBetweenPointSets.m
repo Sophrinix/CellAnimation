@@ -1,5 +1,5 @@
 function [min_distance min_distance_index interset_edge_indexes interset_edges_length]=getMinDistanceBetweenPointSets(set_a,set_b)
-%get the smallest distance between two non-overlapping sets of points
+%helper function. get the smallest distance between two non-overlapping sets of points
 
 points_cloud=[set_a;set_b];
 set_a_sz=size(set_a,1);

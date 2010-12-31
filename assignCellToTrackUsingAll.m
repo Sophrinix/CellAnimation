@@ -1,4 +1,6 @@
 function output_args=assignCellToTrackUsingAll(input_args)
+%custom tracking module for CA. can track cells using a variety of
+%parameters and creates dynamic matching groups.
 
 unassignedIDs=input_args.UnassignedCells.Value;
 cells_lbl=input_args.CellsLabel.Value;

@@ -1,5 +1,5 @@
 function output_args=imNorm(input_args)
-%normalize image so that lowest value is zero and highest value is the
+%module to normalize image so that lowest value is zero and highest value is the
 %maximum allowed value for the specified intclass
 int_class=input_args.IntegerClass.Value;
 max_val=double(intmax(int_class));

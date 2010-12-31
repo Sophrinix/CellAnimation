@@ -1,5 +1,6 @@
 function output_args=overlayAncestry(input_args)
-
+%overlay ancestry module. color-code the cell outlines based on the
+%generation number. also, overlay the track ids for each cell.
 cur_img=input_args.Image.Value;
 cur_tracks=input_args.CurrentTracks.Value;
 cells_lbl=input_args.CellsLabel.Value;

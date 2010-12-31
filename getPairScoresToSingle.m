@@ -1,6 +1,6 @@
 function pair_scores=getPairScoresToSingle(pair_params,single_params,b_use_direction,unknown_param_weights,...
     param_weights,pair_ranking_order,pair_group_idx,relevant_params_idx)
-%see which one of two cells is a better match for a track or which of two tracks is a better match for a cell. this has to
+%helper function for CA tracking algorithm. see which one of two cells is a better match for a track or which of two tracks is a better match for a cell. this has to
 %be done one cell pair at a time otherwise the best cell/track may not be picked
 assert(size(pair_params,1)==2);
 %keep only the relevant parameters

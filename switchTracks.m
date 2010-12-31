@@ -1,4 +1,6 @@
 function switchTracks()
+%helper for manual tracking review module. initialize switch track
+%process
 global mtr_gui_struct;
 
 mtr_gui_struct.SwitchTrackID=mtr_gui_struct.SelectedCellID;

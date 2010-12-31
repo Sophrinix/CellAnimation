@@ -1,5 +1,6 @@
 function resegmentBlob(stage)
-
+%helper function for manual segmentation review. used to resegment a blob
+%into new objects
 switch stage
     case 'initialize'
         intializeResegmentBlob();

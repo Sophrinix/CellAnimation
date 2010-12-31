@@ -1,6 +1,6 @@
 function output_args=getObjectsMeanDisplacement(input_args)
 
-%this function makes the assumption that most of these objects can be
+%this helper function makes the assumption that most of these objects can be
 %located in the next frame using the shortest distance criteria
 %compute the delaunay triangulation
 prev_frame_centroids=input_args.CurrentTracks.Value(:,input_args.Centroid1Col.Value:input_args.Centroid2Col.Value);

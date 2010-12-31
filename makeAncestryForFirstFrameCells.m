@@ -1,5 +1,5 @@
 function output_args=makeAncestryForFirstFrameCells(input_args)
-%create ancestry records cells that are present in the first frame. 
+%module to create ancestry records cells that are present in the first frame. 
 %they are generation zero and have no parents
 
 timeCol=input_args.TimeCol.Value;

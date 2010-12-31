@@ -1,6 +1,8 @@
 function [new_cells_ids parent_ids merge_with_parent new_cells_centroids parent_cells_centroids]=getDaughterCells(all_tracks, cur_tracks, ...
     cur_tracks_ids, cur_time, max_dist, new_cells_ids, new_tracks_idx, min_track_frames, cell_areas, cells_lbl,...
     med_area)
+%helper function. use a series of filters to determine potential daughter
+%cells
 new_tracks=cur_tracks(new_tracks_idx,:);
 new_tracks_sz=size(new_tracks,1);
 merge_with_parent=false(new_tracks_sz,1);

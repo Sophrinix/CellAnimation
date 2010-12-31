@@ -1,4 +1,5 @@
 function []=darren_fl_20091007_track(well_folder)
+%darren's assay
 TrackStruct=[];
 TrackStruct.ImgExt='.tif';
 ds='\'  %directory symbol

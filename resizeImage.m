@@ -1,5 +1,5 @@
 function output_args=resizeImage(input_args)
-
+%wrapper module for Matlab imresize
 output_args.Image=imresize(input_args.Image.Value,input_args.Scale.Value,input_args.Method.Value);
 
 %end resizeImage

@@ -1,4 +1,5 @@
 function joined_blob=joinFragmentedBlob(fragmented_blob)
+%helper function to join the parts of a fragmented blob 
 joined_blob=fragmented_blob;
 blob_boundaries=bwboundaries(fragmented_blob,8,'noholes');
 nr_blobs=length(blob_boundaries);

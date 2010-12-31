@@ -1,5 +1,5 @@
 function [output_args]=if_statement(function_struct)
-
+%control module for branching execution in an assay.
 %propagate all the args to subfunctions
 updateArgs(function_struct.InstanceName,function_struct.FunctionArgs,'input');
 test_function_instance=function_struct.TestFunction.InstanceName;

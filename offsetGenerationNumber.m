@@ -1,4 +1,6 @@
 function offsetGenerationNumber(parent_id,offset_val)
+%helper function for manual tracking review. adjust the generation number
+%of daughter cells by the offset_val
 global mtr_gui_struct;
 
 ancestry_records=mtr_gui_struct.CellsAncestry;

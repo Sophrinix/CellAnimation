@@ -1,6 +1,5 @@
-
 function output_args=mergeTracks(input_args)
-
+%module to merge tracks updating the tracks matrix and label matrices
 tracks=input_args.Tracks.Value;
 tracks_to_be_merged=input_args.TracksToBeMerged.Value;
 if isempty(tracks_to_be_merged)

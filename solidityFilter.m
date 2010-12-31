@@ -1,5 +1,6 @@
 function output_args=solidityFilter(input_args)
-
+%module to remove objects below or above a threshold solidity from a binary
+%image
 cells_lbl=bwlabeln(input_args.Image.Value);
 cells_props=regionprops(cells_lbl,'Solidity');
 field_names=fieldnames(input_args);

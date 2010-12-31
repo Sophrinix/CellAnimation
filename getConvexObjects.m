@@ -1,5 +1,5 @@
 function output_args=getConvexObjects(input_args)
-%assumes the index of the boundaries is the same as the label index
+%module to find and return the index of convex objects in the image. assumes the index of the boundaries is the same as the label index
 %bwboundaries uses bwlabel internally then calls bwboundariesmex on the
 %label image so it all works out
 obj_bounds=bwboundaries(input_args.Image.Value);

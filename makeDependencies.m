@@ -1,4 +1,5 @@
 function makeDependencies(parent_function_struct)
+%core CellAnimation function. used to make a dependency tree from the module list.
 global functions_list;
 global dependencies_list;
 global dependencies_index;

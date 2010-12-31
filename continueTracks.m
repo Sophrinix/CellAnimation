@@ -1,5 +1,6 @@
 function output_args=continueTracks(input_args)
-
+%helper function for the CA tracking module. used to continue the tracks as
+%the tracking progresses
 %continue the tracks
 trackAssignments=input_args.TrackAssignments.Value;
 [dummy tracks_sort_idx]=sort(trackAssignments(:,2));

@@ -1,6 +1,9 @@
 function b_cell_can_get_another_track=canCellGetAnotherTrack(cur_id,nearby_tracks_sorted,prev_cells_lbl,cells_lbl,...
     tracks_layout,trackAssignments,shape_params,cells_centroids,prev_tracks,matching_groups,b_bumping_allowed,relevant_params_idx,...
     param_weights,unknown_param_weights,unknown_ranking_order,b_check_path)
+%helper function for the CA tracking module used to determine if a cell has
+%another track that it can use if the track currently assigned to it is
+%assigned to another cell
 if (isempty(nearby_tracks_sorted))
     b_cell_can_get_another_track=false;
     return;

@@ -1,5 +1,5 @@
 function track_ranks=rankParams(cur_shape_params,nearby_shape_params)
-%rank how similar each previous nearby cell is to the current cell
+%helper function for CA tracking algorithm. rank how similar each previous nearby cell is to the current cell
 [nr_tracks nr_params]=size(nearby_shape_params);
 track_ranks=zeros(nr_tracks, nr_params);
 

@@ -1,5 +1,5 @@
 function output_args=loadMatFile(input_args)
-
+%module to load all the variables in a Matlab .mat file
 mat_file_name=input_args.MatFileName.Value;
 vars_info = whos('-file', mat_file_name); 
 load_struct=load(mat_file_name);

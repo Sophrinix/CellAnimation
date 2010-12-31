@@ -1,5 +1,5 @@
 function connected_blob=connectBlobs(unconnected_blobs, nr_blobs)
-%get a bunch of unconnected blobs and connect them using shortest distance
+%helper function to deal with fragmented blobs. get a bunch of unconnected blobs and connect them using shortest distance
 %lines
 
 unconnected_blobs=imfill(unconnected_blobs,'holes');

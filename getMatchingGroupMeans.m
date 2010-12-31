@@ -1,5 +1,5 @@
 function output_args=getMatchingGroupMeans(input_args)
-%get the mean param values for each matching group
+%helper function for CA tracking module. get the mean param values for each matching group
 tracks=input_args.Tracks.Value;
 tracks_layout=input_args.TracksLayout.Value;
 group_id_col=tracks_layout.MatchGroupIDCol;

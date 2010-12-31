@@ -1,5 +1,6 @@
 function showRawLabel()
-
+%helper function for manual segmentation review module. show the original
+%label without any corrections
 global msr_gui_struct;
 show_raw_label=get(msr_gui_struct.CheckBoxRawLabelHandle,'Value');
 if (show_raw_label)

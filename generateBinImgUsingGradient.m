@@ -1,4 +1,6 @@
 function output_args=generateBinImgUsingGradient(input_args)
+%module to convert a grayscale image to a binary image using values of the
+%image gradient
 [grad_x grad_y]=gradient(double(input_args.Image.Value));
 grad_mag=sqrt(grad_x.^2+grad_y.^2);
 img_bw=grad_mag>input_args.GradientThreshold.Value;

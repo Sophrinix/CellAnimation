@@ -1,4 +1,5 @@
 function output_args=makeOutputStruct(function_struct)
+%core CellAnimation function. create a CellAnimation output structure
 global dependencies_list;
 global dependencies_index;
 

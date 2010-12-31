@@ -1,5 +1,5 @@
 function lbl_id=getLabelId(cells_lbl, cell_centroid)
-%main reason for this function is that the centroid may fall outside the
+%helper function to get the label id of a cell whose centroid is known. main reason for this function is that the centroid may fall outside the
 %cell body
 lbl_id=0;
 xtend_sz=0;

@@ -1,6 +1,6 @@
 function [valid_segmentation_ids valid_len new_segmentation_idx]=determineValidObjects(segmentation_idx,...
     min_object_area,blob_1,blob_2)
-%blobs smaller than our min threshold have to be unsegmented by assigning
+%helper function. blobs smaller than our min threshold have to be unsegmented by assigning
 %them to the nearest blob that is larger than minimum blob area
 
 new_blob_areas=accumarray(segmentation_idx, 1);

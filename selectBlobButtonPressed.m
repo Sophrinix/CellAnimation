@@ -1,4 +1,6 @@
 function selectBlobButtonPressed(hObject,eventdata,handles)
+%helper function for manual segmentation review module. handler for the
+%select button
 global msr_gui_struct;
 button_value=get(hObject,'Value');
 objects_lbl=msr_gui_struct.ObjectsLabel;

@@ -1,5 +1,6 @@
 function joinObjects(stage)
-
+%helper function for manual segmentation review module. join objects in a
+%label matrix to form a single possibly fragmented object.
 switch stage
     case 'initialize'
         intializeJoinObjects();

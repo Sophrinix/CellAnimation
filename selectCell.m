@@ -1,4 +1,6 @@
 function selectCell(cur_cell_lbl_id)
+%helper function for manual tracking review module. used to select a cell
+%in the GUI
 global mtr_gui_struct;
 
 cells_lbl=mtr_gui_struct.CellsLabel;

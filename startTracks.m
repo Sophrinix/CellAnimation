@@ -1,5 +1,5 @@
 function output_args=startTracks(input_args)
-
+%module to start a tracks matrix
 cells_props=regionprops(input_args.CellsLabel.Value,'Centroid');
 cells_centroids=[cells_props.Centroid]';
 cells_centroids_2=cells_centroids(1:2:length(cells_centroids));

@@ -1,7 +1,7 @@
 function [ranking_order group_idx]=getRankingOrder(cur_shape_params,nearby_shape_params,nearby_ranks,...
     matching_groups,tracks_layout,bUseDirection,matching_group_stats,min_second_distance,max_dist_ratio,max_angle_diff,unknown_ranking_order,...
     distance_ranking_order,direction_ranking_order)
-%we need to figure out which parameters to use first when trying to match
+%helper function for CA tracking algorithm. we need to figure out which parameters to use first when trying to match
 %this cell to a track - this can be done if the cell can be assigned to a
 %matching group. if not we'll assign a default ranking_order. determine if
 %we need a distance-biased or direction-biased ranking order

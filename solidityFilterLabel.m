@@ -1,5 +1,6 @@
 function output_args=solidityFilterLabel(input_args)
-
+%remove objects below or above a threshold solidity value from a label
+%matrix
 cells_lbl=input_args.ObjectsLabel.Value;
 cells_props=regionprops(cells_lbl,'Solidity');
 field_names=fieldnames(input_args);

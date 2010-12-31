@@ -1,5 +1,5 @@
 function output_args=segmentObjectsUsingMarkers(input_args)
-
+%module to segment objects in a binary image using nuclear markers
 nuclei_lbl=input_args.MarkersLabel.Value;
 cyto_lbl=input_args.ObjectsLabel.Value;
 img_sz=size(nuclei_lbl);

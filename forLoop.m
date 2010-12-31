@@ -1,5 +1,6 @@
 function output_args=forLoop(function_struct)
-%need to add break functionality
+%core CA module. used to create a for loop in an assay. sub-modules
+%contained in LoopFunctions will be run in the loop
 global dependencies_list;
 global dependencies_index;
 

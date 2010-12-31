@@ -1,5 +1,6 @@
 function output_args=polygonalAssistedWatershed(input_args)
-
+%polygonal assisted watershed module. used to segment blobs in a binary
+%image into objects
 %allow the watershed to split only non-convex blobs
 
 %determine bkg_ids - have to use area because ws_lbl splits the background

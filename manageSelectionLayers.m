@@ -1,4 +1,6 @@
 function manageSelectionLayers()
+%helper function for manual tracking review. used to start the selection layer GUI and update the
+%selection layers
 global sl_gui_struct;
 global mtr_gui_struct;
 sl_gui_struct=[];

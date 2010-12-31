@@ -1,4 +1,5 @@
 function removeLayer()
+%helper function for manual tracking review. remove selected selection layer
 global sl_gui_struct;
 
 layers_txt=get(sl_gui_struct.ListboxSelectionLayersHandle,'String');

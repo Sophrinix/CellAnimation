@@ -1,4 +1,6 @@
 function addSegmentationError(error_type, original_blob_id)
+%helper function for the manual segmentation review GUI. Used to add a
+%segmentation error to the list of segmentation errors.
 global msr_gui_struct;
 
 error_blob_ids=msr_gui_struct.ErrorBlobIDs;

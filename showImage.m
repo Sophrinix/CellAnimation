@@ -1,5 +1,6 @@
 function showImage()
-
+%helper function for manual segmentation review module. display the image
+%of the current label matrix
 global msr_gui_struct;
 show_image=get(msr_gui_struct.CheckBoxImageHandle,'Value');
 if (show_image)

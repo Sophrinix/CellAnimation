@@ -1,4 +1,5 @@
 function output_args=clearSmallComponentsInLabelMatrix(input_args)
+%module to remove objects below a certain size from the label matrix
 
 cyto_lbl=input_args.LabelMatrix.Value;
 cyto_props=regionprops(cyto_lbl,'Area');

@@ -1,5 +1,6 @@
 function overlayPreviousLabel()
-
+%helper function for manual segmentation review. overlay the previous label
+%as a transparency on the image of the current label.
 global msr_gui_struct;
 overlay_prev_label=get(msr_gui_struct.CheckBoxOverlayPrevLabelHandle,'Value');
 if (overlay_prev_label)    

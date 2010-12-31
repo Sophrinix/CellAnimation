@@ -1,5 +1,5 @@
 function output_args=assignCellToTrackUsingNN(input_args)
-%assign cells using nearest-neighbor. only used for comparison purposes
+%tracking using nearest-neighbor module.
 
 unassignedIDs=input_args.UnassignedCells.Value;
 cells_centroids=input_args.CellsCentroids.Value;

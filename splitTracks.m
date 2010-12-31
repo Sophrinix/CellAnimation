@@ -1,4 +1,5 @@
 function output_args=splitTracks(input_args)
+%helper function for ancestry module
 %split tracks where we detected mitotic events and record cell ancestry
 
 split_cells=input_args.SplitCells.Value;

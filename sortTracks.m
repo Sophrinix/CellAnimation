@@ -1,4 +1,5 @@
 function [tracks_sorted sort_idx track_scores]=sortTracks(track_ranks,tracks,ranking_order,params_weights)
+%helper function for CA tracking module
 %sort the tracks according to ranking order
 nr_tracks=size(track_ranks,1);
 if (nr_tracks==1)

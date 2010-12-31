@@ -1,4 +1,6 @@
 function addCondition()
+%helper function for the manual tracking review GUI. used to add conditions
+%for a selection layer
 global al_gui_struct;
 
 cell_properties=al_gui_struct.CellProperties;

@@ -1,4 +1,6 @@
 function selectObjectButtonPressed(hObject,eventdata,handles)
+%helper function for manual segmentation review. select object button
+%handler.
 global msr_gui_struct;
 button_value=get(hObject,'Value');
 objects_lbl=msr_gui_struct.ObjectsLabel;

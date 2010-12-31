@@ -1,5 +1,5 @@
 function cell_centroids=getApproximateCentroids(cells_lbl)
-%these centroids are exact for shapes without disconnects but only
+%helper function. these centroids are exact for shapes without disconnects but only
 %approximate the centroids of shapes with disconnects. it is however close
 %enough for matching purposes
 lbl_idx=cells_lbl>0;

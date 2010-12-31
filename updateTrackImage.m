@@ -1,4 +1,6 @@
 function []=updateTrackImage(frame_nr,b_show_labels,b_show_outlines)
+%helper function for manual tracking review module. display the new image
+%and cell and population statistics
 global mtr_gui_struct;
 
 file_name_args.FileBase.Value=mtr_gui_struct.ImageFileBase;

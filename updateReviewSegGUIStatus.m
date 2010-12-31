@@ -1,4 +1,5 @@
 function updateReviewSegGUIStatus(gui_status)
+%helper function for manual segmentation review. update the GUI status bar
 global msr_gui_struct;
 status_text_handle=msr_gui_struct.StatusTextHandle;
 

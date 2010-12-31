@@ -1,4 +1,6 @@
 function removeSplit()
+%helper function for manual tracking review. used to remove an erroneous
+%mitotic event
 global mtr_gui_struct;
 
 ancestry_layout=mtr_gui_struct.AncestryLayout;

@@ -1,4 +1,6 @@
 function saveLayer()
+%helper function for manual tracking review module. save the new selection
+%layer
 global al_gui_struct;
 
 selection_name=get(al_gui_struct.EditSelectionLayerNameHandle,'String');

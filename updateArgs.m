@@ -1,4 +1,5 @@
 function []=updateArgs(instance_name,function_struct,update_type)
+%CellAnimation core function
 %update input parameters of dependent functions using either input or
 %output parameters of function
 global dependencies_list;

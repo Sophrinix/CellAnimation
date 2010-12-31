@@ -1,4 +1,6 @@
 function deleteTrack()
+%helper function for manual tracking review. used to delete a selected
+%track.
 global mtr_gui_struct;
 
 track_id=mtr_gui_struct.SelectedCellID;

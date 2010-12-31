@@ -1,4 +1,6 @@
 function output_args=displayAncestryData(input_args)
+%module to overlay the ancestry data as cell outlines of different colors.
+%in addition the cell labels are also overlayed
 
 cur_img=input_args.Image.Value;
 cur_tracks=input_args.CurrentTracks.Value;

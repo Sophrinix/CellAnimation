@@ -1,4 +1,6 @@
 function undoAllChanges(hObject, eventdata, handles)
+%helper for manual segmentation review module. undo all changes to the
+%current label matrix
 global msr_gui_struct;
 
 button_pressed=questdlg('Are you sure you want to undo all the changes?',...

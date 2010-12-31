@@ -1,4 +1,6 @@
 function saveChanges(hObject, eventdata, handles)
+%helper function for manual segmentation review. save changes made to the
+%label matrix and close the GUI
 global msr_gui_struct;
 
 gui_handle=msr_gui_struct.GuiHandle;

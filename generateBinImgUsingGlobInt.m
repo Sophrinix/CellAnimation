@@ -1,5 +1,6 @@
 function output_args=generateBinImgUsingGlobInt(input_args)
-
+%module to convert a grayscale image to binary using a global intensity
+%threshold
 max_pixel=max(input_args.Image.Value(:));
 min_pixel=min(input_args.Image.Value(:));
 brightnessPct=input_args.IntensityThresholdPct.Value;

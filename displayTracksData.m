@@ -1,6 +1,5 @@
-
 function output_args=displayTracksData(input_args)
-%display and save images showing the cell boundaries and cell ids - no
+%module to display and save images showing the cell boundaries and cell ids - no
 %mitosis data
 normalize_args.RawImage.Value=input_args.Image.Value;
 int_class='uint8';

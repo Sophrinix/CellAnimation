@@ -1,5 +1,5 @@
 function output_args=makeAncestryForCellsEnteringFrames(input_args)
-%add an ancestry record for cells entering the field of view after the
+%module to add an ancestry record for cells entering the field of view after the
 %first frame
 
 split_cells=input_args.SplitCells.Value;

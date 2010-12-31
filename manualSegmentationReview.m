@@ -1,4 +1,5 @@
 function output_args=manualSegmentationReview(input_args)
+%manual segmentation review module. used to correct errors in automatic segmentation
 global msr_gui_struct;
 
 objects_lbl=input_args.ObjectsLabel.Value;

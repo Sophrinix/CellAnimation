@@ -1,4 +1,5 @@
 function saveTrackingImage()
+%helper function for manual tracking review module. save the current image
 global mtr_gui_struct;
 
 [file_name path_name filter_index]=uiputfile({'*.jpg';'*.tif'},'Save Frame Image');

@@ -1,5 +1,5 @@
 function output_args=displayMatchingGroupsData(input_args)
-
+%module to the overlay the group ids as cell outlines of different colors
 cur_img=input_args.Image.Value;
 cur_tracks=input_args.CurrentTracks.Value;
 cells_lbl=input_args.CellsLabel.Value;

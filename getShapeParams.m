@@ -1,4 +1,6 @@
 function output_args=getShapeParams(input_args)
+%module to compute the return the 2-d shape parameters of the objects in a
+%label matrix
 cells_lbl=input_args.LabelMatrix.Value;
 cells_props=regionprops(cells_lbl,'Centroid','Area','Eccentricity','MajorAxisLength','MinorAxisLength',...
     'Orientation','Perimeter','Solidity');

@@ -1,6 +1,5 @@
 function output_args=getCurrentTracks(input_args)
-
-%get tracks that existed in the previous max_missing_frames
+%module to get the tracks that existed in the previous max_missing_frames
 tracks=input_args.Tracks.Value;
 frame_step=input_args.FrameStep.Value;
 offset_frame=input_args.OffsetFrame.Value;

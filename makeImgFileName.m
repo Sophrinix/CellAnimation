@@ -1,4 +1,5 @@
 function output_args=makeImgFileName(function_args)
+%module to build an image file name
 file_base=function_args.FileBase.Value;
 cur_frame=function_args.CurFrame.Value;
 number_fmt=function_args.NumberFmt.Value;

@@ -1,5 +1,5 @@
 function output_args=distanceWatershed(input_args)
-
+%module to compute the distance watershed of a binary image
 img_neg=~input_args.Image.Value;
 img_dist=bwdist(img_neg);
 img_dist=-img_dist;

@@ -1,4 +1,6 @@
 function mouseClickInTrackingFrame()
+%helper function for manual tracking review. detect mouse clicks and
+%perform various functions
 global mtr_gui_struct;
 
 axes_handle=mtr_gui_struct.TracksHandle;

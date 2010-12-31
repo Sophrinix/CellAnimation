@@ -1,5 +1,5 @@
 function output_args=detectMitoticEvents(input_args)
-%detect any mitotic events
+%module to detect any mitotic events in cells stained using a nuclear stain
 
 tracks=input_args.Tracks.Value;
 tracks_layout=input_args.TracksLayout.Value;

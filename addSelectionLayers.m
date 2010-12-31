@@ -1,4 +1,6 @@
 function addSelectionLayers()
+%helper function for the manual tracking review module. Used to overlay
+%selection layers over the original image
 global mtr_gui_struct;
 
 selection_layers=mtr_gui_struct.SelectionLayers;

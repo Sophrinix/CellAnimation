@@ -1,5 +1,6 @@
 function output_args=areaOverPerimeterFilterLabel(input_args)
-
+%area/perimeter filter module. used to eliminate montage noise which tends to have a
+%higher area over perimeter ratio than cells
 cells_lbl=input_args.ObjectsLabel.Value;
 cells_props=regionprops(cells_lbl,'Area','Perimeter');
 field_names=fieldnames(input_args);

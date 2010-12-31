@@ -1,4 +1,5 @@
 function sliderTracksEvent()
+%manual tracking review module. track slider event handler
 global mtr_gui_struct;
 
 cur_frame=round(get(mtr_gui_struct.SliderHandle,'Value'));

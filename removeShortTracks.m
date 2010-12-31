@@ -1,5 +1,5 @@
 function output_args=removeShortTracks(input_args)
-
+%module to remove tracks shorter than a certain time period
 tracks=input_args.Tracks.Value;
 ancestry=input_args.CellsAncestry.Value;
 ancestry_layout=input_args.AncestryLayout.Value;

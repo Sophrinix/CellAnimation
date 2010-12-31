@@ -1,4 +1,6 @@
 function removeBlob(hObject, eventdata, handles)
+%helper function for manual segmentation review. remove the currently
+%selected blob
 global msr_gui_struct;
 
 selected_blob_id=msr_gui_struct.SelectedBlobID;

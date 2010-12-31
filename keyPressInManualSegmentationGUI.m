@@ -1,4 +1,6 @@
 function keyPressInManualSegmentationGUI()
+%helper function in manual segmentation review GUI. detect key presses and
+%take various actions
 global msr_gui_struct;
 gui_handle=msr_gui_struct.GuiHandle;
 char_pressed=get(gui_handle,'CurrentCharacter');

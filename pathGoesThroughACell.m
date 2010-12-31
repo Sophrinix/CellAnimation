@@ -1,4 +1,6 @@
 function b_path_goes_through_a_cell=pathGoesThroughACell(cells_lbl, prev_cells_lbl, cur_id, prev_id, bkg_id)
+%helper function for CA tracking module. determine if the desired track
+%will have to go through another cell
 cur_pxls=cells_lbl==cur_id;
 prev_pxls=prev_cells_lbl==prev_id;
 and_pxls=cur_pxls&prev_pxls;

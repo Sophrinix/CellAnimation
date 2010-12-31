@@ -1,5 +1,6 @@
 function output_args=areaFilterLabel(input_args)
-
+%area filter module. used to eliminate objects below or above a certain
+%area
 cells_lbl=input_args.ObjectsLabel.Value;
 cells_props=regionprops(cells_lbl,'Area');
 field_names=fieldnames(input_args);

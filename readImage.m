@@ -1,5 +1,5 @@
 function output_args=readImage(function_args)
-
+%read image module
 image_name=function_args.ImageName.Value;
 img_channel=function_args.ImageChannel.Value;
 img_to_proc=imread(image_name);

@@ -1,5 +1,6 @@
 function output_args=eccentricityFilterLabel(input_args)
-
+%module to remove objects from a label matrix that are above or below a
+%threshold eccentricity value
 cells_lbl=input_args.ObjectsLabel.Value;
 cells_props=regionprops(cells_lbl,'Eccentricity');
 field_names=fieldnames(input_args);

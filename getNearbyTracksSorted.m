@@ -2,7 +2,7 @@ function [nearby_tracks_sorted group_idx matching_groups]=getNearbyTracksSorted(
     ,cur_tracks,prev_tracks,search_radius_pct,matching_groups,params_coeff_var,relevant_params_idx,matching_group_stats,...
     params_for_sure_match,param_weights,unknown_param_weights,distance_ranking_order,direction_ranking_order,unknown_ranking_order,...
     min_second_distance,max_dist_ratio,max_angle_diff,max_search_dist,min_search_dist,front_params)
-%get the tracks in the local nhood of this cell sorted by matching scores
+%helper function for CA tracking algorithm. get the tracks in the local nhood of this cell sorted by matching scores
 hugeNbr=1e6;
 cur_cell_centroid=cells_centroids(cur_id,:);
 areaCol=tracks_layout.AreaCol;

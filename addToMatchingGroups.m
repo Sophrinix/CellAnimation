@@ -1,6 +1,9 @@
 function [ranking_order matching_groups group_idx]=addToMatchingGroups(matching_groups,cur_shape_params,...
     nearby_params,params_coeff_var,best_fit_idx,min_reliable_params, track_ranks,relevant_params_idx,...
     max_angle_diff,min_second_distance,max_dist_ratio,front_params)
+%helper function for the CA tracking module. used to create a new matching
+%group if one is not found that matches the specific combination of
+%parameters
 %we need to rank parameters by how near they are to their former values
 %then once a ranking order is determined assign it to a matching_group. if
 %none exists with the same ranking order create a new one. the first two

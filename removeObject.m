@@ -1,4 +1,5 @@
 function removeObject(hObject, eventdata, handles)
+%helper function for manual segmentation review. remove selected object.
 global msr_gui_struct;
 
 selected_object_id=msr_gui_struct.SelectedObjectID;

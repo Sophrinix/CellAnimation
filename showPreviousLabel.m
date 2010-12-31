@@ -1,5 +1,6 @@
 function showPreviousLabel()
-
+%helper function for manual segmentation review. overlay the previous label
+%image on the current image label
 global msr_gui_struct;
 show_prev_label=get(msr_gui_struct.CheckBoxPrevLabelHandle,'Value');
 if (show_prev_label)

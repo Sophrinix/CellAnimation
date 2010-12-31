@@ -1,5 +1,5 @@
 function clearArgs(instance_name)
-%clear arguments values to free up memory
+%core CellAnimation function. clear argument values to free up memory
 
 global dependencies_list;
 global dependencies_index;

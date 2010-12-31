@@ -1,5 +1,5 @@
 function output_args=detectMergeCandidatesUsingDistance(input_args)
-%detect tracks that never are further than a small distance apart for
+%module to detect tracks that never are further than a small distance apart for
 %possible merging
 untested_ids=input_args.TrackIDs.Value;
 tracks=input_args.Tracks.Value;
