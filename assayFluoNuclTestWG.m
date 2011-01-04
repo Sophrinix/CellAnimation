@@ -4,7 +4,7 @@ TrackStruct=[];
 TrackStruct.ImgExt='.tif';
 ds='\'  %directory symbol
 TrackStruct.DS=ds;
-root_folder='c:\darren';
+root_folder=well_folder;
 TrackStruct.ImageFileName='DsRed - Confocal - n';
 %low hepsin expressing - not really wildtype
 TrackStruct.ImageFileBase=[well_folder ds TrackStruct.ImageFileName];
@@ -467,6 +467,9 @@ assign_cell_to_track_function.FunctionArgs.CheckCellPath.Value=true;
 %how far from the nearest future cell we should look for possible matches
 %to our present cell. ie 1.5 means we should look one and a half times the
 %distance between the current cell and the nearest future cell
+assign_cell_to_track_function.FunctionArgs.FrontParams.Value=[];
+assign_cell_to_track_function.FunctionArgs.MaxSearchRadius.Value=Inf;
+assign_cell_to_track_function.FunctionArgs.MinSearchRadius.Value=0;
 assign_cell_to_track_function.FunctionArgs.SearchRadiusPct.Value=1.5;
 assign_cell_to_track_function.FunctionArgs.TrackAssignments.FunctionInstance='AssignCellsToTracksLoop';
 assign_cell_to_track_function.FunctionArgs.TrackAssignments.InputArg='TrackAssignments';
