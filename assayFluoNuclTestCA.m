@@ -1,4 +1,4 @@
-function []=assayFluoNuclTestWG(well_folder)
+function []=assayFluoNuclTestCA(well_folder)
 %test assay for tracking cells stained with a fluorescent nuclear stain
 TrackStruct=[];
 TrackStruct.ImgExt='.tif';

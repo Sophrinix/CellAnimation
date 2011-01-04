@@ -1,9 +1,9 @@
-function []=assayNNTrackingFluoNuclear(well_folder)
+function []=assayFluoNuclTestNN(well_folder)
 TrackStruct=[];
 TrackStruct.ImgExt='.tif';
 ds='\'  %directory symbol
 TrackStruct.DS=ds;
-root_folder='c:\darren';
+root_folder=well_folder;
 TrackStruct.ImageFileName='DsRed - Confocal - n';
 %low hepsin expressing - not really wildtype
 TrackStruct.ImageFileBase=[well_folder ds TrackStruct.ImageFileName];
