@@ -5,6 +5,6 @@ img_dist=bwdist(img_neg);
 img_dist=-img_dist;
 img_dist(img_neg)=-Inf;
 med_filt_nhood=input_args.MedianFilterNhood.Value;
-output_args.WatershedLabel=watershed(medfilt2(img_dist,[med_filt_nhood med_filt_nhood]));
+output_args.LabelMatrix=watershed(medfilt2(img_dist,[med_filt_nhood med_filt_nhood]));
 
 end
