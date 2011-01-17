@@ -43,6 +43,14 @@ msr_gui_struct.RemoveObjectButtonHandle=findobj(children_handles,'tag','removeOb
 msr_gui_struct.StatusTextHandle=findobj(children_handles,'tag','statusText');
 msr_gui_struct.CheckBoxPrevLabelHandle=findobj(children_handles,'tag','checkboxPrevLabel');
 msr_gui_struct.CheckBoxOverlayPrevLabelHandle=findobj(children_handles,'tag','checkboxOverlayPrevLabel');
+if (isempty(previous_lbl))
+    %disable show previous label checkbox
+    set(msr_gui_struct.CheckBoxPrevLabelHandle,'Enable','off');
+    msr_gui_struct.CheckBoxPrevLabelHandle=[];
+    %disable overlay previous label checkbox
+    set(msr_gui_struct.CheckBoxOverlayPrevLabelHandle,'Enable','off');
+    msr_gui_struct.CheckBoxOverlayPrevLabelHandle=[];
+end
 msr_gui_struct.CheckBoxRawLabelHandle=findobj(children_handles,'tag','checkboxRawLabel');
 msr_gui_struct.CheckBoxImageHandle=findobj(children_handles,'tag','checkboxImage');
 
