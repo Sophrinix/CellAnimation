@@ -11,12 +11,10 @@ switch (gui_status)
         msr_gui_struct.CurrentAction='JoinObjects';
         set(status_text_handle,'String','Click on objects to be joined. Click again to remove them from the join list. Type "d" when done.');
     case 'SelectBlob'
-        msr_gui_struct.CurrentAction='SelectBlob';
-        msr_gui_struct.SelectedBlobID=[];
+        msr_gui_struct.CurrentAction='SelectBlob';        
         set(status_text_handle,'String','Click on a blob to select it.');
     case 'SelectObject'
-        msr_gui_struct.CurrentAction='SelectObject';
-        msr_gui_struct.SelectedObjectID=[];
+        msr_gui_struct.CurrentAction='SelectObject';        
         set(status_text_handle,'String','Click on an object to select it.');
     case 'ResegmentBlob'
         msr_gui_struct.CurrentAction='ResegmentBlob';
