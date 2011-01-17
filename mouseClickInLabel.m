@@ -67,21 +67,7 @@ global msr_gui_struct;
 
 blobs_lbl=msr_gui_struct.BlobsLabel;
 blob_id=blobs_lbl(round(click_point(1,2)),round(click_point(1,1)));
-image_handle=msr_gui_struct.ImageHandle;
-objects_lbl=msr_gui_struct.ObjectsLabel;
-image_data=label2rgb(objects_lbl,msr_gui_struct.ColorMap,msr_gui_struct.BkgColor,'shuffle');
-if (blob_id==0)
-    warnDlg('You clicked on the background!');
-    msr_gui_struct.SelectedBlobID=[];
-    set(image_handle,'CData',image_data);
-    return;
-end
-cur_blob=blobs_lbl==blob_id;
-blob_mask=repmat(cur_blob,[1 1 3]);
-image_data(blob_mask)=createCheckerBoardPattern(cur_blob);
-set(image_handle,'CData',image_data);
-msr_gui_struct.SelectedObjectID=[];
-msr_gui_struct.SelectedBlobID=blob_id;
+selectBlobByID(blob_id);
 original_blobs_lbl=msr_gui_struct.OriginalBlobsLabel;
 msr_gui_struct.OriginalBlobID=original_blobs_lbl(round(click_point(1,2)),round(click_point(1,1)));
 
@@ -93,20 +79,8 @@ global msr_gui_struct;
 
 objects_lbl=msr_gui_struct.ObjectsLabel;
 obj_id=objects_lbl(round(click_point(1,2)),round(click_point(1,1)));
-image_handle=msr_gui_struct.ImageHandle;
-image_data=label2rgb(objects_lbl,msr_gui_struct.ColorMap,msr_gui_struct.BkgColor,'shuffle');
-if (obj_id==0)
-    warnDlg('You clicked on the background!');
-    msr_gui_struct.SelectedObjectID=[];
-    set(image_handle,'CData',image_data);
-    return;
-end
-cur_obj=objects_lbl==obj_id;
-obj_mask=repmat(cur_obj,[1 1 3]);
-image_data(obj_mask)=createCheckerBoardPattern(cur_obj);
-set(image_handle,'CData',image_data);
+selectObjectByID(obj_id);
 blobs_lbl=msr_gui_struct.BlobsLabel;
-msr_gui_struct.SelectedObjectID=obj_id;
 msr_gui_struct.SelectedBlobID=blobs_lbl(round(click_point(1,2)),round(click_point(1,1)));
 
 %end selectObject
@@ -187,16 +161,4 @@ msr_gui_struct.BlobsLabel=bwlabeln(objects_lbl);
 msr_gui_struct.CurrentAction='SelectBlob';
 
 %end selectBlobAndRestore
-end
-
-function checkerboard_pattern=createCheckerBoardPattern(selected_object)
-
-cur_obj_size=sum(selected_object(:));
-checkerboard_pattern=repmat([0;intmax('uint8')],floor(cur_obj_size/2),1);
-if (rem(cur_obj_size,2))
-    checkerboard_pattern=[checkerboard_pattern;0];  
-end
-checkerboard_pattern=repmat(checkerboard_pattern,3,1);
-
-%end createCheckerBoardPattern
 end
