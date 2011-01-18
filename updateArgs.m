@@ -21,18 +21,67 @@ for i=1:size(dependent_functions,1)
                 if (args_struct.Type==2)
                     input_arg_name=args_struct.InputArg;
                     if (args_struct.DependencyType==1)
-                        dependencies_list{function_idx}.FunctionArgs.(arg_name).Value=function_struct.(input_arg_name).Value;
+                        try
+                            dependencies_list{function_idx}.FunctionArgs.(arg_name).Value=function_struct.(input_arg_name).Value;
+                        catch ME
+                            err_text=ME.message;
+                            err_text=[err_text ' \n Function Instance: ' instance_name ' \n '];
+                            err_text=[err_text 'Input arg name: ' output_arg_name ' \n '];
+                            err_text=[err_text 'Dependent function arg name: ' arg_name ' \n '];
+                            err_text=[err_text 'Dependent function name: ' function_instance ' \n '];
+                            new_err.message=sprintf(err_text);
+                            new_err.identifier=ME.identifier;
+                            new_err.stack=ME.stack;
+                            error(new_err);
+                        end
                     elseif (args_struct.DependencyType==2)
-                        dependencies_list{function_idx}.KeepValues.(arg_name).Value=function_struct.(input_arg_name).Value;
+                        try
+                            dependencies_list{function_idx}.KeepValues.(arg_name).Value=function_struct.(input_arg_name).Value;
+                        catch ME
+                            err_text=ME.message;
+                            err_text=[err_text ' \n Function Instance: ' instance_name ' \n '];
+                            err_text=[err_text 'Input arg name: ' output_arg_name ' \n '];
+                            err_text=[err_text 'Dependent function keepvalue name: ' arg_name ' \n '];
+                            err_text=[err_text 'Dependent function name: ' function_instance ' \n '];
+                            new_err.message=sprintf(err_text);
+                            new_err.identifier=ME.identifier;
+                            new_err.stack=ME.stack;
+                            error(new_err);
+                        end
                     end
                 end
             case('output')
                 if (args_struct.Type==1)
                     output_arg_name=args_struct.OutputArg;
                     if (args_struct.DependencyType==1)
-                        dependencies_list{function_idx}.FunctionArgs.(arg_name).Value=function_struct.(output_arg_name);
+                        try
+                            dependencies_list{function_idx}.FunctionArgs.(arg_name).Value=function_struct.(output_arg_name);
+                        catch ME
+                            err_text=ME.message;
+                            err_text=[err_text ' \n Function Instance: ' instance_name ' \n '];
+                            err_text=[err_text 'Output arg name: ' output_arg_name ' \n '];                            
+                            err_text=[err_text 'Dependent function arg name: ' arg_name ' \n '];
+                            err_text=[err_text 'Dependent function name: ' function_instance ' \n '];
+                            new_err.message=sprintf(err_text);
+                            new_err.identifier=ME.identifier;
+                            new_err.stack=ME.stack;
+                            error(new_err);                            
+                        end
+                            
                     elseif (args_struct.DependencyType==2)
-                        dependencies_list{function_idx}.KeepValues.(arg_name).Value=function_struct.(output_arg_name);
+                        try
+                            dependencies_list{function_idx}.KeepValues.(arg_name).Value=function_struct.(output_arg_name);
+                        catch ME
+                            err_text=ME.message;
+                            err_text=[err_text ' \n Function Instance: ' instance_name ' \n '];
+                            err_text=[err_text 'Output arg name: ' output_arg_name ' \n '];                            
+                            err_text=[err_text 'Dependent function keepvalue name: ' arg_name ' \n '];
+                            err_text=[err_text 'Dependent function name: ' function_instance ' \n '];
+                            new_err.message=sprintf(err_text);
+                            new_err.identifier=ME.identifier;
+                            new_err.stack=ME.stack;
+                            error(new_err);                            
+                        end
                     end
                 end        
         end        
