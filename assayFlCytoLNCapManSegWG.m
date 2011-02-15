@@ -1,17 +1,21 @@
 function []=assayFlCytoLNCapManSegWG(well_folder)
-%assay to review segmentation of LNCap cells stained with Cell Tracker
+%assay to review segmentation of LNCap cells stained with Cell Tracker.
+%This assay can only be used after cells have been tracked using another
+%assay!
 
+global functions_list;
+functions_list=[];
 TrackStruct=[];
 TrackStruct.ImgExt='.tif';
 ds='\'  %directory symbol
 TrackStruct.DS=ds;
-root_folder='i:\walter';
+root_folder=well_folder;
 TrackStruct.ImageFileName='Cell Tracker Green - Confocal - n';
 %low hepsin expressing - not really wildtype
 TrackStruct.ImageFileBase=[well_folder ds TrackStruct.ImageFileName];
 %hepsin overexpressing
 % TrackStruct.ImageFileBase=[well_folder ds 'llh_hep_lm7_t'];
-TrackStruct.StartFrame=17;
+TrackStruct.StartFrame=5;
 TrackStruct.FrameCount=10;
 TrackStruct.TimeFrame=24; %minutes
 TrackStruct.FrameStep=1; %read every x frames
@@ -102,8 +106,9 @@ display_trackstruct_function.InstanceName='DisplayTrackStruct';
 display_trackstruct_function.FunctionHandle=@displayVariable;
 display_trackstruct_function.FunctionArgs.Variable.Value=TrackStruct;
 display_trackstruct_function.FunctionArgs.VariableName.Value='TrackStruct';
+functions_list=addToFunctionChain(functions_list,display_trackstruct_function);
 %threshold images
-global functions_list;
+image_read_loop_functions=[];
 image_read_loop.InstanceName='SegmentationLoop';
 image_read_loop.FunctionHandle=@forLoop;
 image_read_loop.FunctionArgs.StartLoop.Value=TrackStruct.StartFrame;
@@ -121,6 +126,7 @@ display_curtrackframe_function.FunctionHandle=@displayVariable;
 display_curtrackframe_function.FunctionArgs.Variable.FunctionInstance='SegmentationLoop';
 display_curtrackframe_function.FunctionArgs.Variable.OutputArg='LoopCounter';
 display_curtrackframe_function.FunctionArgs.VariableName.Value='Current Tracking Frame';
+image_read_loop_functions=addToFunctionChain(image_read_loop_functions,display_curtrackframe_function);
 
 make_file_name_function.InstanceName='MakeImageNamesInSegmentationLoop';
 make_file_name_function.FunctionHandle=@makeImgFileName;
@@ -129,16 +135,21 @@ make_file_name_function.FunctionArgs.CurFrame.FunctionInstance='SegmentationLoop
 make_file_name_function.FunctionArgs.CurFrame.OutputArg='LoopCounter';
 make_file_name_function.FunctionArgs.NumberFmt.Value=TrackStruct.NumberFormat;
 make_file_name_function.FunctionArgs.FileExt.Value=TrackStruct.ImgExt;
+image_read_loop_functions=addToFunctionChain(image_read_loop_functions,make_file_name_function);
+
 read_image_function.InstanceName='ReadImagesInSegmentationLoop';
 read_image_function.FunctionHandle=@readImage;
 read_image_function.FunctionArgs.ImageName.FunctionInstance='MakeImageNamesInSegmentationLoop';
 read_image_function.FunctionArgs.ImageName.OutputArg='FileName';
 read_image_function.FunctionArgs.ImageChannel.Value='';
+image_read_loop_functions=addToFunctionChain(image_read_loop_functions,read_image_function);
+
 normalize_image_to_16bit_function.InstanceName='NormalizeImageTo16Bit';
 normalize_image_to_16bit_function.FunctionHandle=@imNorm;
 normalize_image_to_16bit_function.FunctionArgs.RawImage.FunctionInstance='ReadImagesInSegmentationLoop';
 normalize_image_to_16bit_function.FunctionArgs.RawImage.OutputArg='Image';
 normalize_image_to_16bit_function.FunctionArgs.IntegerClass.Value='uint16';
+image_read_loop_functions=addToFunctionChain(image_read_loop_functions,normalize_image_to_16bit_function);
 
 % gaussian_pyramid_function.InstanceName='GaussianPyramid';
 % gaussian_pyramid_function.FunctionHandle=@gaussianPyramid;
@@ -150,6 +161,8 @@ resize_image_function.FunctionArgs.Image.FunctionInstance='NormalizeImageTo16Bit
 resize_image_function.FunctionArgs.Image.OutputArg='Image';
 resize_image_function.FunctionArgs.Scale.Value=0.5;
 resize_image_function.FunctionArgs.Method.Value='bicubic';
+image_read_loop_functions=addToFunctionChain(image_read_loop_functions,resize_image_function);
+
 cyto_local_avg_filter_function.InstanceName='CytoBrightnessLocalAveragingFilter';
 cyto_local_avg_filter_function.FunctionHandle=@generateBinImgUsingLocAvg;
 cyto_local_avg_filter_function.FunctionArgs.Image.FunctionInstance='ResizeImage';
@@ -159,6 +172,8 @@ cyto_local_avg_filter_function.FunctionArgs.StrelSize.Value=10;
 cyto_local_avg_filter_function.FunctionArgs.BrightnessThresholdPct.Value=1.1;
 cyto_local_avg_filter_function.FunctionArgs.ClearBorder.Value=false;
 cyto_local_avg_filter_function.FunctionArgs.ClearBorderDist.Value=0;
+image_read_loop_functions=addToFunctionChain(image_read_loop_functions,cyto_local_avg_filter_function);
+
 % cyto_global_int_filter_function.InstanceName='CytoGlobalBrightnessIntensityFilter';
 % cyto_global_int_filter_function.FunctionHandle=@generateBinImgUsingGlobInt;
 % cyto_global_int_filter_function.FunctionArgs.Image.FunctionInstance='ResizeImage';
@@ -177,11 +192,15 @@ fill_holes_cyto_images_function.InstanceName='FillHolesCytoplasmImages';
 fill_holes_cyto_images_function.FunctionHandle=@fillHoles;
 fill_holes_cyto_images_function.FunctionArgs.Image.FunctionInstance='CytoBrightnessLocalAveragingFilter';
 fill_holes_cyto_images_function.FunctionArgs.Image.OutputArg='Image';
+image_read_loop_functions=addToFunctionChain(image_read_loop_functions,fill_holes_cyto_images_function);
+
 clear_small_cells_function.InstanceName='ClearSmallCells';
 clear_small_cells_function.FunctionHandle=@clearSmallObjects;
 clear_small_cells_function.FunctionArgs.Image.FunctionInstance='FillHolesCytoplasmImages';
 clear_small_cells_function.FunctionArgs.Image.OutputArg='Image';
 clear_small_cells_function.FunctionArgs.MinObjectArea.Value=TrackStruct.MinCytoArea;
+image_read_loop_functions=addToFunctionChain(image_read_loop_functions,clear_small_cells_function);
+
 nucl_local_avg_filter_function.InstanceName='NuclBrightnessLocalAveragingFilter';
 nucl_local_avg_filter_function.FunctionHandle=@generateBinImgUsingLocAvg;
 nucl_local_avg_filter_function.FunctionArgs.Image.FunctionInstance='ResizeImage';
@@ -191,6 +210,8 @@ nucl_local_avg_filter_function.FunctionArgs.StrelSize.Value=10;
 nucl_local_avg_filter_function.FunctionArgs.BrightnessThresholdPct.Value=1.1;
 nucl_local_avg_filter_function.FunctionArgs.ClearBorder.Value=false;
 nucl_local_avg_filter_function.FunctionArgs.ClearBorderDist.Value=0;
+image_read_loop_functions=addToFunctionChain(image_read_loop_functions,nucl_local_avg_filter_function);
+
 % nucl_global_int_filter_function.InstanceName='NuclGlobalBrightnessIntensityFilter';
 % nucl_global_int_filter_function.FunctionHandle=@generateBinImgUsingGlobInt;
 % nucl_global_int_filter_function.FunctionArgs.Image.FunctionInstance='ResizeImage';
@@ -205,15 +226,20 @@ nucl_local_avg_filter_function.FunctionArgs.ClearBorderDist.Value=0;
 % combine_nucl_images_function.FunctionArgs.Image2.FunctionInstance='CytoGlobalBrightnessIntensityFilter';
 % combine_nucl_images_function.FunctionArgs.Image2.OutputArg='Image';
 % combine_nucl_images_function.FunctionArgs.CombineOperation.Value='OR';
+
 fill_holes_nucl_images_function.InstanceName='FillHolesNuclearImages';
 fill_holes_nucl_images_function.FunctionHandle=@fillHoles;
 fill_holes_nucl_images_function.FunctionArgs.Image.FunctionInstance='NuclBrightnessLocalAveragingFilter';
 fill_holes_nucl_images_function.FunctionArgs.Image.OutputArg='Image';
+image_read_loop_functions=addToFunctionChain(image_read_loop_functions,fill_holes_nucl_images_function);
+
 clear_small_nuclei_function.InstanceName='ClearSmallNuclei';
 clear_small_nuclei_function.FunctionHandle=@clearSmallObjects;
 clear_small_nuclei_function.FunctionArgs.Image.FunctionInstance='FillHolesNuclearImages';
 clear_small_nuclei_function.FunctionArgs.Image.OutputArg='Image';
 clear_small_nuclei_function.FunctionArgs.MinObjectArea.Value=TrackStruct.MinNuclArea;
+image_read_loop_functions=addToFunctionChain(image_read_loop_functions,clear_small_nuclei_function);
+
 combine_nucl_plus_cyto_function.InstanceName='CombineNuclearAndCytoplasmImages';
 combine_nucl_plus_cyto_function.FunctionHandle=@combineImages;
 combine_nucl_plus_cyto_function.FunctionArgs.Image1.FunctionInstance='ClearSmallNuclei';
@@ -221,20 +247,27 @@ combine_nucl_plus_cyto_function.FunctionArgs.Image1.OutputArg='Image';
 combine_nucl_plus_cyto_function.FunctionArgs.Image2.FunctionInstance='ClearSmallCells';
 combine_nucl_plus_cyto_function.FunctionArgs.Image2.OutputArg='Image';
 combine_nucl_plus_cyto_function.FunctionArgs.CombineOperation.Value='AND';
+image_read_loop_functions=addToFunctionChain(image_read_loop_functions,combine_nucl_plus_cyto_function);
+
 reconstruct_cyto_function.InstanceName='ReconstructCytoplasmImage';
 reconstruct_cyto_function.FunctionHandle=@reconstructObjects;
 reconstruct_cyto_function.FunctionArgs.GuideImage.FunctionInstance='CombineNuclearAndCytoplasmImages';
 reconstruct_cyto_function.FunctionArgs.GuideImage.OutputArg='Image';
 reconstruct_cyto_function.FunctionArgs.ImageToReconstruct.FunctionInstance='ClearSmallNuclei';
 reconstruct_cyto_function.FunctionArgs.ImageToReconstruct.OutputArg='Image';
+image_read_loop_functions=addToFunctionChain(image_read_loop_functions,reconstruct_cyto_function);
+
 label_nuclei_function.InstanceName='LabelNuclei';
 label_nuclei_function.FunctionHandle=@labelObjects;
 label_nuclei_function.FunctionArgs.Image.FunctionInstance='ClearSmallNuclei';
 label_nuclei_function.FunctionArgs.Image.OutputArg='Image';
+image_read_loop_functions=addToFunctionChain(image_read_loop_functions,label_nuclei_function);
+
 label_cyto_function.InstanceName='LabelCytoplasm';
 label_cyto_function.FunctionHandle=@labelObjects;
 label_cyto_function.FunctionArgs.Image.FunctionInstance='ReconstructCytoplasmImage';
 label_cyto_function.FunctionArgs.Image.OutputArg='Image';
+image_read_loop_functions=addToFunctionChain(image_read_loop_functions,label_cyto_function);
 
 %segment images
 get_convex_objects_function.InstanceName='GetConvexObjects';
@@ -242,11 +275,15 @@ get_convex_objects_function.FunctionHandle=@getConvexObjects;
 get_convex_objects_function.FunctionArgs.Image.FunctionInstance='ClearSmallNuclei';
 get_convex_objects_function.FunctionArgs.Image.OutputArg='Image';
 get_convex_objects_function.FunctionArgs.ApproximationDistance.Value=TrackStruct.ApproxDist;
+image_read_loop_functions=addToFunctionChain(image_read_loop_functions,get_convex_objects_function);
+
 distance_watershed_function.InstanceName='DistanceWatershed';
 distance_watershed_function.FunctionHandle=@distanceWatershed;
 distance_watershed_function.FunctionArgs.Image.FunctionInstance='ClearSmallNuclei';
 distance_watershed_function.FunctionArgs.Image.OutputArg='Image';
 distance_watershed_function.FunctionArgs.MedianFilterNhood.Value=TrackStruct.WatershedMed;
+image_read_loop_functions=addToFunctionChain(image_read_loop_functions,distance_watershed_function);
+
 polygonal_assisted_watershed_function.InstanceName='PolygonalAssistedWatershed';
 polygonal_assisted_watershed_function.FunctionHandle=@polygonalAssistedWatershed;
 polygonal_assisted_watershed_function.FunctionArgs.ImageLabel.FunctionInstance='LabelNuclei';
@@ -256,6 +293,7 @@ polygonal_assisted_watershed_function.FunctionArgs.WatershedLabel.OutputArg='Lab
 polygonal_assisted_watershed_function.FunctionArgs.ConvexObjectsIndex.FunctionInstance='GetConvexObjects';
 polygonal_assisted_watershed_function.FunctionArgs.ConvexObjectsIndex.OutputArg='ConvexObjectsIndex';
 polygonal_assisted_watershed_function.FunctionArgs.MinBlobArea.Value=TrackStruct.MinNuclArea;
+image_read_loop_functions=addToFunctionChain(image_read_loop_functions,polygonal_assisted_watershed_function);
 
 segment_objects_using_markers_function.InstanceName='SegmentObjectsUsingMarkers';
 segment_objects_using_markers_function.FunctionHandle=@segmentObjectsUsingMarkers;
@@ -263,12 +301,14 @@ segment_objects_using_markers_function.FunctionArgs.MarkersLabel.FunctionInstanc
 segment_objects_using_markers_function.FunctionArgs.MarkersLabel.OutputArg='LabelMatrix';
 segment_objects_using_markers_function.FunctionArgs.ObjectsLabel.FunctionInstance='LabelCytoplasm';
 segment_objects_using_markers_function.FunctionArgs.ObjectsLabel.OutputArg='LabelMatrix';
+image_read_loop_functions=addToFunctionChain(image_read_loop_functions,segment_objects_using_markers_function);
 
 get_previous_frame_nr_function.InstanceName='GetPreviousFrameNr';
 get_previous_frame_nr_function.FunctionHandle=@addFunction;
 get_previous_frame_nr_function.FunctionArgs.Number1.FunctionInstance='SegmentationLoop';
 get_previous_frame_nr_function.FunctionArgs.Number1.OutputArg='LoopCounter';
 get_previous_frame_nr_function.FunctionArgs.Number2.Value=-1;
+image_read_loop_functions=addToFunctionChain(image_read_loop_functions,get_previous_frame_nr_function);
 
 make_mat_name_function.InstanceName='MakeLabelNames';
 make_mat_name_function.FunctionHandle=@makeImgFileName;
@@ -277,11 +317,13 @@ make_mat_name_function.FunctionArgs.CurFrame.FunctionInstance='GetPreviousFrameN
 make_mat_name_function.FunctionArgs.CurFrame.OutputArg='Sum';
 make_mat_name_function.FunctionArgs.NumberFmt.Value=TrackStruct.NumberFormat;
 make_mat_name_function.FunctionArgs.FileExt.Value='.mat';
+image_read_loop_functions=addToFunctionChain(image_read_loop_functions,make_mat_name_function);
 
 load_previous_label_function.InstanceName='LoadPreviousLabel';
 load_previous_label_function.FunctionHandle=@loadCellsLabel;
 load_previous_label_function.FunctionArgs.MatFileName.FunctionInstance='MakeLabelNames';
 load_previous_label_function.FunctionArgs.MatFileName.OutputArg='FileName';
+image_read_loop_functions=addToFunctionChain(image_read_loop_functions,load_previous_label_function);
 
 resize_previous_label_function.InstanceName='ResizePreviousLabel';
 resize_previous_label_function.FunctionHandle=@resizeImage;
@@ -289,7 +331,7 @@ resize_previous_label_function.FunctionArgs.Image.FunctionInstance='LoadPrevious
 resize_previous_label_function.FunctionArgs.Image.OutputArg='LabelMatrix';
 resize_previous_label_function.FunctionArgs.Scale.Value=0.5;
 resize_previous_label_function.FunctionArgs.Method.Value='nearest';
-
+image_read_loop_functions=addToFunctionChain(image_read_loop_functions,resize_previous_label_function);
 
 refine_segmentation_function.InstanceName='RefineSegmentation';
 refine_segmentation_function.FunctionHandle=@refineSegmentation;
@@ -297,6 +339,7 @@ refine_segmentation_function.FunctionArgs.CurrentLabel.FunctionInstance='Segment
 refine_segmentation_function.FunctionArgs.CurrentLabel.OutputArg='LabelMatrix';
 refine_segmentation_function.FunctionArgs.PreviousLabel.FunctionInstance='ResizePreviousLabel';
 refine_segmentation_function.FunctionArgs.PreviousLabel.OutputArg='Image';
+image_read_loop_functions=addToFunctionChain(image_read_loop_functions,refine_segmentation_function);
 
 % segment_objects_using_clusters_function.InstanceName='SegmentObjectsUsingClusters';
 % segment_objects_using_clusters_function.FunctionHandle=@segmentObjectsUsingClusters;
@@ -316,6 +359,7 @@ review_segmentation_function.FunctionArgs.PreviousLabel.FunctionInstance='Resize
 review_segmentation_function.FunctionArgs.PreviousLabel.OutputArg='Image';
 review_segmentation_function.FunctionArgs.Image.FunctionInstance='ResizeImage';
 review_segmentation_function.FunctionArgs.Image.OutputArg='Image';
+image_read_loop_functions=addToFunctionChain(image_read_loop_functions,review_segmentation_function);
 
 resize_cyto_label_function.InstanceName='ResizeCytoLabel';
 resize_cyto_label_function.FunctionHandle=@resizeImage;
@@ -323,6 +367,7 @@ resize_cyto_label_function.FunctionArgs.Image.FunctionInstance='ReviewSegmentati
 resize_cyto_label_function.FunctionArgs.Image.OutputArg='LabelMatrix';
 resize_cyto_label_function.FunctionArgs.Scale.Value=2;
 resize_cyto_label_function.FunctionArgs.Method.Value='nearest';
+image_read_loop_functions=addToFunctionChain(image_read_loop_functions,resize_cyto_label_function);
 
 save_cells_label_function.InstanceName='SaveCellsLabel';
 save_cells_label_function.FunctionHandle=@saveCellsLabel;
@@ -332,18 +377,10 @@ save_cells_label_function.FunctionArgs.CurFrame.FunctionInstance='SegmentationLo
 save_cells_label_function.FunctionArgs.CurFrame.OutputArg='LoopCounter';
 save_cells_label_function.FunctionArgs.FileRoot.Value=TrackStruct.SegFileRoot;
 save_cells_label_function.FunctionArgs.NumberFormat.Value=TrackStruct.NumberFormat;
+image_read_loop_functions=addToFunctionChain(image_read_loop_functions,save_cells_label_function);
 
-image_read_loop.LoopFunctions=[{display_curtrackframe_function};{make_file_name_function};{read_image_function};...
-    {normalize_image_to_16bit_function};{resize_image_function};{cyto_local_avg_filter_function};...
-    {fill_holes_cyto_images_function};{clear_small_cells_function};{nucl_local_avg_filter_function};...
-    {fill_holes_nucl_images_function};{clear_small_nuclei_function};{get_convex_objects_function};{distance_watershed_function};...
-    {combine_nucl_plus_cyto_function};{reconstruct_cyto_function};{label_nuclei_function};{label_cyto_function};...
-    {polygonal_assisted_watershed_function};{segment_objects_using_markers_function};{get_previous_frame_nr_function};{make_mat_name_function};...
-    {load_previous_label_function};{resize_previous_label_function};{refine_segmentation_function};{review_segmentation_function};...
-    {resize_cyto_label_function};{save_cells_label_function}];
-
-
-functions_list=[{display_trackstruct_function};{image_read_loop}];
+image_read_loop.LoopFunctions=image_read_loop_functions;
+functions_list=addToFunctionChain(functions_list,image_read_loop);
 
 global dependencies_list;
 global dependencies_index;
