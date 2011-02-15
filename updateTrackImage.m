@@ -13,9 +13,7 @@ read_image_args.ImageName.Value=file_name_struct.FileName;
 read_image_args.ImageChannel.Value='';
 image_struct=readImage(read_image_args);
 
-normalize_args.RawImage.Value=image_struct.Image;
-normalize_args.IntegerClass.Value='uint16';
-image_struct=imNorm(normalize_args);
+img=imadjust(image_struct.Image);
 
 label_name_args.FileBase.Value=mtr_gui_struct.SegFileRoot;
 label_name_args.CurFrame.Value=frame_nr;
@@ -36,7 +34,7 @@ cur_tracks_args.MaxMissingFrames.Value=mtr_gui_struct.MaxMissingFrames;
 cur_tracks_args.FrameStep.Value=mtr_gui_struct.FrameStep;
 cur_tracks_struct=getCurrentTracks(cur_tracks_args);
 
-overlay_ancestry_args.Image.Value=image_struct.Image;
+overlay_ancestry_args.Image.Value=img;
 overlay_ancestry_args.CurrentTracks.Value=cur_tracks_struct.Tracks;
 overlay_ancestry_args.CellsLabel.Value=label_struct.cells_lbl;
 overlay_ancestry_args.CellsAncestry.Value=mtr_gui_struct.CellsAncestry;
