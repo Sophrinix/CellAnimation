@@ -78,10 +78,10 @@ if (b_show_labels)
         text_coord_1=text_coord_1+rect_coord_1;
         text_coord_2=text_coord_2+rect_coord_3;
         text_coord_lin=sub2ind(img_sz,text_coord_1,text_coord_2);
-        %write the text in blue
-        red_color(text_coord_lin)=max_pxl;
+        %write the text in green
+        red_color(text_coord_lin)=0;
         green_color(text_coord_lin)=max_pxl;
-        blue_color(text_coord_lin)=max_pxl;
+        blue_color(text_coord_lin)=0;
     end
 end
 
