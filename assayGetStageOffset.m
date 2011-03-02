@@ -1,5 +1,5 @@
 function xy_offsets=assayGetStageOffset(file_root,frame_count,varargin)
-%assay to calculate the stage offset at each point by manually clicking on a
+%assay to calculate the microscope stage offset at each frame by manually clicking on a
 %fixed point
 %optional arguments 'FrameStep','ImageExtenstion','NumberFormat','StartFrame'
 global functions_list;
