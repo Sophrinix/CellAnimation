@@ -61,15 +61,15 @@ read_image_function.FunctionArgs.ImageName.OutputArg='FileName';
 read_image_function.FunctionArgs.ImageChannel.Value='';
 image_read_loop_functions=addToFunctionChain(image_read_loop_functions,read_image_function);
 
-enhance_contrast_function.InstanceName='EnhanceContrast';
-enhance_contrast_function.FunctionHandle=@imadjust_Wrapper;
-enhance_contrast_function.FunctionArgs.Image.FunctionInstance='ReadImagesInProcessingLoop';
-enhance_contrast_function.FunctionArgs.Image.OutputArg='Image';
-image_read_loop_functions=addToFunctionChain(image_read_loop_functions,enhance_contrast_function);
+% enhance_contrast_function.InstanceName='EnhanceContrast';
+% enhance_contrast_function.FunctionHandle=@imadjust_Wrapper;
+% enhance_contrast_function.FunctionArgs.Image.FunctionInstance='ReadImagesInProcessingLoop';
+% enhance_contrast_function.FunctionArgs.Image.OutputArg='Image';
+% image_read_loop_functions=addToFunctionChain(image_read_loop_functions,enhance_contrast_function);
 
 display_image_function.InstanceName='DisplayImage';
 display_image_function.FunctionHandle=@displayImage;
-display_image_function.FunctionArgs.Image.FunctionInstance='EnhanceContrast';
+display_image_function.FunctionArgs.Image.FunctionInstance='ReadImagesInProcessingLoop';
 display_image_function.FunctionArgs.Image.OutputArg='Image';
 display_image_function.FunctionArgs.FigureNr.Value=1;
 image_read_loop_functions=addToFunctionChain(image_read_loop_functions,display_image_function);
