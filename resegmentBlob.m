@@ -18,6 +18,10 @@ selected_blob_id=msr_gui_struct.SelectedBlobID;
 if isempty(selected_blob_id)
     warnDlg('No Blob is Selected');
     return;
+end 
+if (length(selected_blob_id)>1)
+    warnDlg('More than one blob is selected!');
+    return;
 end
 msr_gui_struct.CurrentResegmentationIndex=1;
 msr_gui_struct.SegmentationTrainingPoints=[];

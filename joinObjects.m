@@ -1,41 +1,16 @@
-function joinObjects(stage)
+function joinObjects()
 %helper function for manual segmentation review module. join objects in a
 %label matrix to form a single possibly fragmented object.
-switch stage
-    case 'initialize'
-        intializeJoinObjects();
-    case 'complete'
-        completeJoinObjects();
-end
-
-%end joinObjects
-end
-
-function intializeJoinObjects()
-global msr_gui_struct;
-
-if (strcmp(msr_gui_struct.CurrentAction,'JoinObjects'))
-    %already in the process of joining objects
-    return;
-end
-
-selected_object_id=msr_gui_struct.SelectedObjectID;
-if isempty(selected_object_id)
-    warnDlg('No Object is Selected');
-    return;
-end
-msr_gui_struct.JoinIDs=selected_object_id;
-updateReviewSegGUIStatus('JoinObjects');
-
-%end intializeJoinObjects
-end
-
-function completeJoinObjects()
 global msr_gui_struct;
 
 objects_lbl=msr_gui_struct.ObjectsLabel;
-join_ids=sort(msr_gui_struct.JoinIDs);
+join_ids=sort(msr_gui_struct.SelectedObjectIDs);
 join_ids_len=length(join_ids);
+if (length(join_ids)<2)
+    warnDlg('Multiple objects need to be selected!');
+    return;
+end
+
 %set all the ids to the min id
 for i=2:join_ids_len
     objects_lbl(objects_lbl==join_ids(i))=join_ids(1);    

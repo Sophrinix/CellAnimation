@@ -10,8 +10,6 @@ click_point = get(axes_handle,'CurrentPoint');
 set(axes_handle,'Units',original_axes_units);
 
 switch (msr_gui_struct.CurrentAction)
-    case 'JoinObjects'
-        addObject(click_point);
     case 'SelectBlob'
         selectBlob(click_point);
     case 'SelectObject'
@@ -27,40 +25,7 @@ end
 %end mouseClickInLabel
 end
 
-function addObject(click_point)
-global msr_gui_struct;
 
-objects_lbl=msr_gui_struct.ObjectsLabel;
-obj_id=objects_lbl(round(click_point(1,2)),round(click_point(1,1)));
-image_handle=msr_gui_struct.ImageHandle;
-image_data=get(image_handle,'CData');
-if (obj_id==0)
-    warnDlg('You clicked on the background!');
-    msr_gui_struct.SelectedObjectID=[];
-    set(image_handle,'CData',image_data);
-    return;
-end
-join_ids=msr_gui_struct.JoinIDs;
-cur_obj=objects_lbl==obj_id;
-obj_mask=repmat(cur_obj,[1 1 3]);
-if (max(join_ids==obj_id))
-    %remove object from join list
-    label_rgb=label2rgb(objects_lbl,msr_gui_struct.ColorMap,msr_gui_struct.BkgColor,'shuffle');
-    image_data(obj_mask)=label_rgb(obj_mask);
-    join_ids(join_ids==obj_id)=[];
-else
-    %add object to join list    
-    image_data(obj_mask)=createCheckerBoardPattern(cur_obj);
-    join_ids=[join_ids; obj_id];
-end
-msr_gui_struct.JoinIDs=join_ids;
-set(image_handle,'CData',image_data);
-blobs_lbl=msr_gui_struct.BlobsLabel;
-msr_gui_struct.SelectedObjectID=obj_id;
-msr_gui_struct.SelectedBlobID=blobs_lbl(round(click_point(1,2)),round(click_point(1,1)));
-
-%end addObject
-end
 
 function selectBlob(click_point)
 global msr_gui_struct;

@@ -13,11 +13,7 @@ switch (msr_gui_struct.CurrentAction)
             msr_gui_struct.CurrentAction='SelectBlob';
         elseif (char_pressed=='n')
             msr_gui_struct.CurrentResegmentationIndex=msr_gui_struct.CurrentResegmentationIndex+1;
-        end
-    case 'JoinObjects'
-        if (char_pressed=='d')
-            joinObjects('complete');
-        end
+        end   
     otherwise
         return;
 end
