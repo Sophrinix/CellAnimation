@@ -398,6 +398,12 @@ start_tracks_function.FunctionArgs.ShapeParameters.FunctionInstance='GetShapePar
 start_tracks_function.FunctionArgs.ShapeParameters.OutputArg='ShapeParameters';
 if_is_empty_cells_label_functions=addToFunctionChain(if_is_empty_cells_label_functions,start_tracks_function);
 
+get_shape_params_function.InstanceName='GetShapeParameters';
+get_shape_params_function.FunctionHandle=@getShapeParams;
+get_shape_params_function.FunctionArgs.LabelMatrix.FunctionInstance='IfIsEmptyPreviousCellsLabel';
+get_shape_params_function.FunctionArgs.LabelMatrix.InputArg='CellsLabel';
+else_is_empty_cells_label_functions=addToFunctionChain(else_is_empty_cells_label_functions,get_shape_params_function);
+
 get_cur_tracks_function.InstanceName='GetCurrentTracks';
 get_cur_tracks_function.FunctionHandle=@getCurrentTracks;
 get_cur_tracks_function.FunctionArgs.Tracks.FunctionInstance='IfIsEmptyPreviousCellsLabel';

@@ -17,6 +17,9 @@ msr_gui_struct.OriginalObjectsLabel=raw_lbl;
 msr_gui_struct.OriginalBlobsLabel=bwlabeln(raw_lbl>0);
 msr_gui_struct.PreviousLabel=previous_lbl;
 msr_gui_struct.Image=input_args.Image.Value;
+msr_gui_struct.SelectMultiple=false;
+msr_gui_struct.SelectedBlobID=[];
+msr_gui_struct.SelectedObjectID=[];
 %initialize the gui
 field_names=fieldnames(msr_gui_struct);
 gui_handle=findall(0,'Tag','ManualResegmentation');
@@ -43,6 +46,7 @@ msr_gui_struct.RemoveObjectButtonHandle=findobj(children_handles,'tag','removeOb
 msr_gui_struct.StatusTextHandle=findobj(children_handles,'tag','statusText');
 msr_gui_struct.CheckBoxPrevLabelHandle=findobj(children_handles,'tag','checkboxPrevLabel');
 msr_gui_struct.CheckBoxOverlayPrevLabelHandle=findobj(children_handles,'tag','checkboxOverlayPrevLabel');
+msr_gui_struct.CheckBoxSelectMultipleHandle=findobj(children_handles,'tag','checkboxSelectMultiple');
 if (isempty(previous_lbl))
     %disable show previous label checkbox
     set(msr_gui_struct.CheckBoxPrevLabelHandle,'Enable','off');

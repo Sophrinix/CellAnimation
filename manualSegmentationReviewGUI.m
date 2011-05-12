@@ -22,7 +22,7 @@ function varargout = manualSegmentationReviewGUI(varargin)
 
 % Edit the above text to modify the response to help manualSegmentationReviewGUI
 
-% Last Modified by GUIDE v2.5 29-Sep-2010 23:13:13
+% Last Modified by GUIDE v2.5 18-Mar-2011 18:34:57
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -145,7 +145,7 @@ function joinObjectsButton_Callback(hObject, eventdata, handles)
 % hObject    handle to joinObjectsButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-joinObjects('initialize');
+joinObjects();
 
 
 % --- Executes on button press in checkboxPrevLabel.
@@ -184,3 +184,25 @@ function checkboxImage_Callback(hObject, eventdata, handles)
 showImage();
 
 % Hint: get(hObject,'Value') returns toggle state of checkboxImage
+
+
+% --- Executes on button press in checkboxSelectMultiple.
+function checkboxSelectMultiple_Callback(hObject, eventdata, handles)
+% hObject    handle to checkboxSelectMultiple (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+enableMultipleSelection();
+
+% Hint: get(hObject,'Value') returns toggle state of checkboxSelectMultiple
+
+
+
+
+% --- Executes on button press in InvertSelectionButton.
+function InvertSelectionButton_Callback(hObject, eventdata, handles)
+% hObject    handle to InvertSelectionButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+invertSelection();
+
+
