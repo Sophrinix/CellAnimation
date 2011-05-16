@@ -1,4 +1,4 @@
-function []=TrackNuclei(image_id)
+function []=TrackNuclei(image_id, userid, passwd)
 cd ..
 %initialize omero-matlab connection
 loadOmero;
@@ -7,7 +7,7 @@ global s;
 global g;
 
 c = omero.client('omero.accre.vanderbilt.edu', 4064);
-s = c.createSession('hookesw', '713Dixmf');
+s = c.createSession(userid, passwd);
 g = s.createGateway();
 
 TrackStruct=[];

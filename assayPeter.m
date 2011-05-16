@@ -1,30 +1,46 @@
-function []=assayFluoNuclTestCA(well_folder)
+function []=assayPeter(image_id, userid, passwd)
 %test assay for tracking cells stained with a fluorescent nuclear stain
-global functions_list;
-functions_list=[];
+
+try 
+  cd OmeroCode;
+  loadOmero;
+  global c;
+  global s;
+  global g;
+
+  c = omero.client('omero.accre.vanderbilt.edu', 4064);
+  s = c.createSession(userid, passwd);
+  g = s.createGateway();
+catch ME
+  cd ..;
+  rethrow(ME)
+end
+
+cd ..;
+
 TrackStruct=[];
 TrackStruct.ImgExt='.tif';
-ds='\'  %directory symbol
+ds='/';  %directory symbol
 TrackStruct.DS=ds;
-root_folder=well_folder;
-TrackStruct.ImageFileName='DsRed - Confocal - n';
-%low hepsin expressing - not really wildtype
-TrackStruct.ImageFileBase=[well_folder ds TrackStruct.ImageFileName];
-%hepsin overexpressing
-% TrackStruct.ImageFileBase=[well_folder ds 'llh_hep_lm7_t'];
-TrackStruct.StartFrame=1;
+root_folder='~/CellAnimOutput';
+TrackStruct.ImageFileName='Confocal - n';
+TrackStruct.ImageFileBase=[root_folder ds TrackStruct.ImageFileName];
+TrackStruct.StartFrame=0;
 TrackStruct.FrameCount=10;
-TrackStruct.TimeFrame=15; %minutes
+TrackStruct.TimeFrame=1; %minutes
 TrackStruct.FrameStep=1; %read every x frames
 TrackStruct.NumberFormat='%06d';
 TrackStruct.MaxFramesMissing=6; %how many frames a cell can disappear before we end its track
+TrackStruct.FrontParams=[];
+
+image = getImage(g, image_id);
+well = char(image.getName().getValue());
+well_name = ['Well' well];
+
+global functions_list;
+functions_list=[];
 
 
-name_idx=find(well_folder==ds,2,'last');
-%generate a unique well name
-well_name=well_folder((name_idx(1)+1):end);
-well_name(name_idx(2)-name_idx(1))=[];
-well_name(well_name==' ')=[];
 TrackStruct.OutputFolder=[root_folder ds 'output' ds well_name];
 track_dir=[TrackStruct.OutputFolder ds 'track'];
 TrackStruct.TrackDir=track_dir;
@@ -137,12 +153,20 @@ make_file_name_function.FunctionArgs.NumberFmt.Value=TrackStruct.NumberFormat;
 make_file_name_function.FunctionArgs.FileExt.Value=TrackStruct.ImgExt;
 image_read_loop_functions=addToFunctionChain(image_read_loop_functions,make_file_name_function);
 
+
+%loads the correct image from Omero based on the loop iteration
 read_image_function.InstanceName='ReadImagesInSegmentationLoop';
-read_image_function.FunctionHandle=@readImage;
-read_image_function.FunctionArgs.ImageName.FunctionInstance='MakeImageNamesInSegmentationLoop';
-read_image_function.FunctionArgs.ImageName.OutputArg='FileName';
-read_image_function.FunctionArgs.ImageChannel.Value='';
-image_read_loop_functions=addToFunctionChain(image_read_loop_functions,read_image_function);
+read_image_function.FunctionHandle=@readImageOmero;
+read_image_function.FunctionArgs.CurFrame.FunctionInstance='SegmentationLoop';
+read_image_function.FunctionArgs.CurFrame.OutputArg='LoopCounter';
+read_image_function.FunctionArgs.ImageId.Value=image_id;
+
+%read_image_function.InstanceName='ReadImagesInSegmentationLoop';
+%read_image_function.FunctionHandle=@readImage;
+%read_image_function.FunctionArgs.ImageName.FunctionInstance='MakeImageNamesInSegmentationLoop';
+%read_image_function.FunctionArgs.ImageName.OutputArg='FileName';
+%read_image_function.FunctionArgs.ImageChannel.Value='';
+%image_read_loop_functions=addToFunctionChain(image_read_loop_functions,read_image_function);
 
 normalize_image_to_16bit_function.InstanceName='NormalizeImageTo16Bit';
 normalize_image_to_16bit_function.FunctionHandle=@imNorm;
@@ -785,12 +809,19 @@ make_file_name2_function.FunctionArgs.NumberFmt.Value=TrackStruct.NumberFormat;
 make_file_name2_function.FunctionArgs.FileExt.Value=TrackStruct.ImgExt;
 image_overlay_loop_functions=addToFunctionChain(image_overlay_loop_functions,make_file_name2_function);
 
-read_image2_function.InstanceName='ReadImagesInOverlayLoop';
-read_image2_function.FunctionHandle=@readImage;
-read_image2_function.FunctionArgs.ImageName.FunctionInstance='MakeImageNamesInOverlayLoop';
-read_image2_function.FunctionArgs.ImageName.OutputArg='FileName';
-read_image2_function.FunctionArgs.ImageChannel.Value='';
-image_overlay_loop_functions=addToFunctionChain(image_overlay_loop_functions,read_image2_function);
+%loads the correct image from Omero based on the loop iteration
+read_image2_function.InstanceName='ReadImagesInSegmentationLoop';
+read_image2_function.FunctionHandle=@readImageOmero;
+read_image2_function.FunctionArgs.CurFrame.FunctionInstance='MakeImageNamesInOverlayLoop';
+read_image2_function.FunctionArgs.CurFrame.OutputArg='LoopCounter';
+read_image2_function.FunctionArgs.ImageId.Value=image_id;
+
+%read_image2_function.InstanceName='ReadImagesInOverlayLoop';
+%read_image2_function.FunctionHandle=@readImage;
+%read_image2_function.FunctionArgs.ImageName.FunctionInstance='MakeImageNamesInOverlayLoop';
+%read_image2_function.FunctionArgs.ImageName.OutputArg='FileName';
+%read_image2_function.FunctionArgs.ImageChannel.Value='';
+%image_overlay_loop_functions=addToFunctionChain(image_overlay_loop_functions,read_image2_function);
 
 get_cur_tracks2_function.InstanceName='GetCurrentTracks2';
 get_cur_tracks2_function.FunctionHandle=@getCurrentTracks;
