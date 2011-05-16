@@ -26,7 +26,7 @@ root_folder='~/CellAnimOutput';
 TrackStruct.ImageFileName='Confocal - n';
 TrackStruct.ImageFileBase=[root_folder ds TrackStruct.ImageFileName];
 TrackStruct.StartFrame=0;
-TrackStruct.FrameCount=10;
+TrackStruct.FrameCount=5;
 TrackStruct.TimeFrame=1; %minutes
 TrackStruct.FrameStep=1; %read every x frames
 TrackStruct.NumberFormat='%06d';
@@ -39,7 +39,6 @@ well_name = ['Well' well];
 
 global functions_list;
 functions_list=[];
-
 
 TrackStruct.OutputFolder=[root_folder ds 'output' ds well_name];
 track_dir=[TrackStruct.OutputFolder ds 'track'];
@@ -144,14 +143,14 @@ display_curtrackframe_function.FunctionArgs.Variable.OutputArg='LoopCounter';
 display_curtrackframe_function.FunctionArgs.VariableName.Value='Current Tracking Frame';
 image_read_loop_functions=addToFunctionChain(image_read_loop_functions,display_curtrackframe_function);
 
-make_file_name_function.InstanceName='MakeImageNamesInSegmentationLoop';
-make_file_name_function.FunctionHandle=@makeImgFileName;
-make_file_name_function.FunctionArgs.FileBase.Value=TrackStruct.ImageFileBase;
-make_file_name_function.FunctionArgs.CurFrame.FunctionInstance='SegmentationLoop';
-make_file_name_function.FunctionArgs.CurFrame.OutputArg='LoopCounter';
-make_file_name_function.FunctionArgs.NumberFmt.Value=TrackStruct.NumberFormat;
-make_file_name_function.FunctionArgs.FileExt.Value=TrackStruct.ImgExt;
-image_read_loop_functions=addToFunctionChain(image_read_loop_functions,make_file_name_function);
+%make_file_name_function.InstanceName='MakeImageNamesInSegmentationLoop';
+%make_file_name_function.FunctionHandle=@makeImgFileName;
+%make_file_name_function.FunctionArgs.FileBase.Value=TrackStruct.ImageFileBase;
+%make_file_name_function.FunctionArgs.CurFrame.FunctionInstance='SegmentationLoop';
+%make_file_name_function.FunctionArgs.CurFrame.OutputArg='LoopCounter';
+%make_file_name_function.FunctionArgs.NumberFmt.Value=TrackStruct.NumberFormat;
+%make_file_name_function.FunctionArgs.FileExt.Value=TrackStruct.ImgExt;
+%image_read_loop_functions=addToFunctionChain(image_read_loop_functions,make_file_name_function);
 
 
 %loads the correct image from Omero based on the loop iteration
@@ -160,6 +159,7 @@ read_image_function.FunctionHandle=@readImageOmero;
 read_image_function.FunctionArgs.CurFrame.FunctionInstance='SegmentationLoop';
 read_image_function.FunctionArgs.CurFrame.OutputArg='LoopCounter';
 read_image_function.FunctionArgs.ImageId.Value=image_id;
+image_read_loop_functions=addToFunctionChain(image_read_loop_functions,read_image_function);
 
 %read_image_function.InstanceName='ReadImagesInSegmentationLoop';
 %read_image_function.FunctionHandle=@readImage;
@@ -810,11 +810,12 @@ make_file_name2_function.FunctionArgs.FileExt.Value=TrackStruct.ImgExt;
 image_overlay_loop_functions=addToFunctionChain(image_overlay_loop_functions,make_file_name2_function);
 
 %loads the correct image from Omero based on the loop iteration
-read_image2_function.InstanceName='ReadImagesInSegmentationLoop';
+read_image2_function.InstanceName='ReadImagesInOverlayLoop';
 read_image2_function.FunctionHandle=@readImageOmero;
-read_image2_function.FunctionArgs.CurFrame.FunctionInstance='MakeImageNamesInOverlayLoop';
+read_image2_function.FunctionArgs.CurFrame.FunctionInstance='ImageOverlayLoop';
 read_image2_function.FunctionArgs.CurFrame.OutputArg='LoopCounter';
 read_image2_function.FunctionArgs.ImageId.Value=image_id;
+image_overlay_loop_functions=addToFunctionChain(image_overlay_loop_functions,read_image2_function);
 
 %read_image2_function.InstanceName='ReadImagesInOverlayLoop';
 %read_image2_function.FunctionHandle=@readImage;
