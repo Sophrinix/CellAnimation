@@ -21,7 +21,7 @@ function varargout = SegmentReview(varargin)
 
 % Edit the above text to modify the response to help SegmentReview
 
-% Last Modified by GUIDE v2.5 19-Apr-2011 14:45:34
+% Last Modified by GUIDE v2.5 26-May-2011 11:32:06
 
   % Begin initialization code - DO NOT EDIT
   gui_Singleton = 1;
@@ -96,6 +96,7 @@ function error=InitDisplay(handles, imagefile, segmentfile)
   handles.image       = i;
   handles.segment     = s;
   handles.labels      = l;
+  handles.trainingsegmentfile = '';
   
   % Update handles structure
   guidata(handles.output, handles);
@@ -281,8 +282,18 @@ function ApoptoticCheck_Callback(hObject, eventdata, handles)
   guidata(hObject, handles);
 end
 
-
 % --- Executes on button press in EdgeCheck.
 function EdgeCheck_Callback(hObject, eventdata, handles)
 
+end
+
+
+% --- Executes on button press in SaveToTrainingSet.
+function SaveToTrainingSet_Callback(hObject, eventdata, handles)
+  handles.trainingsegmentfile = 'properties.mat';
+  load(handles.trainingsegmentfile, 's', 'l');
+  rows = size(s,1);
+  selected = get(handles.SegmentPopup, 'Value');
+  s(rows+1) = handles.segment(selected);
+  save(handles.trainingsegmentfile, 's', 'l');
 end
