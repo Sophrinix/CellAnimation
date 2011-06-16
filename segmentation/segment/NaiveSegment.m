@@ -38,6 +38,7 @@ function [p,l] = NaiveSegment(image, varargin)
   % Subtract background, in pixel radius (default 50) tophat filter
   i      = imtophat(im2double(image), strel('disk', radius));
   
+  
   % maps the intensity values such that 1% of data is saturated at low and high intensities 
   j      = imadjust(i);
   
@@ -66,41 +67,17 @@ function [p,l] = NaiveSegment(image, varargin)
                   'PixelList',       'BoundingBox');
   
   % Compute intensities from background adjusted image
-  for obj=1:size(p,1)
-    p(obj).Intensity =  sum(i(p(obj).PixelIdxList));
-  end
-  
   bounds = bwboundaries(bw);
   for obj=1:size(p,1)
+    p(obj).Intensity =  sum(i(p(obj).PixelIdxList));
+    
     p(obj).bound = bounds{obj};
-  end
-  
-  % Naive Classification
-  for obj=1:size(p,1)
+    
     p(obj).edge    = 0;
-    p(obj).debris  = 0;
-    p(obj).nucleus = 0;
-    p(obj).over    = 0;
-    p(obj).under   = 0;
-    p(obj).premitotic = 0;
-    p(obj).postmitotic=0;
-    p(obj).apoptotic=0;
-    
-    if p(obj).Area < 190
-      p(obj).debris = 1;
-    elseif p(obj).Area < 300
-      p(obj).newborn = 1;
-      p(obj).nucleus = 1;
-    elseif p(obj).Area < 820
-      p(obj).nucleus = 1;
-    else
-      p(obj).under = 1;
-    end
-    
     if find(p(obj).PixelList(:,1) == 1)
       p(obj).edge = 1;
     end
-    
+
     if find(p(obj).PixelList(:,2) == 1)
       p(obj).edge = 1;
     end
@@ -108,11 +85,13 @@ function [p,l] = NaiveSegment(image, varargin)
     if find(p(obj).PixelList(:,1) == size(i,2) )
       p(obj).edge = 1;
     end
-    
+
     if find(p(obj).PixelList(:,2) == size(i,1) )
       p(obj).edge = 1;
     end
     
   end
+  
+  p = ClassifyFirstPass(p);
   
 end % NaiveSegment

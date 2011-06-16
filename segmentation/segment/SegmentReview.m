@@ -21,7 +21,7 @@ function varargout = SegmentReview(varargin)
 
 % Edit the above text to modify the response to help SegmentReview
 
-% Last Modified by GUIDE v2.5 26-May-2011 11:32:06
+% Last Modified by GUIDE v2.5 16-Jun-2011 10:20:44
 
   % Begin initialization code - DO NOT EDIT
   gui_Singleton = 1;
@@ -87,7 +87,7 @@ function error=InitDisplay(handles, imagefile, segmentfile)
     end
   else
     fprintf(1,'Segment File was not specified. Running default segmentation.\n');
-    [s,l] = NaiveSegment(i, 'BackgroundThreshold', 0.35);
+    [s,l] = NaiveSegment(i);
     handles.segmentfile = '';
     fprintf(1,'Segmentation Finished.\n');
   end
@@ -101,7 +101,23 @@ function error=InitDisplay(handles, imagefile, segmentfile)
   % Update handles structure
   guidata(handles.output, handles);
 
-  set(handles.SegmentPopup, 'String', 1:size(s,1));
+  set(handles.SegmentPopup, 'String', 1:size(handles.segment,1));
+  
+  %initialize figure
+  axes(handles.ImageDisplay);
+  handles.h = imagesc(handles.image);
+  colormap gray;
+  
+  %initialize red rectangle - starts on object #1
+  handles.o=rectangle('Position',handles.segment(1).BoundingBox, 'EdgeColor', 'r', 'LineWidth', 2);
+  
+  %initialize outlines handles
+  handles.outlines = struct();
+  
+  %initialize highlights handles
+  handles.highlights = struct();
+  
+  guidata(handles.output, handles);
   
   DrawDisplay(handles);
   
@@ -109,47 +125,40 @@ function error=InitDisplay(handles, imagefile, segmentfile)
 end % InitDisplay
 
 function DrawDisplay(handles)
-  axes(handles.ImageDisplay);
-  
-  h = imagesc(handles.image);
-  colormap gray;
-  
-  outline = get(handles.OutlineButton, 'Value');
 
-  s = handles.segment;
-  
   hold on;
-  if outline == 1
-
-    colors=pmkmp(20, 'IsoL'); % http://www.mathworks.com/matlabcentral/fileexchange/28982
-    for obj=1:size(s,1)
-      o=plot(s(obj).bound(:,2), s(obj).bound(:,1),           ...,
-           'Color', colors(mod(obj, size(colors,1))+1, :), ...,
-           'LineWidth',1.25);
-      set(o, 'HitTest', 'off') ;
-    end
-  end
+  
   
   selected = get(handles.SegmentPopup, 'Value');
   if selected
-    set(handles.AreaText,        'String', s(selected).Area);
-    set(handles.DebrisCheck,     'Value',  s(selected).debris);
-    set(handles.NucleusCheck,    'Value',  s(selected).nucleus);
-    set(handles.OverCheck,       'Value',  s(selected).over);
-    set(handles.UnderCheck,      'Value',  s(selected).under);
-    set(handles.PostMitoticCheck,'Value',  s(selected).postmitotic);
-    set(handles.PreMitoticCheck, 'Value',  s(selected).premitotic);
-    set(handles.ApoptoticCheck,  'Value',  s(selected).apoptotic);
-    set(handles.EdgeCheck,       'Value',  s(selected).edge);
+    set(handles.AreaText,        'String', handles.segment(selected).Area);
+    set(handles.DebrisCheck,     'Value',  handles.segment(selected).debris);
+    set(handles.NucleusCheck,    'Value',  handles.segment(selected).nucleus);
+    set(handles.OverCheck,       'Value',  handles.segment(selected).over);
+    set(handles.UnderCheck,      'Value',  handles.segment(selected).under);
+    set(handles.PostMitoticCheck,'Value',  handles.segment(selected).postmitotic);
+    set(handles.PreMitoticCheck, 'Value',  handles.segment(selected).premitotic);
+    set(handles.ApoptoticCheck,  'Value',  handles.segment(selected).apoptotic);
+    set(handles.EdgeCheck,       'Value',  handles.segment(selected).edge);
     
     %'Setting'
     %selected
-    % s(selected).newborn
-    o=rectangle('Position',s(selected).BoundingBox, 'EdgeColor', 'r', 'LineWidth', 2);
-    set(o, 'HitTest', 'off') ;
+    % handles.segment(selected).newborn
+    
+    handles = HighlightSelected(handles);
+    
+    %remove old rectangle
+    delete(handles.o);
+    
+    %draw rectangle around selected object
+    handles.o=rectangle('Position',handles.segment(selected).BoundingBox, 'EdgeColor', 'r', 'LineWidth', 2);
+    set(handles.o, 'HitTest', 'off') ;
+    
+    %save rectangle object to allow global access
+    guidata(handles.o, handles);
   end
   
-  set(h, 'HitTest', 'off') ;
+  set(handles.h, 'HitTest', 'off') ;
   set(handles.ImageDisplay, 'ButtonDownFcn',{@ImageDisplay_ButtonDownFcn,handles}) ;
 end
 
@@ -166,6 +175,31 @@ end % SegmentReview_OutputFcn
 
 % --- Executes on button press in OutlineButton.
 function OutlineButton_Callback(hObject, eventdata, handles)
+  %DrawDisplay(handles);
+  
+  %remove old outlines, if they exist
+  outlines = fieldnames(handles.outlines);
+  for(i=1:size(outlines,1))
+    if(handles.outlines.(outlines{i}) ~= 0)
+      delete(handles.outlines.(outlines{i}));
+    end
+    handles.outlines.(outlines{i}) = 0;
+  end
+  
+  if(get(handles.OutlineButton, 'Value') == 1)
+
+    colors=pmkmp(20, 'IsoL'); % http://www.mathworks.com/matlabcentral/fileexchange/28982
+    for obj=1:size(handles.segment,1)
+        handles.outlines.(['o' int2str(obj)])=plot(handles.segment(obj).bound(:,2),...
+            handles.segment(obj).bound(:,1),...,
+            'Color', colors(mod(obj, size(colors,1))+1, :), ...,
+            'LineWidth',1.25);
+        set(handles.outlines.(['o' int2str(obj)]), 'HitTest', 'off') ;
+    end
+  end
+
+  guidata(hObject, handles);
+  
   DrawDisplay(handles);
   
 end % OutlineButton_Callback
@@ -206,30 +240,34 @@ end
 
 % --- Executes on button press in DebrisCheck.
 function DebrisCheck_Callback(hObject, eventdata, handles)
-  selected = get(handles.SegmentPopup, 'Value');
-  handles.segment(selected).debris = get(hObject,'Value');
+  handles.segment(get(handles.SegmentPopup, 'Value')).debris = ...
+        get(hObject,'Value');
   guidata(hObject, handles);
+  DrawDisplay(handles);
 end
 
 % --- Executes on button press in NucleusCheck.
 function NucleusCheck_Callback(hObject, eventdata, handles)
-  selected = get(handles.SegmentPopup, 'Value');
-  handles.segment(selected).nucleus = get(hObject,'Value');
+  handles.segment(get(handles.SegmentPopup, 'Value')).nucleus = ...
+        get(hObject,'Value');
   guidata(hObject, handles);
+  DrawDisplay(handles);
 end
 
 % --- Executes on button press in OverCheck.
 function OverCheck_Callback(hObject, eventdata, handles)
-  selected = get(handles.SegmentPopup, 'Value');
-  handles.segment(selected).over = get(hObject,'Value');
+  handles.segment(get(handles.SegmentPopup, 'Value')).over = ...
+        get(hObject,'Value');
   guidata(hObject, handles);
+  DrawDisplay(handles);
 end
 
 % --- Executes on button press in UnderCheck.
 function UnderCheck_Callback(hObject, eventdata, handles)
-  selected = get(handles.SegmentPopup, 'Value');
-  handles.segment(selected).under = get(hObject,'Value');
+  handles.segment(get(handles.SegmentPopup, 'Value')).under = ...
+        get(hObject,'Value');
   guidata(hObject, handles);
+  DrawDisplay(handles);
 end
 
 % --- Executes on button press in SaveButton.
@@ -242,13 +280,15 @@ function SaveButton_Callback(hObject, eventdata, handles)
   else
     save(handles.segmentfile, 's', 'l');
   end
+  DrawDisplay(handles);
 end
 
 % --- Executes on button press in PostMitoticCheck.
 function PostMitoticCheck_Callback(hObject, eventdata, handles)
-  selected = get(handles.SegmentPopup, 'Value');
-  handles.segment(selected).postmitotic = get(hObject,'Value');
+  handles.segment(get(handles.SegmentPopup, 'Value')).postmitotic = ...
+        get(hObject,'Value');
   guidata(hObject, handles);
+  DrawDisplay(handles);
 end
 
 
@@ -259,9 +299,8 @@ function ImageDisplay_ButtonDownFcn(hObject, eventdata, handles)
   y=int64(pos(1,2));
   s=size(handles.labels);
   if x > 0 && x <= s(2) && y > 0 && y <= s(1)
-    l = handles.labels(y,x);
-    if l > 0
-      set(handles.SegmentPopup, 'Value', l);
+    if handles.labels(y,x) > 0
+      set(handles.SegmentPopup, 'Value', handles.labels(y,x));
       DrawDisplay(handles);
     end
   end
@@ -270,16 +309,18 @@ end
 
 % --- Executes on button press in PreMitoticCheck.
 function PreMitoticCheck_Callback(hObject, eventdata, handles)
-  selected = get(handles.SegmentPopup, 'Value');
-  handles.segment(selected).premitotic = get(hObject,'Value');
+  handles.segment(get(handles.SegmentPopup, 'Value')).premitotic = ...
+        get(hObject,'Value');
   guidata(hObject, handles);
+  DrawDisplay(handles);
 end
 
 % --- Executes on button press in ApoptoticCheck.
 function ApoptoticCheck_Callback(hObject, eventdata, handles)
-  selected = get(handles.SegmentPopup, 'Value');
-  handles.segment(selected).apoptotic = get(hObject,'Value');
+  handles.segment(get(handles.SegmentPopup, 'Value')).apoptotic = ...
+        get(hObject,'Value');
   guidata(hObject, handles);
+  DrawDisplay(handles);
 end
 
 % --- Executes on button press in EdgeCheck.
@@ -290,10 +331,170 @@ end
 
 % --- Executes on button press in SaveToTrainingSet.
 function SaveToTrainingSet_Callback(hObject, eventdata, handles)
-  handles.trainingsegmentfile = 'properties.mat';
+  if(strcmp(handles.trainingsegmentfile,''))
+        answer = inputdlg('Training Set Object: ', 's');
+        handles.trainingsegmentfile = answer{1};
+        guidata(hObject, handles);
+  end
   load(handles.trainingsegmentfile, 's', 'l');
-  rows = size(s,1);
-  selected = get(handles.SegmentPopup, 'Value');
-  s(rows+1) = handles.segment(selected);
+  s(size(s,1)+1) = handles.segment(get(handles.SegmentPopup, 'Value'));
   save(handles.trainingsegmentfile, 's', 'l');
+  DrawDisplay(handles);
+end
+
+
+% --- Executes on button press in SelectDebris.
+function SelectDebris_Callback(hObject, eventdata, handles)
+% hObject    handle to SelectDebris (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+%handles = HighlightSelected(handles);
+guidata(hObject, handles);
+DrawDisplay(handles);
+
+end
+
+% --- Executes on button press in SelectNuclei.
+function SelectNuclei_Callback(hObject, eventdata, handles)
+% hObject    handle to SelectNuclei (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+%handles = HighlightSelected(handles);
+guidata(hObject, handles);
+DrawDisplay(handles);
+
+end
+
+% --- Executes on button press in SelectOver.
+function SelectOver_Callback(hObject, eventdata, handles)
+% hObject    handle to SelectOver (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+%handles = HighlightSelected(handles);
+guidata(hObject, handles);
+DrawDisplay(handles);
+
+end
+
+% --- Executes on button press in SelectUnder.
+function SelectUnder_Callback(hObject, eventdata, handles)
+% hObject    handle to SelectUnder (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+%handles = HighlightSelected(handles);
+guidata(hObject, handles);
+DrawDisplay(handles);
+
+end
+
+% --- Executes on button press in SelectPostMitotic.
+function SelectPostMitotic_Callback(hObject, eventdata, handles)
+% hObject    handle to SelectPostMitotic (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+%handles = HighlightSelected(handles);
+guidata(hObject, handles);
+DrawDisplay(handles);
+
+end
+
+% --- Executes on button press in SelectPreMitotic.
+function SelectPreMitotic_Callback(hObject, eventdata, handles)
+% hObject    handle to SelectPreMitotic (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+%handles = HighlightSelected(handles);
+guidata(hObject, handles);
+DrawDisplay(handles);
+
+end
+
+% --- Executes on button press in SelectApoptotic.
+function SelectApoptotic_Callback(hObject, eventdata, handles)
+% hObject    handle to SelectApoptotic (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+%handles = HighlightSelected(handles);
+guidata(hObject, handles);
+DrawDisplay(handles);
+
+end
+
+function newhandles = HighlightSelected(handles)
+
+newhandles = handles;
+%available options in GUI
+selectButtons   = {'SelectDebris',  'SelectNuclei',     'SelectOver',       ...   
+                   'SelectUnder',   'SelectPostMitotic','SelectPreMitotic', ... 
+                   'SelectApoptotic'};
+
+%classifications which the above apply to (respectively)
+classifications = {'debris',        'nucleus',          'over',             ...
+                   'under',         'postmitotic',      'premitotic',       ...
+                   'apoptotic'};           
+
+               
+%remove old highlights, if they exist
+highlights = fieldnames(newhandles.highlights);
+for(i=1:size(highlights,1))
+  delete(newhandles.highlights.(highlights{i}));
+  clear newhandles.highlights.(highlights{i});
+end
+clear newhandles.highlights;
+newhandles.highlights = struct();
+               
+
+%iterate over the button options               
+for(i=1:size(selectButtons,2))
+    
+    %only act on the ones that are selected
+    if(get(newhandles.(selectButtons{1,i}), 'Value') == 1)
+        
+        hold on;
+        colors=pmkmp(20, 'IsoL'); % http://www.mathworks.com/matlabcentral/fileexchange/28982
+        
+        %outline all objects that are classified this way
+        for obj=1:size(newhandles.segment,1)
+            if(newhandles.segment(obj).(classifications{1,i}) == 1)
+                newhandles.highlights.([classifications{1,i} int2str(obj)])=...
+                    plot(newhandles.segment(obj).bound(:,2),              ...
+                    newhandles.segment(obj).bound(:,1),                   ...,
+                    'Color', colors(mod(obj, size(colors,1))+1, :),    ...,
+                    'LineWidth',1.25);
+                set(newhandles.highlights.([classifications{1,i} int2str(obj)]),...
+                    'HitTest', 'off') ;
+            end
+        end
+        
+    end
+    
+end
+
+end
+
+
+% --- Executes on button press in SaveImgToTrainingSet.
+function SaveImgToTrainingSet_Callback(hObject, eventdata, handles)
+% hObject    handle to SaveImgToTrainingSet (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+  if(strcmp(handles.trainingsegmentfile,''))
+        answer = inputdlg('Training Set Object: ', 's');
+        handles.trainingsegmentfile = answer{1};
+        guidata(hObject, handles);
+  end
+  load(handles.trainingsegmentfile, 's', 'l');
+  for(i=1:size(handles.segment,1))
+    s(size(s,1)+1) = handles.segment(i);
+  end
+  save(handles.trainingsegmentfile, 's', 'l');
+  DrawDisplay(handles);
 end
