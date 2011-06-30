@@ -5,15 +5,15 @@ TrackStruct=[];
 TrackStruct.ImgExt='.tif';
 ds='\'  %directory symbol
 TrackStruct.DS=ds;
-root_folder='i:\walter';
-TrackStruct.ImageFileName='Cell Tracker Green - Confocal - n';
+root_folder=well_folder;
+TrackStruct.ImageFileName='DsRed - Confocal - n';
 %low hepsin expressing - not really wildtype
 TrackStruct.ImageFileBase=[well_folder ds TrackStruct.ImageFileName];
 %hepsin overexpressing
 % TrackStruct.ImageFileBase=[well_folder ds 'llh_hep_lm7_t'];
-TrackStruct.StartFrame=31;
-TrackStruct.FrameCount=29;
-TrackStruct.TimeFrame=8; %minutes
+TrackStruct.StartFrame=1;
+TrackStruct.FrameCount=9;
+TrackStruct.TimeFrame=15; %minutes
 TrackStruct.FrameStep=1; %read every x frames
 TrackStruct.NumberFormat='%06d';
 TrackStruct.MaxFramesMissing=6; %how many frames a cell can disappear before we end its track
