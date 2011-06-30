@@ -4,8 +4,8 @@ function output_args=generateBinImgUsingLocAvg(input_args)
 avg_filter=fspecial(input_args.Strel.Value,input_args.StrelSize.Value);
 img_avg=imfilter(input_args.Image.Value,avg_filter,'replicate');
 img_bw=input_args.Image.Value>(input_args.BrightnessThresholdPct.Value*img_avg);
-clear_border_dist=input_args.ClearBorderDist.Value;
 if (input_args.ClearBorder.Value)
+    clear_border_dist=input_args.ClearBorderDist.Value;
     if (clear_border_dist>1)
         img_bw(1:clear_border_dist-1,1:end)=1;
         img_bw(end-clear_border_dist+1:end,1:end)=1;
