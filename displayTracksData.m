@@ -16,6 +16,17 @@ red_color=cur_img;
 green_color=cur_img;
 blue_color=cur_img;
 
+field_names=fieldnames(input_args);
+if (max(strcmp(field_names,'ShowIDs')))
+    b_show_ids=input_args.ShowIDs.Value;
+else
+    b_show_ids=true;
+end
+if (max(strcmp(field_names,'IDList')))
+    id_list=input_args.IDList.Value;
+else
+    id_list=[];
+end
 
 cur_cell_number=size(cur_tracks,1);
 
@@ -37,32 +48,39 @@ centroid1Col=tracks_layout.Centroid1Col;
 centroid2Col=tracks_layout.Centroid2Col;
 trackIDCol=tracks_layout.TrackIDCol;
 
-for j=1:cur_cell_number
-    cur_centroid=cur_tracks(j,centroid1Col:centroid2Col);
-    cell_id=cur_tracks(j,trackIDCol);
-    
-    %add the cell ids
-    text_img=text2im(num2str(cell_id));
-    text_img=imresize(text_img,0.75,'nearest');
-    text_length=size(text_img,2);
-    text_height=size(text_img,1);
-    rect_coord_1=round(cur_centroid(1)-text_height/2);
-    rect_coord_2=round(cur_centroid(1)+text_height/2);    
-    rect_coord_3=round(cur_centroid(2)-text_length/2);
-    rect_coord_4=round(cur_centroid(2)+text_length/2);
-    if ((rect_coord_1<1)||(rect_coord_2>img_sz(1))||(rect_coord_3<1)||(rect_coord_4>img_sz(2)))
-        continue;
+if (b_show_ids)
+    for j=1:cur_cell_number
+        cur_centroid=cur_tracks(j,centroid1Col:centroid2Col);
+        cell_id=cur_tracks(j,trackIDCol);
+        if (~isempty(id_list))
+            if (max(id_list==cell_id)==0)
+                continue;
+            end
+        end
+
+        %add the cell ids
+        text_img=text2im(num2str(cell_id));
+        text_img=imresize(text_img,0.75,'nearest');
+        text_length=size(text_img,2);
+        text_height=size(text_img,1);
+        rect_coord_1=round(cur_centroid(1)-text_height/2);
+        rect_coord_2=round(cur_centroid(1)+text_height/2);
+        rect_coord_3=round(cur_centroid(2)-text_length/2);
+        rect_coord_4=round(cur_centroid(2)+text_length/2);
+        if ((rect_coord_1<1)||(rect_coord_2>img_sz(1))||(rect_coord_3<1)||(rect_coord_4>img_sz(2)))
+            continue;
+        end
+        [text_coord_1 text_coord_2]=find(text_img==0);
+        %offset the text coordinates by the image coordinates in the (low,low)
+        %corner of the rectangle
+        text_coord_1=text_coord_1+rect_coord_1;
+        text_coord_2=text_coord_2+rect_coord_3;
+        text_coord_lin=sub2ind(img_sz,text_coord_1,text_coord_2);
+        %write the text in green
+        red_color(text_coord_lin)=max_pxl;
+        green_color(text_coord_lin)=max_pxl;
+        blue_color(text_coord_lin)=max_pxl;
     end
-    [text_coord_1 text_coord_2]=find(text_img==0);
-    %offset the text coordinates by the image coordinates in the (low,low)
-    %corner of the rectangle
-    text_coord_1=text_coord_1+rect_coord_1;
-    text_coord_2=text_coord_2+rect_coord_3;
-    text_coord_lin=sub2ind(img_sz,text_coord_1,text_coord_2);
-    %write the text in green
-    red_color(text_coord_lin)=max_pxl;
-    green_color(text_coord_lin)=max_pxl;
-    blue_color(text_coord_lin)=max_pxl;
 end
 
 %write the combined channels as an rgb image
