@@ -1,0 +1,14 @@
+This directory is an attempt to do bayesian directed segmentation.
+
+Here is a walkthrough of usage:
+
+1) Start Matlab
+2) Change Matlab directory to this directory.
+3) >> SegmentImages('~/Desktop/2011-06-13_000/Well E04', 'DsRed - Confocal - n', '.tif', 6, 854, 858, 'output')
+4) Correct
+5) Hit "Save"
+6) Close
+7) Yes to add to training set.
+8) Repeat, lather, rinse
+9) Next is the "validation set", begins with Naive segment.
+10) Close
