@@ -39,6 +39,16 @@ for i=1:nuclei_nr
         nr_clusters=length(ws_cluster_ids);
         [blob_1 blob_2]=find(cur_obj);
         segmentation_idx=clusterdata([blob_1 blob_2], 'maxclust', nr_clusters, 'linkage', 'average');
+		zero_idx = find(segmentation_idx == 0);
+		for(k=1:size(zero_idx))
+			if(zero_idx(k) == 1)
+				segmentation_idx(zero_idx(k)) = ...
+					segmentation_idx(zero_idx(k) + 1);
+			else
+				segmentation_idx(zero_idx(k)) = ...
+					segmentation_idx(zero_idx(k) - 1);
+			end
+		end
         %the segmentation might create objects that are smaller than our
         %minimum object size - we need to unsegment those
         [valid_segmentation_ids valid_len new_segmentation_idx]=determineValidObjects(segmentation_idx,...
