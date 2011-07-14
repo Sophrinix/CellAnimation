@@ -10,11 +10,12 @@ function [s,l] = Resegment(im, properties, labels, objids)
     %
     %labels      -  the matrix of labeled objects
     %
-    %objids      -  a list of object ids (indexes in the properties struct) to
-    %               be resegmented
+    %objids      -  a list of object ids (indexes in the properties struct) 
+	%				to be resegmented
     %OUTPUTS:
-    %s           -  properties of all objects in the image after resegmentation,
-    %               maintains prior classification of pre-existing objects
+    %s           -  properties of all objects in the image after 
+	%				resegmentation, maintains prior classification of 
+	%				pre-existing objects
     %
     %l           -  label matrix of the image after resegmentation
     %
@@ -118,5 +119,9 @@ function [s,l] = Resegment(im, properties, labels, objids)
     edges = [s(:).BoundingBox];
     [unused, order] = sort(edges(1:4:size(edges,2)));
     s = s(order);    
+	
+	for(obj = 1:size(s,1))
+		s(obj).label = label;
+	end	
     
 end

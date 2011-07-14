@@ -69,7 +69,10 @@ function [p,l] = NaiveSegment(image, varargin)
   % Compute intensities from background adjusted image
   bounds = bwboundaries(bw);
   for obj=1:size(p,1)
-    p(obj).Intensity =  sum(i(p(obj).PixelIdxList));
+
+	p(obj).label = obj;    
+
+	p(obj).Intensity =  sum(i(p(obj).PixelIdxList));
     
     p(obj).bound = bounds{obj};
     

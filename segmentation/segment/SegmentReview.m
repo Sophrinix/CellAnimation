@@ -1,27 +1,31 @@
 function varargout = SegmentReview(varargin)
 % SEGMENTREVIEW M-file for SegmentReview.fig
-%      SEGMENTREVIEW, by itself, creates a new SEGMENTREVIEW or raises the existing
-%      singleton*.
+%      	SEGMENTREVIEW, by itself, creates a new SEGMENTREVIEW or raises the 
+%		existing singleton*.
 %
-%      H = SEGMENTREVIEW returns the handle to a new SEGMENTREVIEW or the handle to
-%      the existing singleton*.
+%      	H = SEGMENTREVIEW returns the handle to a new SEGMENTREVIEW or the 
+%		handle to the existing singleton*.
 %
-%      SEGMENTREVIEW('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in SEGMENTREVIEW.M with the given input arguments.
+%      	SEGMENTREVIEW('CALLBACK',hObject,eventData,handles,...) calls the 
+%		local function named CALLBACK in SEGMENTREVIEW.M with the given 
+%		input arguments.
 %
-%      SEGMENTREVIEW('Property','Value',...) creates a new SEGMENTREVIEW or raises the
-%      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before SegmentReview_OpeningFcn gets called.  An
-%      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to SegmentReview_OpeningFcn via varargin.
+%      	SEGMENTREVIEW('Property','Value',...) creates a new SEGMENTREVIEW or 
+%		raises the existing singleton*.  Starting from the left, property 
+%		value pairs are applied to the GUI before SegmentReview_OpeningFcn 
+%		gets called.  An unrecognized property name or invalid value makes 
+%		property application 
+%		stop.  All inputs are passed to SegmentReview_OpeningFcn via 
+%		varargin.
 %
-%      *See GUI Options on GUIDEs Tools menu.  Choose "GUI allows only one instance to run (singleton)".
+%   	*See GUI Options on GUIDEs Tools menu.  Choose "GUI allows only one 
+%		instance to run (singleton)".
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
 % Edit the above text to modify the response to help SegmentReview
 
-% Last Modified by GUIDE v2.5 16-Jun-2011 10:20:44
+% Last Modified by GUIDE v2.5 13-Jul-2011 14:58:13
 
   % Begin initialization code - DO NOT EDIT
   gui_Singleton = 1;
@@ -34,467 +38,814 @@ function varargout = SegmentReview(varargin)
                    
   if nargin && ischar(varargin{1})
      gui_State.gui_Callback = str2func(varargin{1});
-  end
+  end %if nargin...
 
   if nargout
       [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
-  else
+  else 
       gui_mainfcn(gui_State, varargin{:});
-  end
+  end %if nargout
 % End initialization code - DO NOT EDIT
 end % SegmentReview
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Output
+
+% --- Outputs from this function are returned to the command line.
+function varargout = SegmentReview_OutputFcn(hObject, eventdata, handles) 
+ 
+  varargout{1} = handles.output;
+
+end % SegmentReview_OutputFcn
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Initialization
 
 % --- Executes just before SegmentReview is made visible.
 function SegmentReview_OpeningFcn(hObject, eventdata, handles, varargin)
+  
   % Choose default command line output for SegmentReview
   handles.output = hObject;
 
   % Update handles structure
   guidata(hObject, handles);
 
-  if size(varargin,2) < 2
-    errordlg('Must Specify Number followed by Image File on Command Line', 'No Filename');
+  if size(varargin,2) < 3
+    errordlg(['Must Specify Number followed by working directory, ' ...
+			  'followed by output file on Command Line'], 'No Filename');
     close(handles);
-  elseif size(varargin,2) < 3
-    if InitDisplay(handles, varargin{2}) == 1
-      errordlg('Unable to locate image file', 'Invalid Filename');
-      close(handles);
-    end
+  elseif size(varargin,2) > 4
+    errordlg('Too many input arguments', 'Too many arguments');
   elseif InitDisplay(handles, varargin{2}, varargin{3}) == 1
-    errordlg('Unable to locate file', 'Invalid Filename');
+    errordlg('Unable to locate directory', 'Invalid Directory');
     close(handles);
-  end
+  end %if size...
 
 end % SegmentReview_OpeningFcn
 
-function error=InitDisplay(handles, imagefile, segmentfile)
+function error=InitDisplay(handles, directory, outputfile) 
 
   try
-    i = imread(imagefile);
+    handles.directory = directory;
+	addpath(directory);%check to see if directory is real
   catch
-    error=1;
-    return;
-  end
-  
-  if nargin == 3
-    try
-      load(segmentfile, 's', 'l');
-      handles.segmentfile = segmentfile;
-    catch
-      error=1;
-      return;
-    end
+	error = 1;
+	return;
+  end %try
+ 
+  if(strcmp(which(outputfile), ''))
+	%new set
+	handles 					= LoadNewImage(handles);	
+	handles.objSet 				= [];
+	handles.objSetIdx 			= 0;
+	set(handles.SaveImgToSet,   'Enable', 'on');
+  	set(handles.deleteObj, 	    'Enable', 'off');  
+	set(handles.SaveObjToSet,   'Enable', 'on');
+
   else
-    fprintf(1,'Segment File was not specified. Running default segmentation.\n');
-    [s,l] = NaiveSegment(i);
-    handles.segmentfile = '';
-    fprintf(1,'Segmentation Finished.\n');
-  end
+	%set already exists
+	load(outputfile, 'objSet');
+	handles.objSet 				= objSet;
+	handles.imagefile 			= [directory 				  ...
+								   filesep 					  ...
+								   handles.objSet(1).wellName ...
+								   filesep 					  ...
+								   handles.objSet(1).imageName];
+	handles.image 				= imread(handles.imagefile);
+	handles.imageName 			= handles.objSet(1).imageName;
+	handles.wellName 			= handles.objSet(1).wellName;
+	handles.objsetIdx 			= 1;
+	handles.props 				= handles.objSet(1).props;
+	handles.labels				= handles.objSet(1).labels;
+	set(handles.SaveImgToSet,   'Enable', 'off');
+  	set(handles.deleteObj,      'Enable', 'on');  
+	set(handles.SaveObjToSet,   'Enable', 'off');
 
-  handles.imagefile   = imagefile;
-  handles.image       = i;
-  handles.segment     = s;
-  handles.labels      = l;
-  handles.trainingsegmentfile = '';
-  
-  % Update handles structure
-  guidata(handles.output, handles);
+  end %if(which...
 
-  set(handles.SegmentPopup, 'String', 1:size(handles.segment,1));
-  
-  %initialize figure
-  axes(handles.ImageDisplay);
-  handles.h = imagesc(handles.image);
-  colormap gray;
-  
-  %initialize red rectangle - starts on object #1
-  handles.o=rectangle('Position',handles.segment(1).BoundingBox, 'EdgeColor', 'r', 'LineWidth', 2);
-  
-  %initialize outlines handles
-  handles.outlines = struct();
-  
-  %initialize highlights handles
-  handles.highlights = struct();
-  
+  handles.outputfile 			= outputfile;%.mat file
+  handles.outlines 				= struct();%outlines handles
+  handles.highlights 			= struct();%highlights handles
+  handles.rectangle				= handle(rectangle);%rectangle handle
+  delete(handles.rectangle);
+
+  handles = PopulateObjSetPopUp(handles);
+  handles.selected = 1; 
   guidata(handles.output, handles);
   
+  set(handles.ImageDisplay, 'NextPlot', 'replacechildren');
   DrawDisplay(handles);
   
   error=0;
+
 end % InitDisplay
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Handles the main display
+
+% --- Draws the image
 function DrawDisplay(handles)
-
+ 
+  handles = DeleteRectangle(handles);
+  handles = DeleteHighlights(handles);
+  handles = DeleteOutlines(handles);
+  guidata(handles.output, handles);
+ 
+  %initialize figure
+  newplot;
+  imagesc(handles.image);
+  axis image
+  colormap gray; 
+  set(handles.ImageDisplay, 'NextPlot', 'replacechildren');
   hold on;
-  
-  
-  selected = get(handles.SegmentPopup, 'Value');
-  if selected
-    set(handles.AreaText,        'String', handles.segment(selected).Area);
-    set(handles.DebrisCheck,     'Value',  handles.segment(selected).debris);
-    set(handles.NucleusCheck,    'Value',  handles.segment(selected).nucleus);
-    set(handles.OverCheck,       'Value',  handles.segment(selected).over);
-    set(handles.UnderCheck,      'Value',  handles.segment(selected).under);
-    set(handles.PostMitoticCheck,'Value',  handles.segment(selected).postmitotic);
-    set(handles.PreMitoticCheck, 'Value',  handles.segment(selected).premitotic);
-    set(handles.ApoptoticCheck,  'Value',  handles.segment(selected).apoptotic);
-    set(handles.EdgeCheck,       'Value',  handles.segment(selected).edge);
-    
-    %'Setting'
-    %selected
-    % handles.segment(selected).newborn
-    
-    handles = HighlightSelected(handles);
-    
-    %remove old rectangle
-    delete(handles.o);
-    
-    %draw rectangle around selected object
-    handles.o=rectangle('Position',handles.segment(selected).BoundingBox, 'EdgeColor', 'r', 'LineWidth', 2);
-    set(handles.o, 'HitTest', 'off') ;
-    
-    %save rectangle object to allow global access
-    guidata(handles.o, handles);
+
+  %assign segment popup values
+  set(handles.SegmentPopup, 'Value', 1);  
+  set(handles.SegmentPopup, 'String', 1:size(handles.props,1));
+
+  handles.selected 	= 1;	
+  handles = UpdateClassificationDisplay(handles);  
+
+  handles = DrawRectangle(handles);
+  if(get(handles.OutlineButton, 'Value'))
+    handles = DrawOutlines(handles);
   end
+  handles = DrawHighlights(handles);
+
+  set(get(handles.ImageDisplay, 'Children'), 'HitTest', 'off');
+
+  guidata(handles.output, handles);
+   
+end %DrawDisplay
+
+% --- Executes on mouse press over axes background.
+function ImageDisplay_ButtonDownFcn(hObject, eventdata, handles)
+ 
+  labels    = [handles.props(:).label];
+  pos 		= get(hObject, 'Currentpoint');
+  x   		= int64(pos(1,1));
+  y   		= int64(pos(1,2));
+  s   		= size(handles.labels);
+
+  if x > 0 && x <= s(2) && y > 0 && y <= s(1)
+    if handles.labels(y,x) > 0
+      l = handles.labels(y,x);
+	  s = find(labels == l);
+	  if(~isempty(s))
+        handles.selected = s;
+ 		get(handles.SegmentPopup, 'String');
+		set(handles.SegmentPopup, 'Value', handles.selected);
+	  end %if(isempty...
+    end %if handles...
+  end %if x...
+
+  handles 	= DeleteRectangle(handles);
+  handles 	= DrawRectangle(handles);
+  handles	= UpdateClassificationDisplay(handles);
+  guidata(handles.output, handles);
   
-  set(handles.h, 'HitTest', 'off') ;
-  set(handles.ImageDisplay, 'ButtonDownFcn',{@ImageDisplay_ButtonDownFcn,handles}) ;
+end %ImageDisplay_ButtonDownFcn
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Handles the classification pane
+
+% --- Display selected object's classification
+function newHandles = UpdateClassificationDisplay(handles)
+
+  newHandles = handles;
+
+  set(newHandles.AreaText,     	  'String',...
+	newHandles.props(newHandles.selected).Area);
+  set(newHandles.DebrisCheck,     'Value', ...
+	newHandles.props(newHandles.selected).debris);
+  set(newHandles.NucleusCheck,    'Value', ...
+	newHandles.props(newHandles.selected).nucleus);
+  set(newHandles.OverCheck,       'Value', ...
+	newHandles.props(newHandles.selected).over);
+  set(newHandles.UnderCheck,      'Value', ...
+	newHandles.props(newHandles.selected).under);
+  set(newHandles.PostMitoticCheck,'Value', ...
+	newHandles.props(newHandles.selected).postmitotic);
+  set(newHandles.PreMitoticCheck, 'Value', ...
+	newHandles.props(newHandles.selected).premitotic);
+  set(newHandles.ApoptoticCheck,  'Value', ...
+	newHandles.props(newHandles.selected).apoptotic);
+  set(newHandles.EdgeCheck,       'Value', ...
+	newHandles.props(newHandles.selected).edge);
+
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-% UIWAIT makes SegmentReview wait for user response (see UIRESUME)
-% uiwait(handles.figure1);
 
 
-% --- Outputs from this function are returned to the command line.
-function varargout = SegmentReview_OutputFcn(hObject, eventdata, handles) 
-  varargout{1} = handles.output;
-end % SegmentReview_OutputFcn
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Handles the rectangle around the selected object
 
+% --- Draws a rectangle around the selected object
+function newHandles = DrawRectangle(handles)
+
+  newHandles = handles;
+
+  newHandles.rectangle = ... 
+	rectangle( ...
+		'Position', newHandles.props(newHandles.selected).BoundingBox, ...
+		'EdgeColor', 'r', ...
+		'LineWidth', 2);
+  set(newHandles.rectangle, 'HitTest', 'off');
+
+end %DrawRectangle
+
+% --- Removes the rectangle
+function newHandles = DeleteRectangle(handles)
+
+  newHandles = handles;
+
+  if(ishandle(newHandles.rectangle))
+    delete(newHandles.rectangle);
+  end %if(ishandle...
+
+end %DeleteRectangle
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Handles outlines around objects
 
 % --- Executes on button press in OutlineButton.
 function OutlineButton_Callback(hObject, eventdata, handles)
-  %DrawDisplay(handles);
-  
-  %remove old outlines, if they exist
-  outlines = fieldnames(handles.outlines);
-  for(i=1:size(outlines,1))
-    if(handles.outlines.(outlines{i}) ~= 0)
-      delete(handles.outlines.(outlines{i}));
-    end
-    handles.outlines.(outlines{i}) = 0;
-  end
-  
-  if(get(handles.OutlineButton, 'Value') == 1)
+ 
+  handles = DeleteOutlines(handles);
 
-    colors=pmkmp(20, 'IsoL'); % http://www.mathworks.com/matlabcentral/fileexchange/28982
-    for obj=1:size(handles.segment,1)
-        handles.outlines.(['o' int2str(obj)])=plot(handles.segment(obj).bound(:,2),...
-            handles.segment(obj).bound(:,1),...,
-            'Color', colors(mod(obj, size(colors,1))+1, :), ...,
-            'LineWidth',1.25);
-        set(handles.outlines.(['o' int2str(obj)]), 'HitTest', 'off') ;
-    end
-  end
+  if(get(hObject, 'Value'))
+    handles = DrawOutlines(handles); 
+  end %if(get...
 
-  guidata(hObject, handles);
-  
-  DrawDisplay(handles);
+  guidata(handles.output, handles);
   
 end % OutlineButton_Callback
 
+% --- Draws outlines around objects
+function newHandles = DrawOutlines(handles)
+
+  newHandles = handles;
+
+  % http://www.mathworks.com/matlabcentral/fileexchange/28982
+  colors=pmkmp(20, 'IsoL');
+
+  for obj=1:size(newHandles.props,1)
+    newHandles.outlines.(['o' int2str(obj)]) = ...
+	  plot(newHandles.props(obj).bound(:,2),...
+           newHandles.props(obj).bound(:,1),...,
+           'Color', colors(mod(obj, size(colors,1))+1, :), ...,
+           'LineWidth',1.25);
+    set(newHandles.outlines.(['o' int2str(obj)]), 'HitTest', 'off') ;
+  end %for obj...
+
+end %DrawOutlines
+
+% --- removes the outlines, if present
+function newHandles = DeleteOutlines(handles)
+
+  newHandles = handles;
+
+  outlines = fieldnames(newHandles.outlines);
+  for(i=1:size(outlines,1))
+    if(newHandles.outlines.(outlines{i}) ~= 0)
+      delete(newHandles.outlines.(outlines{i}));
+    end %if(newHandles...
+  end %for(i=1...
+
+  clear newHandles.outlines;
+  newHandles.outlines = struct();
+
+end %DeleteOutlines
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Handles popup menu which allows direct acces to objects 
+%in the frame
 
 % --- Executes on selection change in SegmentPopup.
 function SegmentPopup_Callback(hObject, eventdata, handles)
-  DrawDisplay(handles);
-end
+ 
+  if(isempty(handles.props))
+ 	msgbox('There are no objects');
+  else
+    handles.selected 	= get(handles.SegmentPopup, 'Value');
+    handles 			= DeleteRectangle(handles);
+    handles 			= DrawRectangle(handles);
+    handles				= UpdateClassificationDisplay(handles);
+  
+    guidata(handles.output, handles);
+  end
+
+end %SegmentPopup_Callback
 
 % --- Executes during object creation, after setting all properties.
 function SegmentPopup_CreateFcn(hObject, eventdata, handles)
-  % Hint: popupmenu controls usually have a white background on Windows.
-  %       See ISPC and COMPUTER.
-  if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+ 
+  if ispc && isequal(get(hObject,'BackgroundColor'), ...
+					 get(0,'defaultUicontrolBackgroundColor'))
       set(hObject,'BackgroundColor','white');
-  end
+  end %if ispc ...
   
-end
+end %SegmentPopup_CreateFcn
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Handles the area text box
+
+% --- Executes of click in area text box
 function AreaText_Callback(hObject, eventdata, handles)
-
-% Hints: get(hObject,'String') returns contents of AreaText as text
-%        str2double(get(hObject,'String')) returns contents of AreaText as a double
-end
+  %nothing to do
+end %AreaText_Callback
 
 % --- Executes during object creation, after setting all properties.
 function AreaText_CreateFcn(hObject, eventdata, handles)
 
-  % Hint: edit controls usually have a white background on Windows.
-  %       See ISPC and COMPUTER.
-  if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+  if ispc && isequal(get(hObject,'BackgroundColor'), ... 
+					 get(0,'defaultUicontrolBackgroundColor'))
       set(hObject,'BackgroundColor','white');
-  end
-end
+  end %if ispc ...
 
+end %AreaText_CreateFcn
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Handles the classification check boxes
 
 % --- Executes on button press in DebrisCheck.
 function DebrisCheck_Callback(hObject, eventdata, handles)
-  handles.segment(get(handles.SegmentPopup, 'Value')).debris = ...
+  
+  handles.props(get(handles.SegmentPopup, 'Value')).debris = ...
         get(hObject,'Value');
-  guidata(hObject, handles);
-  DrawDisplay(handles);
-end
+  handles = DeleteHighlights(handles);
+  handles = DrawHighlights(handles);
+  guidata(handles.output, handles);
+
+end %DebrisCheck_Callback
 
 % --- Executes on button press in NucleusCheck.
 function NucleusCheck_Callback(hObject, eventdata, handles)
-  handles.segment(get(handles.SegmentPopup, 'Value')).nucleus = ...
+
+  handles.props(get(handles.SegmentPopup, 'Value')).nucleus = ...
         get(hObject,'Value');
-  guidata(hObject, handles);
-  DrawDisplay(handles);
-end
+  handles = DeleteHighlights(handles);
+  handles = DrawHighlights(handles);
+  guidata(handles.output, handles);
+
+end %NucleusCheck_Callback
 
 % --- Executes on button press in OverCheck.
 function OverCheck_Callback(hObject, eventdata, handles)
-  handles.segment(get(handles.SegmentPopup, 'Value')).over = ...
+
+  handles.props(get(handles.SegmentPopup, 'Value')).over = ...
         get(hObject,'Value');
-  guidata(hObject, handles);
-  DrawDisplay(handles);
-end
+  handles = DeleteHighlights(handles);
+  handles = DrawHighlights(handles);
+  guidata(handles.output, handles);
+
+end %OverCheck_Callback
 
 % --- Executes on button press in UnderCheck.
 function UnderCheck_Callback(hObject, eventdata, handles)
-  handles.segment(get(handles.SegmentPopup, 'Value')).under = ...
-        get(hObject,'Value');
-  guidata(hObject, handles);
-  DrawDisplay(handles);
-end
 
-% --- Executes on button press in SaveButton.
-function SaveButton_Callback(hObject, eventdata, handles)
-  s = handles.segment;
-  l = handles.labels;
-  if(isempty(handles.segmentfile))
-    [file,path] = uiputfile('','Save Classification');
-    save(strcat(path,file), 's', 'l');
-  else
-    save(handles.segmentfile, 's', 'l');
-  end
-  DrawDisplay(handles);
-end
+  handles.props(get(handles.SegmentPopup, 'Value')).under = ...
+        get(hObject,'Value');
+  handles = DeleteHighlights(handles);
+  handles = DrawHighlights(handles);
+  guidata(handles.output, handles);
+ 
+end %UnderCheck_Callback
 
 % --- Executes on button press in PostMitoticCheck.
 function PostMitoticCheck_Callback(hObject, eventdata, handles)
-  handles.segment(get(handles.SegmentPopup, 'Value')).postmitotic = ...
+
+  handles.props(get(handles.SegmentPopup, 'Value')).postmitotic = ...
         get(hObject,'Value');
-  guidata(hObject, handles);
-  DrawDisplay(handles);
-end
-
-
-% --- Executes on mouse press over axes background.
-function ImageDisplay_ButtonDownFcn(hObject, eventdata, handles)
-  pos=get(hObject, 'Currentpoint');
-  x=int64(pos(1,1));
-  y=int64(pos(1,2));
-  s=size(handles.labels);
-  if x > 0 && x <= s(2) && y > 0 && y <= s(1)
-    if handles.labels(y,x) > 0
-      set(handles.SegmentPopup, 'Value', handles.labels(y,x));
-      DrawDisplay(handles);
-    end
-  end
-end
-
+  handles = DeleteHighlights(handles);
+  handles = DrawHighlights(handles);
+  guidata(handles.output, handles);
+ 
+end %PostMitoticCheck_Callback
 
 % --- Executes on button press in PreMitoticCheck.
 function PreMitoticCheck_Callback(hObject, eventdata, handles)
-  handles.segment(get(handles.SegmentPopup, 'Value')).premitotic = ...
+
+  handles.props(get(handles.SegmentPopup, 'Value')).premitotic = ...
         get(hObject,'Value');
-  guidata(hObject, handles);
-  DrawDisplay(handles);
-end
+  handles = DeleteHighlights(handles);
+  handles = DrawHighlights(handles);
+  guidata(handles.output, handles);
+  
+end %PreMitoticCheck_Callback
 
 % --- Executes on button press in ApoptoticCheck.
 function ApoptoticCheck_Callback(hObject, eventdata, handles)
-  handles.segment(get(handles.SegmentPopup, 'Value')).apoptotic = ...
+
+  handles.props(get(handles.SegmentPopup, 'Value')).apoptotic = ...
         get(hObject,'Value');
-  guidata(hObject, handles);
-  DrawDisplay(handles);
-end
+  handles = DeleteHighlights(handles);
+  handles = DrawHighlights(handles);
+  guidata(handles.output, handles);
+  
+end %ApoptoticCheck_Callback
 
 % --- Executes on button press in EdgeCheck.
 function EdgeCheck_Callback(hObject, eventdata, handles)
+	%nothing to do
+end %EdgeCheck_Callback
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-end
 
 
-% --- Executes on button press in SaveToTrainingSet.
-function SaveToTrainingSet_Callback(hObject, eventdata, handles)
-  if(strcmp(handles.trainingsegmentfile,''))
-        answer = inputdlg('Training Set Object: ', 's');
-        handles.trainingsegmentfile = answer{1};
-        guidata(hObject, handles);
-  end
-  load(handles.trainingsegmentfile, 's', 'l');
-  s(size(s,1)+1) = handles.segment(get(handles.SegmentPopup, 'Value'));
-  save(handles.trainingsegmentfile, 's', 'l');
-  DrawDisplay(handles);
-end
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Allows objects to be outlined based on classification
 
 % --- Executes on button press in SelectDebris.
 function SelectDebris_Callback(hObject, eventdata, handles)
-% hObject    handle to SelectDebris (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
-%handles = HighlightSelected(handles);
-guidata(hObject, handles);
-DrawDisplay(handles);
+  handles = DeleteHighlights(handles);
+  handles = DrawHighlights(handles);  
+  guidata(handles.output, handles);
 
-end
+end %SelectDebris_Callback
 
 % --- Executes on button press in SelectNuclei.
 function SelectNuclei_Callback(hObject, eventdata, handles)
-% hObject    handle to SelectNuclei (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
-%handles = HighlightSelected(handles);
-guidata(hObject, handles);
-DrawDisplay(handles);
+  handles = DeleteHighlights(handles);
+  handles = DrawHighlights(handles);
+  guidata(handles.output, handles);
 
-end
+end %SelectNuclei_Callback
 
 % --- Executes on button press in SelectOver.
 function SelectOver_Callback(hObject, eventdata, handles)
-% hObject    handle to SelectOver (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
-%handles = HighlightSelected(handles);
-guidata(hObject, handles);
-DrawDisplay(handles);
-
-end
+  handles = DeleteHighlights(handles);
+  handles = DrawHighlights(handles);
+  guidata(handles.output, handles);
+  
+end %SelectOver_Callback
 
 % --- Executes on button press in SelectUnder.
 function SelectUnder_Callback(hObject, eventdata, handles)
-% hObject    handle to SelectUnder (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
-%handles = HighlightSelected(handles);
-guidata(hObject, handles);
-DrawDisplay(handles);
+  handles = DeleteHighlights(handles);
+  handles = DrawHighlights(handles);
+  guidata(handles.output, handles);
 
-end
+end %SelectUnder_Callback
 
 % --- Executes on button press in SelectPostMitotic.
 function SelectPostMitotic_Callback(hObject, eventdata, handles)
-% hObject    handle to SelectPostMitotic (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
-%handles = HighlightSelected(handles);
-guidata(hObject, handles);
-DrawDisplay(handles);
+  hhandles = DeleteHighlights(handles);
+  handles = DrawHighlights(handles);
+  guidata(handles.output, handles);
 
-end
+end %SelectPostMitotic_Callback
 
 % --- Executes on button press in SelectPreMitotic.
 function SelectPreMitotic_Callback(hObject, eventdata, handles)
-% hObject    handle to SelectPreMitotic (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
-%handles = HighlightSelected(handles);
-guidata(hObject, handles);
-DrawDisplay(handles);
+  handles = DeleteHighlights(handles);
+  handles = DrawHighlights(handles);
+  guidata(handles.output, handles);
 
-end
+end %SelectPreMitotic_Callback
 
 % --- Executes on button press in SelectApoptotic.
 function SelectApoptotic_Callback(hObject, eventdata, handles)
-% hObject    handle to SelectApoptotic (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
-%handles = HighlightSelected(handles);
-guidata(hObject, handles);
-DrawDisplay(handles);
+  handles = DeleteHighlights(handles);
+  handles = DrawHighlights(handles);
+  guidata(handles.output, handles);
 
-end
+end %SelectApoptotic_Callback
 
-function newhandles = HighlightSelected(handles)
+% --- Draws outlines around objects which match the 
+%	  selected classification
+function newHandles = DrawHighlights(handles)
 
-newhandles = handles;
-%available options in GUI
-selectButtons   = {'SelectDebris',  'SelectNuclei',     'SelectOver',       ...   
-                   'SelectUnder',   'SelectPostMitotic','SelectPreMitotic', ... 
-                   'SelectApoptotic'};
+  newHandles = handles;
 
-%classifications which the above apply to (respectively)
-classifications = {'debris',        'nucleus',          'over',             ...
-                   'under',         'postmitotic',      'premitotic',       ...
-                   'apoptotic'};           
+  %available options to outline
+  selectButtons 	= {	'SelectDebris', 		...
+				  		'SelectNuclei', 		...
+						'SelectOver',   		...
+						'SelectUnder',  		...
+						'SelectPostMitotic', 	...
+						'SelectPreMitotic',		...
+						'SelectApoptotic' };
+  
+  %corresponding classifications
+  classifications 	= {	'debris', 				...
+						'nucleus',				...
+						'over',					...
+						'under',				...
+						'postmitotic',			...
+						'premitotic',			...
+						'apoptotic' };
 
-               
-%remove old highlights, if they exist
-highlights = fieldnames(newhandles.highlights);
-for(i=1:size(highlights,1))
-  delete(newhandles.highlights.(highlights{i}));
-  clear newhandles.highlights.(highlights{i});
-end
-clear newhandles.highlights;
-newhandles.highlights = struct();
-               
+  for(i = 1:size(selectButtons,2))
+    if(get(newHandles.(selectButtons{1,i}), 'Value') == 1)
+	  hold on;
+	  % http://www.mathworks.com/matlabcentral/fileexchange/28982
+      colors = pmkmp(20, 'IsoL'); 
+	  %outline all objects classified this way
+	  for(obj = 1:size(newHandles.props))
+		if(newHandles.props(obj).(classifications{1,i}) == 1)
+          newHandles.highlights.([classifications{1,i} int2str(obj)])=...
+            plot(newHandles.props(obj).bound(:,2), ...
+                 newHandles.props(obj).bound(:,1), ...
+                 'Color', colors(mod(obj, size(colors,1))+1, :),    ...,
+                 'LineWidth',1.25);
+          set(newHandles.highlights.([classifications{1,i} int2str(obj)]),...
+              'HitTest', 'off') ;
+        end %if(newHandles...
+	  end %for(obj = 1:...
+    end %if(get(newH...
+  end %for(1 = ...
 
-%iterate over the button options               
-for(i=1:size(selectButtons,2))
+end %DrawHighlights
+
+% --- Deletes outlines if they are present
+function newHandles = DeleteHighlights(handles)
+
+  newHandles = handles;
+
+  highlights = fieldnames(newHandles.highlights);
+  for(i=1:size(highlights,1))
+    if(newHandles.highlights.(highlights{i}) ~= 0)
+      delete(newHandles.highlights.(highlights{i}));
+    end %if(newHandles...
+  end %for(i=1...
+
+  clear newHandles.highlights;
+  newHandles.highlights = struct();
+
+end %DeleteHighlights
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Handles the delete object button
+
+% --- Executes on button press in deleteObj.
+function deleteObj_Callback(hObject, eventdata, handles)
+  
+  %delete the object 
+  handles.props(handles.selected) = [];
+
+  %clear display in preparation for resetting it
+  handles = DeleteRectangle(handles);
+  handles = DeleteOutlines(handles);
+  handles = DeleteHighlights(handles);
+
+  if(isempty(handles.props))
+	%handle deletion of last object in set
+    msgbox('Deleting last object in set');
+    %deleted last object
+    handles.objSet(get(handles.ObjSetPopUp, 'Value')) = [];
+	set(handles.ObjSetPopUp, 'Value', 1);
+    handles = PopulateObjSetPopUp(handles);
+	set(handles.SegmentPopup, 'String', 'No Objects');
+  else
+	%regular case
+    %update set object
+    handles.objSet(get(handles.ObjSetPopUp, 'Value')).props = handles.props;
     
-    %only act on the ones that are selected
-    if(get(newhandles.(selectButtons{1,i}), 'Value') == 1)
-        
-        hold on;
-        colors=pmkmp(20, 'IsoL'); % http://www.mathworks.com/matlabcentral/fileexchange/28982
-        
-        %outline all objects that are classified this way
-        for obj=1:size(newhandles.segment,1)
-            if(newhandles.segment(obj).(classifications{1,i}) == 1)
-                newhandles.highlights.([classifications{1,i} int2str(obj)])=...
-                    plot(newhandles.segment(obj).bound(:,2),              ...
-                    newhandles.segment(obj).bound(:,1),                   ...,
-                    'Color', colors(mod(obj, size(colors,1))+1, :),    ...,
-                    'LineWidth',1.25);
-                set(newhandles.highlights.([classifications{1,i} int2str(obj)]),...
-                    'HitTest', 'off') ;
-            end
-        end
-        
-    end
-    
-end
+    %update display to account for the removed objecti
+    handles.selected = 1;
+    set(handles.SegmentPopup, 'String', 1:size(handles.props));
+    handles = DrawRectangle(handles);
+    handles = DrawHighlights(handles);
+    handles = DrawOutlines(handles);
 
-end
+  end %if(size...
+
+  guidata(handles.output, handles);
+
+end %deleteObj_Callback
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-% --- Executes on button press in SaveImgToTrainingSet.
-function SaveImgToTrainingSet_Callback(hObject, eventdata, handles)
-% hObject    handle to SaveImgToTrainingSet (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
-  if(strcmp(handles.trainingsegmentfile,''))
-        answer = inputdlg('Training Set Object: ', 's');
-        handles.trainingsegmentfile = answer{1};
-        guidata(hObject, handles);
-  end
-  load(handles.trainingsegmentfile, 's', 'l');
-  for(i=1:size(handles.segment,1))
-    s(size(s,1)+1) = handles.segment(i);
-  end
-  save(handles.trainingsegmentfile, 's', 'l');
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Handles the save button
+
+% --- Executes on button press in SaveButton.
+function SaveButton_Callback(hObject, eventdata, handles)
+ 
+  objSet = handles.objSet;
+  save(handles.outputfile, 'objSet');
+
+end %SaveButton_Callback
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Handles adding to the set
+
+% --- Executes on button press in SaveToTrainingSet.
+function SaveObjToSet_Callback(hObject, eventdata, handles)
+%handles.props represents a fresh segmentation here, not any part of the
+%stored set. handles.objSet is the stored set
+
+  %find this image in the set
+  idx = 1;
+  while(idx <= size(handles.objSet,2))
+	if(strcmp(handles.objSet(idx).wellName,  handles.wellName) && ...
+	   strcmp(handles.objSet(idx).imageName, handles.imageName))	
+		break;
+	end %if(strcmp...
+	idx = idx + 1;
+  end %while(idx ...
+ 
+  %append the object to the appropriate image set (create a new one
+  %if this image is not yet in the set)
+  if(idx > size(handles.objSet,2))
+    handles.objSet(idx).wellName 	= handles.wellName;
+	handles.objSet(idx).imageName 	= handles.imageName;
+	handles.objSet(idx).props 		= handles.props(handles.selected);
+	handles.objSet(idx).labels 		= handles.labels;
+	handles 						= PopulateObjSetPopUp(handles);	
+
+  else
+  	handles.objSet(idx).props 		= [handles.objSet(idx).props; ...
+									   handles.props(handles.selected)];
+  end %if(idx ...
+
+  %disable add all, still working with fresh segmentation, not editing set
+  set(handles.SaveImgToSet, 'Enable', 'off');
+  
+  guidata(handles.output, handles);
+  
+end %SaveObjToSet_Callback
+
+% --- Executes on button press in SaveImgToSet.
+function SaveImgToSet_Callback(hObject, eventdata, handles)
+%handles.props represents a fresh segmentation here, not any part of the
+%stored set. handles.objSet is the stored set
+ 
+  %append image to set
+  idx 							= size(handles.objSet,2) + 1;
+  handles.objSet(idx).wellName 	= handles.wellName;
+  handles.objSet(idx).imageName = handles.imageName;
+  handles.objSet(idx).props 	= handles.props;
+  handles.objSet(idx).labels 	= handles.labels;
+
+  handles = PopulateObjSetPopUp(handles); 
+ 
+  %change state to editing set instead of fresh segmentation
+  set(handles.SaveImgToSet, 'Enable', 'off');
+  set(handles.deleteObj, 	'Enable', 'on');
+  set(handles.SaveObjToSet, 'Enable', 'off');
+
+  guidata(handles.output, handles);
+
+end %SaveImgToSet_Callback
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Handles the segment new image button
+
+% --- Executes on button press in SegmentNewImg.
+function SegmentNewImg_Callback(hObject, eventdata, handles)
+ 
+  handles = LoadNewImage(handles);
+ 
+  set(handles.SaveImgToSet, 'Enable', 'on');
+  set(handles.deleteObj, 	'Enable', 'off');  
+  set(handles.SaveObjToSet, 'Enable', 'on');
+  guidata(handles.output, handles);
+
   DrawDisplay(handles);
+ 
+end %SegmentNewImg_Callback
+
+% --- loads and segments a new image, from user input
+function newHandles = LoadNewImage(handles)
+
+  newHandles = handles;
+
+  [imagefile, ...
+   path]						= uigetfile('*.*', ...
+										  	'Select an image: ', ...
+											newHandles.directory);
+  newHandles.imagefile			= [path imagefile];
+  [newHandles.image,     ...
+   newHandles.wellName,  ...
+   newHandles.imageName] 		= LoadImage(newHandles.imagefile);
+  
+  h = msgbox('Segmenting image');
+  [newHandles.props, ...
+   newHandles.labels] 			= NaiveSegment(newHandles.image);
+  close(h);
+
+
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Handles the select object set box
+
+% --- Executes on selection change in ObjSetPopUp.
+function ObjSetPopUp_Callback(hObject, eventdata, handles)
+ 
+  if(isempty(handles.objSet))
+	msgbox('There are no sets yet.');
+  else
+    idx				 			= get(handles.ObjSetPopUp, 'Value');
+    handles.imagefile 			= [handles.directory		  ...
+								   filesep 					  ...
+								   handles.objSet(idx).wellName ...
+								   filesep 					  ...
+								   handles.objSet(idx).imageName];
+    handles.image 				= imread(handles.imagefile);
+    handles.imageName 			= handles.objSet(idx).imageName;
+    handles.wellName 			= handles.objSet(idx).wellName;
+    handles.props 				= handles.objSet(idx).props;
+    handles.labels				= handles.objSet(idx).labels;
+    handles.selected			= 1;
+  
+    set(handles.SaveImgToSet, 	'Enable', 'off');
+    set(handles.deleteObj,    	'Enable', 'on');  
+    set(handles.SaveObjToSet, 	'Enable', 'off');
+    guidata(handles.output, handles);
+    DrawDisplay(handles);
+  end
+
+end %ObjSetPopUp_Callback
+
+% --- Executes during object creation, after setting all properties.
+function ObjSetPopUp_CreateFcn(hObject, eventdata, handles)
+
+  if ispc && isequal(get(hObject,'BackgroundColor'), ...
+					 get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+  end %if ispc ...
+
+end %ObjSetPopUp_CreateFcn
+
+% --- Sets the string values in the pop up menu
+function newHandles = PopulateObjSetPopUp(handles)
+  
+  newHandles = handles;
+
+  if(isempty(newHandles.objSet))
+	set(newHandles.ObjSetPopUp, 'String', 'No sets');
+  else
+    objSetStrs = [];
+    for(i=1:size(newHandles.objSet,2))
+      objSetStrs = [objSetStrs; ...
+	  			    newHandles.objSet(i).wellName ...
+	  			    filesep ...
+	  			    newHandles.objSet(i).imageName];
+    end %for(i=1...
+    set(newHandles.ObjSetPopUp, 'String', objSetStrs); 
+  end
+
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

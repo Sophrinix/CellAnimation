@@ -1,22 +1,24 @@
 function varargout = TrackingReview(varargin)
 % TRACKINGREVIEW MATLAB code for TrackingReview.fig
-%      TRACKINGREVIEW, by itself, creates a new TRACKINGREVIEW or raises the existing
-%      singleton*.
+%      	TRACKINGREVIEW, by itself, creates a new TRACKINGREVIEW or raises 
+%		the existing singleton*.
 %
-%      H = TRACKINGREVIEW returns the handle to a new TRACKINGREVIEW or the handle to
-%      the existing singleton*.
+%      	H = TRACKINGREVIEW returns the handle to a new TRACKINGREVIEW or 
+%		the handle to the existing singleton*.
 %
-%      TRACKINGREVIEW('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in TRACKINGREVIEW.M with the given input arguments.
+%      	TRACKINGREVIEW('CALLBACK',hObject,eventData,handles,...) calls the 
+%		local function named CALLBACK in TRACKINGREVIEW.M with the given 
+%		input arguments.
 %
-%      TRACKINGREVIEW('Property','Value',...) creates a new TRACKINGREVIEW or raises the
-%      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before TrackingReview_OpeningFcn gets called.  An
-%      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to TrackingReview_OpeningFcn via varargin.
+%      	TRACKINGREVIEW('Property','Value',...) creates a new TRACKINGREVIEW 
+%		or raises the existing singleton*.  Starting from the left, property 
+%		value pairs are	applied to the GUI before TrackingReview_OpeningFcn 
+%		gets called.  An unrecognized property name or invalid value makes 
+%		property application stop.  All inputs are passed to 
+%		TrackingReview_OpeningFcn via varargin.
 %
-%      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
-%      instance to run (singleton)".
+%      	*See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
+%      	instance to run (singleton)".
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
@@ -43,7 +45,7 @@ else
 end
 % End initialization code - DO NOT EDIT
 end
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
@@ -52,13 +54,9 @@ end
 
 % --- Outputs from this function are returned to the command line.
 function varargout = TrackingReview_OutputFcn(hObject, eventdata, handles) 
-% varargout  cell array for returning output args (see VARARGOUT);
-% hObject    handle to figure
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Get default command line output from handles structure
-varargout{1} = handles.output;
+  
+  % Get default command line output from handles structure
+  varargout{1} = handles.output;
 
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -71,67 +69,68 @@ end
 
 % --- Executes just before TrackingReview is made visible.
 function TrackingReview_OpeningFcn(hObject, eventdata, handles, varargin)
-% Choose default command line output for TrackingReview
-handles.output = hObject;
-handles.saveFile = '';
+  
+  % Choose default command line output for TrackingReview
+  handles.output = hObject;
+  handles.saveFile = '';
 
-% Update handles structure
-guidata(hObject, handles);
+  % Update handles structure
+  guidata(hObject, handles);
 
-if(size(varargin,2) < 2)
+  if(size(varargin,2) < 2)
     errordlg(['Must specify number followed by ' ...
               'images object on command line']);
-else
+  else
     InitDisplay(handles, varargin{3});
-end
+  end
 
 end
-
 
 % --- Draws underlying images, sets up display variables
 function InitDisplay(handles, imagesStruct)
 
-handles.startIndex = 1;
-handles.endIndex = size(imagesStruct,2);
-handles.curIndex = 1;
-handles.images = imagesStruct;
+  %initialize handles
+  handles.startIndex = 1;
+  handles.endIndex = size(imagesStruct,2);
+  handles.curIndex = 1;
+  handles.images = imagesStruct;
 
-%initialize outlines handles
-handles.outlines = struct();
+  %initialize outlines handles
+  handles.outlines = struct();
 
-%set up object popup menu
-set(handles.ObjectPopUp, ...
-    'String', 1:size(handles.images(handles.curIndex).s,1));
-handles.selected = 1;
+  %set up object popup menu
+  set(handles.ObjectPopUp, ...
+      'String', 1:size(handles.images(handles.curIndex).s,1));
+  handles.selected = 1;
 
-%initialize numbers handles
-handles.nums = struct();
+  %initialize numbers handles
+  handles.nums = struct();
 
-%initialize previous outlines handles
-handles.prevOutlines = struct();
+  %initialize previous outlines handles
+  handles.prevOutlines = struct();
 
-%initialize rectangle object
-handles.rectangle = handle(rectangle);
-delete(handles.rectangle);
+  %initialize rectangle object
+  handles.rectangle = handle(rectangle);
+  delete(handles.rectangle);
 
-%numStr = int2str(handles.curIndex + handles.startIndex - 1);
-%while(length(numStr) < handles.digitsForEnum)
-%    numStr = ['0' numStr];
-%end
+  %numStr = int2str(handles.curIndex + handles.startIndex - 1);
+  %while(length(numStr) < handles.digitsForEnum)
+  %    numStr = ['0' numStr];
+  %end
 
-handles.image = zeros(size(handles.images(1).l));
-%imread([handles.imagePath ...
-%                        '/' ...
-%                        handles.imageFileBase ...
-%                        numStr ...
-%                        handles.fileExt]);
+  handles.image = zeros(size(handles.images(1).l));
+  %imread([handles.imagePath ...
+  %                        '/' ...
+  %                        handles.imageFileBase ...
+  %                        numStr ...
+  %                        handles.fileExt]);
 
-axes(handles.ImageDisplay);
-handles.h = imagesc(handles.image);
-colormap gray;
+  axes(handles.ImageDisplay);
+  handles.h = imagesc(handles.image);
+  colormap gray;
 
-guidata(handles.output, handles);
-DrawDisplay(handles);
+  guidata(handles.output, handles);
+  DrawDisplay(handles);
 
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -145,59 +144,56 @@ end
 % --- Draws outlines, numbers, etc
 function DrawDisplay(handles)
 
-hold on;
+  hold on;
 
-%draw outlines of objects (or only nuclei) in current image
-handles = DeleteOutlines(handles);
-handles = DrawOutlines(handles);
+  %draw outlines of objects (or only nuclei) in current image
+  handles = DeleteOutlines(handles);
+  handles = DrawOutlines(handles);
 
-%draw rectangel around selected object
-handles = DrawRectangle(handles);
+  %draw rectangel around selected object
+  handles = DrawRectangle(handles);
 
-%draw track numbers, if applicable
-if(get(handles.DispNumsCheck, 'Value'))
+  %draw track numbers, if applicable
+  if(get(handles.DispNumsCheck, 'Value'))
     handles = DrawNums(handles);
-end
+  end
 
-%draw outlines around objects from previous frame, if applicable
-if(get(handles.PrevOutlinesCheck, 'Value'))
+  %draw outlines around objects from previous frame, if applicable
+  if(get(handles.PrevOutlinesCheck, 'Value'))
     handles = DrawPrevOutlines(handles);
+  end
+
+  set(handles.ImageNumInput, 'String', num2str(handles.curIndex));
+
+  guidata(handles.output, handles);
+
+  set(handles.h, 'HitTest', 'off');
+  set(handles.ImageDisplay, ...
+      'ButtonDownFcn',{@ImageDisplay_ButtonDownFcn,handles}) ;
+
 end
-
-set(handles.ImageNumInput, 'String', num2str(handles.curIndex));
-
-guidata(handles.output, handles);
-
-set(handles.h, 'HitTest', 'off');
-set(handles.ImageDisplay, ...
-    'ButtonDownFcn',{@ImageDisplay_ButtonDownFcn,handles}) ;
-
-end
-
 
 % --- Executes on mouse press over axes background.
 function ImageDisplay_ButtonDownFcn(hObject, eventdata, handles)
-% hObject    handle to ImageDisplay (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-pos=get(hObject, 'Currentpoint');
-x=int64(pos(1,1));
-y=int64(pos(1,2));
-s=size(handles.images(handles.curIndex).l);
-if x > 0 && x <= s(2) && y > 0 && y <= s(1)
-    if handles.images(handles.curIndex).l(y,x) > 0
-        set(handles.ObjectPopUp, 'Value', ...
-            handles.images(handles.curIndex).l(y,x));        
-    end
-end
-handles.selected = get(handles.ObjectPopUp, 'Value');
-handles = DeleteRectangle(handles);
-handles = DrawRectangle(handles);
-guidata(handles.output, handles);
 
-set(handles.h, 'HitTest', 'off');
-set(handles.ImageDisplay, ...
-    'ButtonDownFcn',{@ImageDisplay_ButtonDownFcn,handles}) ;
+  pos=get(hObject, 'Currentpoint');
+  x=int64(pos(1,1));
+  y=int64(pos(1,2));
+  s=size(handles.images(handles.curIndex).l);
+  if x > 0 && x <= s(2) && y > 0 && y <= s(1)
+    if handles.images(handles.curIndex).l(y,x) > 0
+      set(handles.ObjectPopUp, 'Value', ...
+          handles.images(handles.curIndex).l(y,x));        
+    end
+  end
+  handles.selected = get(handles.ObjectPopUp, 'Value');
+  handles = DeleteRectangle(handles);
+  handles = DrawRectangle(handles);
+
+  set(handles.ImageDisplay, ...
+      'ButtonDownFcn',{@ImageDisplay_ButtonDownFcn,handles}) ;
+
+  guidata(handles.output, handles);
 
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -211,35 +207,34 @@ end
 %adds outlines around the objects in the current image
 function newHandles = DrawOutlines(handles)
 
-newHandles = handles;
+  newHandles = handles;
 
-objList = newHandles.images(newHandles.curIndex).s;
-for(i=1:size(objList))
+  objList = newHandles.images(newHandles.curIndex).s;
+  for(i=1:size(objList))
     newHandles.outlines.(['o' num2str(i)]) = ...
-        plot(objList(i).bound(:,2), ...
-             objList(i).bound(:,1), ...
-             'Color', 'b', ...
-             'LineWidth',1.25);
+      plot(objList(i).bound(:,2), ...
+           objList(i).bound(:,1), ...
+           'Color', 'b', ...
+           'LineWidth',1.25);
     set(newHandles.outlines.(['o' num2str(i)]), 'HitTest', 'off');
-end
+  end
 
 end
-
 
 %removes outlines fromt the display, if present
 function newHandles = DeleteOutlines(handles)
 
-newHandles = handles;
+  newHandles = handles;
 
-outlines = fieldnames(newHandles.outlines);
-for(i=1:size(outlines,1))
+  outlines = fieldnames(newHandles.outlines);
+  for(i=1:size(outlines,1))
     if(newHandles.outlines.(outlines{i}) ~= 0)
-        delete(newHandles.outlines.(outlines{i}));
+      delete(newHandles.outlines.(outlines{i}));
     end
     %clear handles.nums.(nums{i});
-end
-clear newHandles.outlines;
-newHandles.outlines = struct();
+  end
+  clear newHandles.outlines;
+  newHandles.outlines = struct();
 
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -253,27 +248,27 @@ end
 %Draw rectangles around the selected object
 function newHandles = DrawRectangle(handles)
 
-newHandles = handles;
+  newHandles = handles;
 
-%draw rectangle around selected object
-newHandles.rectangle= ...
-    rectangle('Position', newHandles.images(newHandles.curIndex).s(newHandles.selected).BoundingBox, ...
+  %draw rectangle around selected object
+  newHandles.rectangle= ...
+    rectangle('Position', newHandles.images(newHandles.curIndex)...
+						  .s(newHandles.selected).BoundingBox, ...
               'EdgeColor', 'r', ...
               'LineWidth', 2);
-set(newHandles.rectangle, 'HitTest', 'off') ;
+  set(newHandles.rectangle, 'HitTest', 'off') ;
 
 end
-
 
 %remove the rectangle around the selected object
 function newHandles = DeleteRectangle(handles)
 
-newHandles = handles;
+  newHandles = handles;
 
-%remove old rectangle
-if(ishandle(newHandles.rectangle))
+  %remove old rectangle
+  if(ishandle(newHandles.rectangle))
     delete(newHandles.rectangle);
-end
+  end
 
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -286,56 +281,48 @@ end
 
 % --- Executes on button press in DispNumsCheck.
 function DispNumsCheck_Callback(hObject, eventdata, handles)
-% hObject    handle to DispNumsCheck (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of DispNumsCheck
-
-handles = DeleteNums(handles);
-if(get(hObject, 'Value'))
+  handles = DeleteNums(handles);
+  if(get(hObject, 'Value'))
     handles = DrawNums(handles);
-end
-guidata(handles.output, handles);
+  end
+  guidata(handles.output, handles);
 
 end
-
 
 %adds track numbers to display over respective objects
 function newHandles = DrawNums(handles)
 
-newHandles = handles;
+  newHandles = handles;
 
-curObjList = newHandles.images(newHandles.curIndex).s;
-for(i=1:size(curObjList))
+  curObjList = newHandles.images(newHandles.curIndex).s;
+  for(i=1:size(curObjList))
     trackNum = curObjList(i).trackNum;
     if(trackNum)
-        newHandles.nums.(['o' num2str(i)]) = ...
-                    text(curObjList(i).Centroid(1), ...
-                         curObjList(i).Centroid(2), ...
-                         num2str(trackNum), ...
-                         'Color', 'w');
-        set(newHandles.nums.(['o' num2str(i)]), 'HitTest', 'off');
+      newHandles.nums.(['o' num2str(i)]) = ...
+        text(curObjList(i).Centroid(1), ...
+             curObjList(i).Centroid(2), ...
+             num2str(trackNum), ...
+             'Color', 'w');
+      set(newHandles.nums.(['o' num2str(i)]), 'HitTest', 'off');
     end
-end
+  end
 
 end
-
 
 %removes track numbers from display, if present
 function newHandles = DeleteNums(handles)
 
-newHandles = handles;
+  newHandles = handles;
 
-nums = fieldnames(newHandles.nums);
-for(i=1:size(nums,1))
+  nums = fieldnames(newHandles.nums);
+  for(i=1:size(nums,1))
     if(newHandles.nums.(nums{i}) ~= 0)
-        delete(newHandles.nums.(nums{i}));
+      delete(newHandles.nums.(nums{i}));
     end
-    %clear handles.nums.(nums{i});
-end
-clear newHandles.nums;
-newHandles.nums = struct();
+  end
+  clear newHandles.nums;
+  newHandles.nums = struct();
 
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -348,58 +335,51 @@ end
 
 % --- Executes on button press in PrevOutlinesCheck.
 function PrevOutlinesCheck_Callback(hObject, eventdata, handles)
-% hObject    handle to PrevOutlinesCheck (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of PrevOutlinesCheck
-
-if(handles.curIndex == 1)
+  if(handles.curIndex == 1)
     msgbox('This is the first image.');
     set(hObject, 'Value', 0);
-else
+  else
     handles = DeletePrevOutlines(handles);
     if(get(hObject, 'Value'))
         handles = DrawPrevOutlines(handles);
     end
     guidata(handles.output, handles);
-end
+  end
 
 end
-
 
 %adds track numbers to display over respective objects
 function newHandles = DrawPrevOutlines(handles)
 
-newHandles = handles;
+  newHandles = handles;
 
-prevObjList = newHandles.images(newHandles.curIndex - 1).s;
-for(i=1:size(prevObjList))
+  prevObjList = newHandles.images(newHandles.curIndex - 1).s;
+  for(i=1:size(prevObjList))
     newHandles.prevOutlines.(['o' num2str(i)]) = ...
-        plot(prevObjList(i).bound(:,2), ...
-             prevObjList(i).bound(:,1), ...
-             'Color', 'r', ...
-             'LineWidth',1.25);
+      plot(prevObjList(i).bound(:,2), ...
+           prevObjList(i).bound(:,1), ...
+           'Color', 'r', ...
+           'LineWidth',1.25);
     set(newHandles.prevOutlines.(['o' num2str(i)]), 'HitTest', 'off');
-end
+  end
 
 end
-
 
 %removes track numbers from display, if present
 function newHandles = DeletePrevOutlines(handles)
 
-newHandles = handles;
+  newHandles = handles;
 
-prevOutlines = fieldnames(newHandles.prevOutlines);
-for(i=1:size(prevOutlines,1))
+  prevOutlines = fieldnames(newHandles.prevOutlines);
+  for(i=1:size(prevOutlines,1))
     if(newHandles.prevOutlines.(prevOutlines{i}) ~= 0)
-        delete(newHandles.prevOutlines.(prevOutlines{i}));
+      delete(newHandles.prevOutlines.(prevOutlines{i}));
     end
     %clear handles.nums.(nums{i});
-end
-clear newHandles.prevOutlines;
-newHandles.prevOutlines = struct();
+  end
+  clear newHandles.prevOutlines;
+  newHandles.prevOutlines = struct();
 
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -412,18 +392,16 @@ end
 
 % --- Executes on button press in NextButton.
 function NextButton_Callback(hObject, eventdata, handles)
-% hObject    handle to NextButton (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
-if((handles.curIndex + handles.startIndex - 1) == handles.endIndex)
+  if((handles.curIndex + handles.startIndex - 1) == handles.endIndex)
     msgbox('This is the last image.');
-else
+  else
     handles = DeleteNums(handles);
     handles = DeletePrevOutlines(handles);
     handles = DeleteRectangle(handles);
 
-    prevSelectedTrack = handles.images(handles.curIndex).s(handles.selected).trackNum;
+    prevSelectedTrack = ...
+	  handles.images(handles.curIndex).s(handles.selected).trackNum;
     handles.curIndex = handles.curIndex + 1;
 
     %set up object popup menu
@@ -435,25 +413,22 @@ else
 
     guidata(handles.output, handles);
     DrawDisplay(handles);
-end
+  end
 
 end
-
 
 % --- Executes on button press in PrevImageButton.
 function PrevImageButton_Callback(hObject, eventdata, handles)
-% hObject    handle to PrevImageButton (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
-if(handles.curIndex == 1)
+  if(handles.curIndex == 1)
     msgbox('This is the first image.');
-else
+  else
     handles = DeleteNums(handles);
     handles = DeletePrevOutlines(handles);
     handles = DeleteRectangle(handles);
 
-    prevSelectedTrack = handles.images(handles.curIndex).s(handles.selected).trackNum;
+    prevSelectedTrack = ...
+	  handles.images(handles.curIndex).s(handles.selected).trackNum;
     handles.curIndex = handles.curIndex - 1;
     
     %set up object popup menu
@@ -465,7 +440,7 @@ else
 
     guidata(handles.output, handles);
     DrawDisplay(handles);
-end
+  end
 
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -479,29 +454,21 @@ end
 
 % --- Executes on selection change in ObjectPopUp.
 function ObjectPopUp_Callback(hObject, eventdata, handles)
-% hObject    handle to ObjectPopUp (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
-handles.selected = get(hObject, 'Value');
-handles = DeleteRectangle(handles);
-handles = DrawRectangle(handles);
-guidata(handles.output, handles);
+  handles.selected = get(hObject, 'Value');
+  handles = DeleteRectangle(handles);
+  handles = DrawRectangle(handles);
+  guidata(handles.output, handles);
 
 end
-
 
 % --- Executes during object creation, after setting all properties.
 function ObjectPopUp_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to ObjectPopUp (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
 
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+  if ispc && isequal(get(hObject,'BackgroundColor'), ...
+					 get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
-end
+  end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -513,20 +480,18 @@ end
 
 % --- Executes on button press in ChangeTrackButton.
 function ChangeTrackButton_Callback(hObject, eventdata, handles)
-% hObject    handle to ChangeTrackButton (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
-newTrackNum = inputdlg('New Track Number: ', 'Change Track Number');
+  newTrackNum = inputdlg('New Track Number: ', 'Change Track Number');
 
-handles = DeleteNums(handles);
-handles = DeletePrevOutlines(handles);
-handles = DeleteRectangle(handles);
+  handles = DeleteNums(handles);
+  handles = DeletePrevOutlines(handles);
+  handles = DeleteRectangle(handles);
 
-handles.images(handles.curIndex).s(handles.selected).trackNum = newTrackNum{1};
+  handles.images(handles.curIndex).s(handles.selected).trackNum = ...
+    newTrackNum{1};
 
-guidata(handles.output, handles);
-DrawDisplay(handles);
+  guidata(handles.output, handles);
+  DrawDisplay(handles);
 
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -539,18 +504,16 @@ end
 
 % --- Executes on button press in SaveButton.
 function SaveButton_Callback(hObject, eventdata, handles)
-% hObject    handle to SaveButton (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-images = handles.images;
-if(isempty(handles.saveFile))
+
+  images = handles.images;
+  if(isempty(handles.saveFile))
     [file, path] = uiputfile('', 'Save Tracks');
     save([path file], 'images');
     handles.saveFile = [path file];
-else
+  else
     save(handles.saveFile, 'images');
-end
-guidata(handles.output, handles);
+  end
+  guidata(handles.output, handles);
 
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -564,20 +527,18 @@ end
 
 % --- Executes when enter is pressed in the image number box
 function ImageNumInput_Callback(hObject, eventdata, handles)
-% hObject    handle to ImageNumInput (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
-newIndex = str2double(get(hObject, 'String'));
-if(or((newIndex < 1), ...
-   (newIndex > (handles.endIndex - handles.startIndex - 1))))
+  newIndex = str2double(get(hObject, 'String'));
+  if(or((newIndex < 1), ...
+        (newIndex > (handles.endIndex - handles.startIndex - 1))))
     msgbox('Image number is out of range');
-else
+  else
     handles = DeleteNums(handles);
     handles = DeletePrevOutlines(handles);
     handles = DeleteRectangle(handles);
 
-    prevSelectedTrack = handles.images(handles.curIndex).s(handles.selected).trackNum;
+    prevSelectedTrack = ...
+	  handles.images(handles.curIndex).s(handles.selected).trackNum;
     handles.curIndex = newIndex;
 
     %set up object popup menu
@@ -589,22 +550,17 @@ else
 
     guidata(handles.output, handles);
     DrawDisplay(handles);
-end
+  end
 
 end
-
 
 % --- Executes during object creation, after setting all properties.
 function ImageNumInput_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to ImageNumInput (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
 
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+  if ispc && isequal(get(hObject,'BackgroundColor'), ...
+					 get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
-end
+  end
 
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -1,36 +1,42 @@
-function classifier = CreateClassifier(classification, props, varargin)
+function classifier = CreateClassifier(classification, objSet, varargin)
 
     %creates a classifier struct which can be used to classify a set of
     %objects by label "classification"
     %
     %INPUTS:
-    %classification  -  the classification to be determined 
-    %                   (e.g. nucleus: which of the objects can be labeled
+    %classification	-	the classification to be determined 
+    %                	(e.g. nucleus: which of the objects can be labeled
     %                   nuclei)
     %
-    %props           -  the properties of the objects to be classified
+    %props          -  	the properties of the objects to be classified
     %                   (e.g. area, eccentricity, ...)
     %
-    %varargin        -  a list of the criteria (properties) by which to 
+    %varargin       -  	a list of the criteria (properties) by which to 
     %                   classify props (e.g. area)
     %
     %OUTPUTS:
-    %classifier      -  a struct used to perform a Naive Bayesian
+    %classifier     -  	a struct used to perform a Naive Bayesian
     %                   Classification on a set of objects with similar
     %                   properties
     %                   contains the probability that an object can be
     %                   labeled "classification" and, for each criterion:
-    %                       yes mean, std: the mean and standard deviation of all
-    %                                      objects that are labeled
+    %                       yes mean, std: the mean and standard deviation of
+	%									   all objects that are labeled
     %                                      "classification"
-    %                       no mean, std: the mean and standard deviation of all
-    %                                     objects that are not labeled
+    %                       no mean, std: the mean and standard deviation of
+	%									  all objects that are not labeled
     %                                     "classification"
     %
 
     %allocate a classifier struct
     classifier = struct();
     criteria = varargin;
+
+	%concatenate all object properties from set
+	props = [];
+	for(i = 1:size(objSet,2))
+		props = [props; objSet(i).props]
+    end
 
     nargs = size(criteria, 2);
     for i=1:nargs

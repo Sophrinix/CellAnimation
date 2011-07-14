@@ -1,33 +1,33 @@
 function classified_props = NaiveClassify(classification, props, classifier)
 
     %
-    %classifies a set of objects by the label "classification" using a provided
-    %classifier
+    %classifies a set of objects by the label "classification" using a
+	%provided classifier
     % 
     %INPUTS:
-    %classification    -  the classification to be determined 
-    %                     (e.g. nucleus: which of the objects can be labeled
-    %                     nuclei)
+    %classification    -  	the classification to be determined 
+    %                     	(e.g. nucleus: which of the objects can be 
+	%						labeled	nuclei)
     %
-    %props             -  the properties of the objects to be classified
-    %                     (e.g. area, eccentricity, ...)
+    %props             -  	the properties of the objects to be classified
+    %                     	(e.g. area, eccentricity, ...)
     %
-    %classifier        -  struct created by function CreateClassifier, 
-    %                     used to perform a Naive Bayesian Classification on a set
-    %                     of objects with similar properties
-    %                     contains the probability that an object can be
-    %                     labeled "classification" and, for each criterion:
-    %                         yes mean, std: the mean and standard deviation of all
-    %                                        objects that are labeled
-    %                                        "classification"
-    %                         no mean, std: the mean and standard deviation of all
-    %                                       objects that are not labeled
-    %                                       "classification"
+    %classifier        -  	struct created by function CreateClassifier, 
+    %                     	used to perform a Naive Bayesian Classification 
+	%						on a set of objects with similar properties
+    %	                    contains the probability that an object can be
+    %   	                labeled "classification" and, for each criterion:
+    %                       	yes mean, std: the mean and standard 
+	%										   deviation of all objects that
+	%										   are labeled "classification"
+    %                        	no mean, std: the mean and standard deviation
+	%										  of all objects that are not
+	%										  labeled "classification"
     %
     %OUTPUTS:
-    %classified_props  -  properties of the objects (from props) after they
-    %                     have been classified according to classification
-    %                     using classified_props
+    %classified_props  -  	properties of the objects (from props) after they
+    %                     	have been classified according to classification
+    %                     	using classified_props
     %
 
     %copy props into output - props is unchanged during classification
