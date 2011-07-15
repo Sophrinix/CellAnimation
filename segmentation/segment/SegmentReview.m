@@ -100,21 +100,62 @@ function error=InitDisplay(handles, directory, outputfile)
 	error = 1;
 	return;
   end %try
- 
+  
+  handles.outputfile 			= outputfile;%.mat file
+  handles.outlines 				= struct();%outlines handles
+  handles.highlights 			= struct();%highlights handles
+  handles.rectangle				= handle(rectangle);%rectangle handle
+  delete(handles.rectangle);
+  handles.selected = 1; 
+  guidata(handles.output, handles);
+
   if(strcmp(which(outputfile), ''))
 	%new set
-	handles 					= LoadNewImage(handles);	
-	handles.objSet 				= [];
-	handles.objSetIdx 			= 0;
-	set(handles.SaveImgToSet,   'Enable', 'on');
-  	set(handles.deleteObj, 	    'Enable', 'off');  
-	set(handles.SaveObjToSet,   'Enable', 'on');
-
+	handles.objSet = [];
+	InitNewImage(handles);
   else
 	%set already exists
 	load(outputfile, 'objSet');
 	handles.objSet 				= objSet;
-	handles.imagefile 			= [directory 				  ...
+	InitFirstSet(handles);
+  end %if(which...
+    
+  error=0;
+
+end % InitDisplay
+
+% --- asks for and displays a fresh segmentation
+function InitNewImage(handles)
+  
+  [imagefile, ...
+   path]						= uigetfile('*.*', ...
+										  	'Select an image: ', ...
+											handles.directory);
+  handles.imagefile			= [path imagefile];
+  [handles.image,     ...
+   handles.wellName,  ...
+   handles.imageName] 		= LoadImage(handles.imagefile);
+  
+  h = msgbox('Segmenting image');
+  [handles.props, ...
+   handles.labels] 			= NaiveSegment(handles.image);
+  close(h);
+	
+  set(handles.SaveImgToSet,   'Enable', 'on');
+  set(handles.deleteObj, 	    'Enable', 'off');  
+  set(handles.SaveObjToSet,   'Enable', 'on');
+  handles = PopulateObjSetPopUp(handles);
+  guidata(handles.output, handles);
+  
+  set(handles.ImageDisplay, 'NextPlot', 'replacechildren');
+  DrawDisplay(handles);
+
+end %InitNewImage
+
+% --- Displays the images and objects from the first image in the set
+function InitFirstSet(handles)
+
+	handles.imagefile 			= [handles.directory 		  ...
 								   filesep 					  ...
 								   handles.objSet(1).wellName ...
 								   filesep 					  ...
@@ -122,31 +163,22 @@ function error=InitDisplay(handles, directory, outputfile)
 	handles.image 				= imread(handles.imagefile);
 	handles.imageName 			= handles.objSet(1).imageName;
 	handles.wellName 			= handles.objSet(1).wellName;
-	handles.objsetIdx 			= 1;
 	handles.props 				= handles.objSet(1).props;
 	handles.labels				= handles.objSet(1).labels;
+	
 	set(handles.SaveImgToSet,   'Enable', 'off');
   	set(handles.deleteObj,      'Enable', 'on');  
 	set(handles.SaveObjToSet,   'Enable', 'off');
 
-  end %if(which...
-
-  handles.outputfile 			= outputfile;%.mat file
-  handles.outlines 				= struct();%outlines handles
-  handles.highlights 			= struct();%highlights handles
-  handles.rectangle				= handle(rectangle);%rectangle handle
-  delete(handles.rectangle);
-
-  handles = PopulateObjSetPopUp(handles);
-  handles.selected = 1; 
-  guidata(handles.output, handles);
+	set(handles.ObjSetPopUp, 'Value', 1);
+    handles = PopulateObjSetPopUp(handles);
+    
+	guidata(handles.output, handles);
   
-  set(handles.ImageDisplay, 'NextPlot', 'replacechildren');
-  DrawDisplay(handles);
-  
-  error=0;
+    set(handles.ImageDisplay, 'NextPlot', 'replacechildren');
+    DrawDisplay(handles);
 
-end % InitDisplay
+end %InitFirstSet
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -173,7 +205,7 @@ function DrawDisplay(handles)
 
   %assign segment popup values
   set(handles.SegmentPopup, 'Value', 1);  
-  set(handles.SegmentPopup, 'String', 1:size(handles.props,1));
+  handles = PopulateSegmentPopup(handles);
 
   handles.selected 	= 1;	
   handles = UpdateClassificationDisplay(handles);  
@@ -217,39 +249,6 @@ function ImageDisplay_ButtonDownFcn(hObject, eventdata, handles)
   guidata(handles.output, handles);
   
 end %ImageDisplay_ButtonDownFcn
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Handles the classification pane
-
-% --- Display selected object's classification
-function newHandles = UpdateClassificationDisplay(handles)
-
-  newHandles = handles;
-
-  set(newHandles.AreaText,     	  'String',...
-	newHandles.props(newHandles.selected).Area);
-  set(newHandles.DebrisCheck,     'Value', ...
-	newHandles.props(newHandles.selected).debris);
-  set(newHandles.NucleusCheck,    'Value', ...
-	newHandles.props(newHandles.selected).nucleus);
-  set(newHandles.OverCheck,       'Value', ...
-	newHandles.props(newHandles.selected).over);
-  set(newHandles.UnderCheck,      'Value', ...
-	newHandles.props(newHandles.selected).under);
-  set(newHandles.PostMitoticCheck,'Value', ...
-	newHandles.props(newHandles.selected).postmitotic);
-  set(newHandles.PreMitoticCheck, 'Value', ...
-	newHandles.props(newHandles.selected).premitotic);
-  set(newHandles.ApoptoticCheck,  'Value', ...
-	newHandles.props(newHandles.selected).apoptotic);
-  set(newHandles.EdgeCheck,       'Value', ...
-	newHandles.props(newHandles.selected).edge);
-
-end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -372,6 +371,100 @@ function SegmentPopup_CreateFcn(hObject, eventdata, handles)
   end %if ispc ...
   
 end %SegmentPopup_CreateFcn
+
+% --- Sets the string values in the pop up menu
+function newHandles = PopulateSegmentPopup(handles)
+  
+  newHandles = handles;
+
+  if(isempty(newHandles.props))
+	set(newHandles.SegmentPopup, 'String', 'No objects');
+  else
+    set(newHandles.SegmentPopup, 'String', 1:size(newHandles.props)); 
+  end
+
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Handles the segment new image button
+
+% --- Executes on button press in SegmentNewImg.
+function SegmentNewImg_Callback(hObject, eventdata, handles)
+ 
+  InitNewImage(handles);
+
+end %SegmentNewImg_Callback
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Handles the select object set box
+
+% --- Executes on selection change in ObjSetPopUp.
+function ObjSetPopUp_Callback(hObject, eventdata, handles)
+ 
+  if(isempty(handles.objSet))
+	msgbox('There are no sets yet.');
+  else
+    idx				 			= get(handles.ObjSetPopUp, 'Value');
+    handles.imagefile 			= [handles.directory		  ...
+								   filesep 					  ...
+								   handles.objSet(idx).wellName ...
+								   filesep 					  ...
+								   handles.objSet(idx).imageName];
+    handles.image 				= imread(handles.imagefile);
+    handles.imageName 			= handles.objSet(idx).imageName;
+    handles.wellName 			= handles.objSet(idx).wellName;
+    handles.props 				= handles.objSet(idx).props;
+    handles.labels				= handles.objSet(idx).labels;
+    handles.selected			= 1;
+  
+    set(handles.SaveImgToSet, 	'Enable', 'off');
+    set(handles.deleteObj,    	'Enable', 'on');  
+    set(handles.SaveObjToSet, 	'Enable', 'off');
+    guidata(handles.output, handles);
+    DrawDisplay(handles);
+  end
+
+end %ObjSetPopUp_Callback
+
+% --- Executes during object creation, after setting all properties.
+function ObjSetPopUp_CreateFcn(hObject, eventdata, handles)
+
+  if ispc && isequal(get(hObject,'BackgroundColor'), ...
+					 get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+  end %if ispc ...
+
+end %ObjSetPopUp_CreateFcn
+
+% --- Sets the string values in the pop up menu
+function newHandles = PopulateObjSetPopUp(handles)
+  
+  newHandles = handles;
+
+  if(isempty(newHandles.objSet))
+	set(newHandles.ObjSetPopUp, 'String', 'No sets');
+  else
+    objSetStrs = [];
+    for(i=1:size(newHandles.objSet,2))
+      objSetStrs = [objSetStrs; ...
+	  			    newHandles.objSet(i).wellName ...
+	  			    filesep ...
+	  			    newHandles.objSet(i).imageName];
+    end %for(i=1...
+    set(newHandles.ObjSetPopUp, 'String', objSetStrs); 
+  end
+
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -401,6 +494,32 @@ end %AreaText_CreateFcn
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Handles the classification check boxes
+
+% --- Display selected object's classification
+function newHandles = UpdateClassificationDisplay(handles)
+
+  newHandles = handles;
+
+  set(newHandles.AreaText,     	  'String',...
+	newHandles.props(newHandles.selected).Area);
+  set(newHandles.DebrisCheck,     'Value', ...
+	newHandles.props(newHandles.selected).debris);
+  set(newHandles.NucleusCheck,    'Value', ...
+	newHandles.props(newHandles.selected).nucleus);
+  set(newHandles.OverCheck,       'Value', ...
+	newHandles.props(newHandles.selected).over);
+  set(newHandles.UnderCheck,      'Value', ...
+	newHandles.props(newHandles.selected).under);
+  set(newHandles.PostMitoticCheck,'Value', ...
+	newHandles.props(newHandles.selected).postmitotic);
+  set(newHandles.PreMitoticCheck, 'Value', ...
+	newHandles.props(newHandles.selected).premitotic);
+  set(newHandles.ApoptoticCheck,  'Value', ...
+	newHandles.props(newHandles.selected).apoptotic);
+  set(newHandles.EdgeCheck,       'Value', ...
+	newHandles.props(newHandles.selected).edge);
+
+end
 
 % --- Executes on button press in DebrisCheck.
 function DebrisCheck_Callback(hObject, eventdata, handles)
@@ -637,12 +756,9 @@ function deleteObj_Callback(hObject, eventdata, handles)
 
   if(isempty(handles.props))
 	%handle deletion of last object in set
-    msgbox('Deleting last object in set');
-    %deleted last object
     handles.objSet(get(handles.ObjSetPopUp, 'Value')) = [];
-	set(handles.ObjSetPopUp, 'Value', 1);
-    handles = PopulateObjSetPopUp(handles);
-	set(handles.SegmentPopup, 'String', 'No Objects');
+	guidata(handles.output, handles);
+	InitFirstSet(handles);
   else
 	%regular case
     %update set object
@@ -650,14 +766,12 @@ function deleteObj_Callback(hObject, eventdata, handles)
     
     %update display to account for the removed objecti
     handles.selected = 1;
-    set(handles.SegmentPopup, 'String', 1:size(handles.props));
+    handles = PopulateSegmentPopup(handles);
     handles = DrawRectangle(handles);
     handles = DrawHighlights(handles);
     handles = DrawOutlines(handles);
-
-  end %if(size...
-
-  guidata(handles.output, handles);
+	guidata(handles.output, handles);
+  end %if(size... 
 
 end %deleteObj_Callback
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -741,111 +855,4 @@ function SaveImgToSet_Callback(hObject, eventdata, handles)
   guidata(handles.output, handles);
 
 end %SaveImgToSet_Callback
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Handles the segment new image button
-
-% --- Executes on button press in SegmentNewImg.
-function SegmentNewImg_Callback(hObject, eventdata, handles)
- 
-  handles = LoadNewImage(handles);
- 
-  set(handles.SaveImgToSet, 'Enable', 'on');
-  set(handles.deleteObj, 	'Enable', 'off');  
-  set(handles.SaveObjToSet, 'Enable', 'on');
-  guidata(handles.output, handles);
-
-  DrawDisplay(handles);
- 
-end %SegmentNewImg_Callback
-
-% --- loads and segments a new image, from user input
-function newHandles = LoadNewImage(handles)
-
-  newHandles = handles;
-
-  [imagefile, ...
-   path]						= uigetfile('*.*', ...
-										  	'Select an image: ', ...
-											newHandles.directory);
-  newHandles.imagefile			= [path imagefile];
-  [newHandles.image,     ...
-   newHandles.wellName,  ...
-   newHandles.imageName] 		= LoadImage(newHandles.imagefile);
-  
-  h = msgbox('Segmenting image');
-  [newHandles.props, ...
-   newHandles.labels] 			= NaiveSegment(newHandles.image);
-  close(h);
-
-
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Handles the select object set box
-
-% --- Executes on selection change in ObjSetPopUp.
-function ObjSetPopUp_Callback(hObject, eventdata, handles)
- 
-  if(isempty(handles.objSet))
-	msgbox('There are no sets yet.');
-  else
-    idx				 			= get(handles.ObjSetPopUp, 'Value');
-    handles.imagefile 			= [handles.directory		  ...
-								   filesep 					  ...
-								   handles.objSet(idx).wellName ...
-								   filesep 					  ...
-								   handles.objSet(idx).imageName];
-    handles.image 				= imread(handles.imagefile);
-    handles.imageName 			= handles.objSet(idx).imageName;
-    handles.wellName 			= handles.objSet(idx).wellName;
-    handles.props 				= handles.objSet(idx).props;
-    handles.labels				= handles.objSet(idx).labels;
-    handles.selected			= 1;
-  
-    set(handles.SaveImgToSet, 	'Enable', 'off');
-    set(handles.deleteObj,    	'Enable', 'on');  
-    set(handles.SaveObjToSet, 	'Enable', 'off');
-    guidata(handles.output, handles);
-    DrawDisplay(handles);
-  end
-
-end %ObjSetPopUp_Callback
-
-% --- Executes during object creation, after setting all properties.
-function ObjSetPopUp_CreateFcn(hObject, eventdata, handles)
-
-  if ispc && isequal(get(hObject,'BackgroundColor'), ...
-					 get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-  end %if ispc ...
-
-end %ObjSetPopUp_CreateFcn
-
-% --- Sets the string values in the pop up menu
-function newHandles = PopulateObjSetPopUp(handles)
-  
-  newHandles = handles;
-
-  if(isempty(newHandles.objSet))
-	set(newHandles.ObjSetPopUp, 'String', 'No sets');
-  else
-    objSetStrs = [];
-    for(i=1:size(newHandles.objSet,2))
-      objSetStrs = [objSetStrs; ...
-	  			    newHandles.objSet(i).wellName ...
-	  			    filesep ...
-	  			    newHandles.objSet(i).imageName];
-    end %for(i=1...
-    set(newHandles.ObjSetPopUp, 'String', objSetStrs); 
-  end
-
-end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
