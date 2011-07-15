@@ -1,4 +1,17 @@
 function [image, wellName, imageName] = LoadImage(imageFileName)
+%function to load an image and determine its well and image name
+%based on the filename used to locate it
+%
+%INPUTS
+%imageFileName		-	string, the file location of the image to load
+%
+%OUTPUTS
+%image				-	the image matrix
+%
+%wellName			-	the name of the well from which the image came
+%
+%imageName			-	the name of the image
+%
 
 	tempFileName = imageFileName;
 	image = imread(imageFileName);

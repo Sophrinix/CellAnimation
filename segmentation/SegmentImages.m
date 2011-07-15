@@ -23,128 +23,126 @@ function SegmentImages(path, imageFileBase, fileExt, digitsForEnum, startIndex, 
   uiwait(h);
 
 
-imNum = imNum + 1;
-while(1)
-  
+  imNum = imNum + 1;
+  while(1)
     answer = input('Add to training set from other images (y/n)? ', 's');
     if(strcmp(answer, 'y'))
-
-        disp('Adding desired objects to training set ');
+      disp('Adding desired objects to training set ');
         
-        imagefilename = makeImageFileName(imNum, digitsForEnum, path, imageFileBase, fileExt);
+      imagefilename = makeImageFileName(imNum, digitsForEnum, path, ...
+										imageFileBase, fileExt);
 
-        h = SegmentReview(1, imagefilename);
-        uiwait(h);
-        imNum = imNum + 1;
-
+      h = SegmentReview(1, imagefilename);
+      uiwait(h);
+      imNum = imNum + 1;
     else
-      
-        break;
-    
+      break;
     end
+  end
 
-end
+  load([outputDir filesep 'trainingset.mat'], 's', 'l');
+  trainingset = s;
 
-load([outputDir filesep 'trainingset.mat'], 's', 'l');
-trainingset = s;
+  %train classifer
+  disp('Training classifier with training set: classifier');
+  classification_names = {'debris', 'nucleus', 'over', 'under', ...
+						  'premitotic', 'postmitotic' 'apoptotic'};
+  for i=1:size(classification_names,2)
+    classifier.(classification_names{1,i}) = ...
+	  CreateClassifier(classification_names{1,i},				...
+              		   trainingset, 							...
+              		   'Area',            'Eccentricity',  		...
+					   'MajorAxisLength', 'MinorAxisLength', 	...
+					   'ConvexArea',      'FilledArea', 		...
+                       'EquivDiameter',   'Solidity',    		...  
+					   'Perimeter');
+  end
+  save([outputDir filesep 'classifier.mat'], 'classifier');
 
-%train classifer
-disp('Training classifier with training set: classifier');
-classification_names = {'debris', 'nucleus', 'over', 'under', 'premitotic', 'postmitotic' 'apoptotic'};
-for i=1:size(classification_names,2)
+  %validation
+  disp('Segmenting validation image');%create end of file name
 
-    classifier.(classification_names{1,i}) = CreateClassifier(classification_names{1,i},...
-              trainingset, ...
-              'Area',            'Eccentricity',  'MajorAxisLength', ...
-              'MinorAxisLength', 'ConvexArea',    'FilledArea', ...
-              'EquivDiameter',   'Solidity',      'Perimeter');
-end
-save([outputDir filesep 'classifier.mat'], 'classifier');
+  imagefilename = makeImageFileName(imNum, digitsForEnum, path, ...
+									imageFileBase, fileExt);
 
-%validation
-disp('Segmenting validation image');%create end of file name
+  im = imread(imagefilename);
+  [s,l] = NaiveSegment(im);
+  testSet = s;
 
-imagefilename = makeImageFileName(imNum, digitsForEnum, path, imageFileBase, fileExt);
+  save([outputDir filesep 'validationset.mat'], 's', 'l');
 
-im = imread(imagefilename);
-[s,l] = NaiveSegment(im);
-testSet = s;
+  disp('Manually classifying validation set: validationset.mat');
 
-save([outputDir filesep 'validationset.mat'], 's', 'l');
+  h = SegmentReview(1, imagefilename, ...
+				    [outputDir filesep 'validationset.mat']);
+  uiwait(h);
+  load('output/validationset.mat', 's', 'l');
+  validationSet = s;
 
-disp('Manually classifying validation set: validationset.mat');
-
-h = SegmentReview(1, imagefilename, [outputDir filesep 'validationset.mat']);
-uiwait(h);
-load('output/validationset.mat', 's', 'l');
-validationSet = s;
-
-disp('Automatically classifying validated image for comparison');
-classification_names = {'debris', 'nucleus', 'over', 'under', 'premitotic', 'postmitotic' 'apoptotic'};
-for i=1:size(classification_names,2)
-
+  disp('Automatically classifying validated image for comparison');
+  classification_names = {'debris', 'nucleus', 'over', 'under', ...
+						  'premitotic', 'postmitotic' 'apoptotic'};
+  for i=1:size(classification_names,2)
     testSet = NaiveClassify(classification_names{1,i}, testSet,...
-                       classifier.(classification_names{1,i}));
+                       		classifier.(classification_names{1,i}));
+  end
+
+  disp('Determining accuracy of the classifier: stats');
+  validationStats = Validate(classifier, validationSet, testSet);
+  save([outputDir filesep 'validationStats.mat'], 'validationStats');
+
+  disp('Segmenting the rest of the image stack');
+
+  %mkdir('output');
+  %mkdir('output/resegmented');
+  %
+  %SegmentImageStack('C:/Users/sam/work/walter_assay/movie2', ...
+  %                  'DsRed - Confocal - n', ...
+  %                  '.tif', ...
+  %                  6, ...
+  %                  imNum, ...
+  %                  endIndex, ...
+  %                  'C:/Users/sam/work/CellAnimation/segmentation/output');
+  %
+  %ClassifyImageStack('C:/Users/sam/work/CellAnimation/segmentation/output', ...
+  %                   'DsRed - Confocal - n', ...
+  %                   6, ...
+  %                   imNum, ...
+  %                   endIndex, ...
+  %                   'C:/Users/sam/work/CellAnimation/segmentation/output',...
+  %                   classifier);
+  %
+  %ResegmentImageStack('C:/Users/sam/work/walter_assay/movie2', ...
+  %                    'C:/Users/sam/work/CellAnimation/segmentation/output', ...
+  %                    'DsRed - Confocal - n', ...
+  %                    '.tif', ...
+  %                    6, ...
+  %                    imNum, ...
+  %                    endIndex, ...
+  %                    'C:/Users/sam/work/CellAnimation/segmentation/output/resegmented');    
+  %
+  %ClassifyImageStack('C:/Users/sam/work/CellAnimation/segmentation/output/resegmented', ...
+  %                   'DsRed - Confocal - n', ...
+  %                   6, ...
+  %                   imNum, ...
+  %                   endIndex, ...
+  %                   'C:/Users/sam/work/CellAnimation/segmentation/output/resegmented',...
+  %                   classifier);
+  %                
+  rmpath('segment');
+  rmpath('classify');
+  
+  disp('Finished');
 
 end
 
-disp('Determining accuracy of the classifier: stats');
-validationStats = Validate(classifier, validationSet, testSet);
-save([outputDir filesep 'validationStats.mat'], 'validationStats');
+function imageFileName = makeImageFileName(imNum, digitsForEnum, path, ...
+										   imageFileBase, fileExt)
 
-disp('Segmenting the rest of the image stack');
-
-
-
-%mkdir('output');
-%mkdir('output/resegmented');
-%
-%SegmentImageStack('C:/Users/sam/work/walter_assay/movie2', ...
-%                  'DsRed - Confocal - n', ...
-%                  '.tif', ...
-%                  6, ...
-%                  imNum, ...
-%                  endIndex, ...
-%                  'C:/Users/sam/work/CellAnimation/segmentation/output');
-%
-%ClassifyImageStack('C:/Users/sam/work/CellAnimation/segmentation/output', ...
-%                   'DsRed - Confocal - n', ...
-%                   6, ...
-%                   imNum, ...
-%                   endIndex, ...
-%                   'C:/Users/sam/work/CellAnimation/segmentation/output',...
-%                   classifier);
-%
-%ResegmentImageStack('C:/Users/sam/work/walter_assay/movie2', ...
-%                    'C:/Users/sam/work/CellAnimation/segmentation/output', ...
-%                    'DsRed - Confocal - n', ...
-%                    '.tif', ...
-%                    6, ...
-%                    imNum, ...
-%                    endIndex, ...
-%                    'C:/Users/sam/work/CellAnimation/segmentation/output/resegmented');    
-%
-%ClassifyImageStack('C:/Users/sam/work/CellAnimation/segmentation/output/resegmented', ...
-%                   'DsRed - Confocal - n', ...
-%                   6, ...
-%                   imNum, ...
-%                   endIndex, ...
-%                   'C:/Users/sam/work/CellAnimation/segmentation/output/resegmented',...
-%                   classifier);
-%                
-%rmpath('segment');
-%rmpath('classify');
-%
-%disp('Finished');
-
-end
-
-function imageFileName = makeImageFileName(imNum, digitsForEnum, path, imageFileBase, fileExt)
-
-    imNumStr = int2str(imNum);
-    while(length(imNumStr) < digitsForEnum)
-        imNumStr = ['0' imNumStr]; 
-    end
-    imageFileName = [path filesep imageFileBase imNumStr fileExt];
+  imNumStr = int2str(imNum);
+  while(length(imNumStr) < digitsForEnum)
+    imNumStr = ['0' imNumStr]; 
+  end
+  imageFileName = [path filesep imageFileBase imNumStr fileExt];
 
 end
