@@ -140,9 +140,11 @@ function InitNewImage(handles)
   [handles.props, ...
    handles.labels] 			= NaiveSegment(handles.image);
   close(h);
+
+  set(handles.CurImage, 'String', handles.imageName);
 	
   set(handles.SaveImgToSet,   'Enable', 'on');
-  set(handles.deleteObj, 	    'Enable', 'off');  
+  set(handles.deleteObj, 	  'Enable', 'off');  
   set(handles.SaveObjToSet,   'Enable', 'on');
   handles = PopulateObjSetPopUp(handles);
   guidata(handles.output, handles);
@@ -168,8 +170,10 @@ function InitFirstSet(handles)
 	  handles.wellName 				= handles.objSet(1).wellName;
 	  handles.props 				= handles.objSet(1).props;
 	  handles.labels				= handles.objSet(1).labels;
-	
-	  set(handles.SaveImgToSet,   'Enable', 'off');
+
+	  set(handles.CurImage, 'String', handles.imageName);
+	  
+ 	  set(handles.SaveImgToSet,   'Enable', 'off');
   	  set(handles.deleteObj,      'Enable', 'on');  
 	  set(handles.SaveObjToSet,   'Enable', 'off');
 
