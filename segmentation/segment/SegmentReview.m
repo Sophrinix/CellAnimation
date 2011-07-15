@@ -25,7 +25,7 @@ function varargout = SegmentReview(varargin)
 
 % Edit the above text to modify the response to help SegmentReview
 
-% Last Modified by GUIDE v2.5 13-Jul-2011 14:58:13
+% Last Modified by GUIDE v2.5 15-Jul-2011 10:49:31
 
   % Begin initialization code - DO NOT EDIT
   gui_Singleton = 1;
@@ -155,28 +155,32 @@ end %InitNewImage
 % --- Displays the images and objects from the first image in the set
 function InitFirstSet(handles)
 
-	handles.imagefile 			= [handles.directory 		  ...
-								   filesep 					  ...
-								   handles.objSet(1).wellName ...
-								   filesep 					  ...
-								   handles.objSet(1).imageName];
-	handles.image 				= imread(handles.imagefile);
-	handles.imageName 			= handles.objSet(1).imageName;
-	handles.wellName 			= handles.objSet(1).wellName;
-	handles.props 				= handles.objSet(1).props;
-	handles.labels				= handles.objSet(1).labels;
+	if(isempty(handles.objSet))
+	  InitNewImage(handles);
+	else
+	  handles.imagefile 			= [handles.directory 		  ...
+								       filesep 					  ...
+								       handles.objSet(1).wellName ...
+								   	   filesep 					  ...
+								       handles.objSet(1).imageName];
+	  handles.image 				= imread(handles.imagefile);
+	  handles.imageName 			= handles.objSet(1).imageName;
+	  handles.wellName 				= handles.objSet(1).wellName;
+	  handles.props 				= handles.objSet(1).props;
+	  handles.labels				= handles.objSet(1).labels;
 	
-	set(handles.SaveImgToSet,   'Enable', 'off');
-  	set(handles.deleteObj,      'Enable', 'on');  
-	set(handles.SaveObjToSet,   'Enable', 'off');
+	  set(handles.SaveImgToSet,   'Enable', 'off');
+  	  set(handles.deleteObj,      'Enable', 'on');  
+	  set(handles.SaveObjToSet,   'Enable', 'off');
 
-	set(handles.ObjSetPopUp, 'Value', 1);
-    handles = PopulateObjSetPopUp(handles);
+	  set(handles.ObjSetPopUp, 'Value', 1);
+      handles = PopulateObjSetPopUp(handles);
     
-	guidata(handles.output, handles);
+	  guidata(handles.output, handles);
   
-    set(handles.ImageDisplay, 'NextPlot', 'replacechildren');
-    DrawDisplay(handles);
+      set(handles.ImageDisplay, 'NextPlot', 'replacechildren');
+      DrawDisplay(handles);
+	end
 
 end %InitFirstSet
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -510,10 +514,10 @@ function newHandles = UpdateClassificationDisplay(handles)
 	newHandles.props(newHandles.selected).over);
   set(newHandles.UnderCheck,      'Value', ...
 	newHandles.props(newHandles.selected).under);
-  set(newHandles.PostMitoticCheck,'Value', ...
-	newHandles.props(newHandles.selected).postmitotic);
-  set(newHandles.PreMitoticCheck, 'Value', ...
-	newHandles.props(newHandles.selected).premitotic);
+  set(newHandles.PostdivisionCheck,'Value', ...
+	newHandles.props(newHandles.selected).postdivision);
+  set(newHandles.PredivisionCheck, 'Value', ...
+	newHandles.props(newHandles.selected).predivision);
   set(newHandles.ApoptoticCheck,  'Value', ...
 	newHandles.props(newHandles.selected).apoptotic);
   set(newHandles.EdgeCheck,       'Value', ...
@@ -565,27 +569,27 @@ function UnderCheck_Callback(hObject, eventdata, handles)
  
 end %UnderCheck_Callback
 
-% --- Executes on button press in PostMitoticCheck.
-function PostMitoticCheck_Callback(hObject, eventdata, handles)
+% --- Executes on button press in postdivisioncheck.
+function PostdivisionCheck_Callback(hObject, eventdata, handles)
 
-  handles.props(get(handles.SegmentPopup, 'Value')).postmitotic = ...
+  handles.props(get(handles.SegmentPopup, 'Value')).postdivision = ...
         get(hObject,'Value');
   handles = DeleteHighlights(handles);
   handles = DrawHighlights(handles);
   guidata(handles.output, handles);
  
-end %PostMitoticCheck_Callback
+end %PostdivisionCheck_Callback
 
-% --- Executes on button press in PreMitoticCheck.
-function PreMitoticCheck_Callback(hObject, eventdata, handles)
+% --- Executes on button press in PredivisionCheck.
+function PredivisionCheck_Callback(hObject, eventdata, handles)
 
-  handles.props(get(handles.SegmentPopup, 'Value')).premitotic = ...
+  handles.props(get(handles.SegmentPopup, 'Value')).predivision = ...
         get(hObject,'Value');
   handles = DeleteHighlights(handles);
   handles = DrawHighlights(handles);
   guidata(handles.output, handles);
   
-end %PreMitoticCheck_Callback
+end %PredivisionCheck_Callback
 
 % --- Executes on button press in ApoptoticCheck.
 function ApoptoticCheck_Callback(hObject, eventdata, handles)
@@ -646,23 +650,23 @@ function SelectUnder_Callback(hObject, eventdata, handles)
 
 end %SelectUnder_Callback
 
-% --- Executes on button press in SelectPostMitotic.
-function SelectPostMitotic_Callback(hObject, eventdata, handles)
-
-  hhandles = DeleteHighlights(handles);
-  handles = DrawHighlights(handles);
-  guidata(handles.output, handles);
-
-end %SelectPostMitotic_Callback
-
-% --- Executes on button press in SelectPreMitotic.
-function SelectPreMitotic_Callback(hObject, eventdata, handles)
+% --- Executes on button press in SelectPostdivision.
+function SelectPostdivision_Callback(hObject, eventdata, handles)
 
   handles = DeleteHighlights(handles);
   handles = DrawHighlights(handles);
   guidata(handles.output, handles);
 
-end %SelectPreMitotic_Callback
+end %SelectPostdivision_Callback
+
+% --- Executes on button press in SelectPredivision.
+function SelectPredivision_Callback(hObject, eventdata, handles)
+
+  handles = DeleteHighlights(handles);
+  handles = DrawHighlights(handles);
+  guidata(handles.output, handles);
+
+end %SelectPredivision_Callback
 
 % --- Executes on button press in SelectApoptotic.
 function SelectApoptotic_Callback(hObject, eventdata, handles)
@@ -684,8 +688,8 @@ function newHandles = DrawHighlights(handles)
 				  		'SelectNuclei', 		...
 						'SelectOver',   		...
 						'SelectUnder',  		...
-						'SelectPostMitotic', 	...
-						'SelectPreMitotic',		...
+						'SelectPostdivision', 	...
+						'SelectPredivision',	...
 						'SelectApoptotic' };
   
   %corresponding classifications
@@ -693,8 +697,8 @@ function newHandles = DrawHighlights(handles)
 						'nucleus',				...
 						'over',					...
 						'under',				...
-						'postmitotic',			...
-						'premitotic',			...
+						'postdivision',			...
+						'predivision',			...
 						'apoptotic' };
 
   for(i = 1:size(selectButtons,2))
