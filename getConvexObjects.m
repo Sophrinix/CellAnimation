@@ -19,7 +19,7 @@ for i=1:obj_nr
     pol_vect_1=diff(pol_points_1);
     pol_vect_2=diff(pol_points_2);
     pol_len=length(pol_vect_1);    
-    if (pol_len==3)
+    if (pol_len<=3)
         %a triangle is a convex polygon
         convex_objects_idx(i)=true;
         continue;
