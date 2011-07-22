@@ -1,11 +1,11 @@
 function selectObjectByID(obj_id)
 global msr_gui_struct;
 
-objects_lbl=msr_gui_struct.BlobsLabel;
+objects_lbl=msr_gui_struct.ObjectsLabel;
 image_handle=msr_gui_struct.ImageHandle;
 
 if (obj_id==0)
-    warnDlg('You clicked on the background!');
+    warndlg('You clicked on the background!');
     msr_gui_struct.SelectedObjectID=[];
     image_data=label2rgb(objects_lbl,msr_gui_struct.ColorMap,msr_gui_struct.BkgColor,'shuffle');
     set(image_handle,'CData',image_data);
