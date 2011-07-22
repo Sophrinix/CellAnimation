@@ -13,7 +13,7 @@ TrackStruct.ImageFileBase=[well_folder ds TrackStruct.ImageFileName];
 %hepsin overexpressing
 % TrackStruct.ImageFileBase=[well_folder ds 'llh_hep_lm7_t'];
 TrackStruct.StartFrame=1;
-TrackStruct.FrameCount=72;
+TrackStruct.FrameCount=10;
 TrackStruct.TimeFrame=15; %minutes
 TrackStruct.FrameStep=1; %read every x frames
 TrackStruct.NumberFormat='%06d';
@@ -390,6 +390,12 @@ start_tracks_function.FunctionArgs.TimeFrame.Value=TrackStruct.TimeFrame;
 start_tracks_function.FunctionArgs.ShapeParameters.FunctionInstance='GetShapeParameters';
 start_tracks_function.FunctionArgs.ShapeParameters.OutputArg='ShapeParameters';
 if_is_empty_cells_label_functions=addToFunctionChain(if_is_empty_cells_label_functions,start_tracks_function);
+
+get_shape_params_function.InstanceName='GetShapeParameters';
+get_shape_params_function.FunctionHandle=@getShapeParams;
+get_shape_params_function.FunctionArgs.LabelMatrix.FunctionInstance='IfIsEmptyPreviousCellsLabel';
+get_shape_params_function.FunctionArgs.LabelMatrix.InputArg='CellsLabel';
+else_is_empty_cells_label_functions=addToFunctionChain(else_is_empty_cells_label_functions,get_shape_params_function);
 
 get_cur_tracks_function.InstanceName='GetCurrentTracks';
 get_cur_tracks_function.FunctionHandle=@getCurrentTracks;
