@@ -144,6 +144,7 @@ for i=1:frame_step:frame_step*framecount
         cur_secondary_ids(cur_secondary_ids==secondary_id)=[]; 
     end
     %save the new cells_lbl
+    cells_lbl=makeContinuousLabelMatrix(cells_lbl);
     save([seg_file_root num2str(curframe,number_fmt)],'cells_lbl');
 end
 
