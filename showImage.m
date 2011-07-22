@@ -69,8 +69,7 @@ else
             updateReviewSegGUIStatus('SelectObject');
     end
     if (~isempty(blob_id))
-        msr_gui_struct.SelectedBlobID=blob_id;
-        selectBlobByID(blob_id);        
+        selectBlobByID(blob_id);                
     end
     obj_id=msr_gui_struct.SavedObjectID;
     if (~isempty(obj_id))

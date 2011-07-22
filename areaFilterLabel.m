@@ -16,12 +16,12 @@ else
 end
 cells_area=[cells_props.Area];
 cells_nr=length(cells_area);
-valid_areas_idx=false(1,cells_nr);
+valid_areas_idx=true(1,cells_nr);
 if (b_min)
-    valid_areas_idx=valid_areas_idx|(cells_area>=input_args.MinArea.Value);
+    valid_areas_idx=valid_areas_idx&(cells_area>=input_args.MinArea.Value);
 end
 if (b_max)
-    valid_areas_idx=valid_areas_idx|(cells_area<=input_args.MaxArea.Value);
+    valid_areas_idx=valid_areas_idx&(cells_area<=input_args.MaxArea.Value);
 end
 if (min(valid_areas_idx)==1)
     %no invalid objects return the same label back
