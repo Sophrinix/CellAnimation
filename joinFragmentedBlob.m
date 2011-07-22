@@ -172,7 +172,13 @@ end
 end
 
 function linkage_clusters=getPointsClusters(point_set)
-
+%test and make sure the point sets are not equal
+set_sz=size(point_set);
+test_set=repmat(point_set(1,:),set_sz(1),1);
+if isequal(point_set,test_set)
+    linkage_clusters=ones(set_sz(1),1);
+    return;
+end
 blob_dist=pdist(point_set);
 %tested all linkage params - this works best
 blob_linkage=linkage(blob_dist,'average');
