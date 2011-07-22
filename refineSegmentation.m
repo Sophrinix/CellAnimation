@@ -4,6 +4,11 @@ function output_args=refineSegmentation(input_args)
 prev_label=input_args.PreviousLabel.Value;
 cur_label=input_args.CurrentLabel.Value;
 
+if (isempty(prev_label))
+    output_args.LabelMatrix=cur_label;
+    return;
+end
+
 prev_centroids=getApproximateCentroids(prev_label);
 cur_centroids=getApproximateCentroids(cur_label);
 cur_triangulation=delaunay(cur_centroids(:,1),cur_centroids(:,2));
