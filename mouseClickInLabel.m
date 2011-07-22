@@ -32,6 +32,24 @@ global msr_gui_struct;
 
 blobs_lbl=msr_gui_struct.BlobsLabel;
 blob_id=blobs_lbl(round(click_point(1,2)),round(click_point(1,1)));
+if ((blob_id==0) && msr_gui_struct.SnapToNearest)
+   lbl_sz=size(blobs_lbl);
+   nhood_sz=20;
+   point11=max(1,(round(click_point(1,1)-nhood_sz)));   
+   point12=min(lbl_sz(2),(round(click_point(1,1)+nhood_sz)));
+   point21=max(1,(round(click_point(1,2)-nhood_sz)));
+   point22=min(lbl_sz(1),(round(click_point(1,2)+nhood_sz)));
+   nearby_frame=blobs_lbl(point21:point22,point11:point12);
+   nearby_centroids=getApproximateCentroids(nearby_frame);
+   nearby_ids=unique(nearby_frame);
+   nearby_ids(1)=[];
+   dist_1=nearby_centroids(nearby_ids,1)-click_point(1,1);
+   dist_2=nearby_centroids(nearby_ids,2)-click_point(1,2);
+   nearby_distances=sqrt(dist_1.^2+dist_2.^2);
+   [dummy min_idx]=min(nearby_distances);
+   click_point=nearby_centroids(nearby_ids(min_idx),:);
+   blob_id=nearby_frame(round(click_point(1)),round(click_point(2)));
+end
 selectBlobByID(blob_id);
 original_blobs_lbl=msr_gui_struct.OriginalBlobsLabel;
 msr_gui_struct.OriginalBlobID=original_blobs_lbl(round(click_point(1,2)),round(click_point(1,1)));
@@ -44,9 +62,26 @@ global msr_gui_struct;
 
 objects_lbl=msr_gui_struct.ObjectsLabel;
 obj_id=objects_lbl(round(click_point(1,2)),round(click_point(1,1)));
+
+if ((obj_id==0) && msr_gui_struct.SnapToNearest)
+   lbl_sz=size(objects_lbl);
+   nhood_sz=20;
+   point11=max(1,(round(click_point(1,1)-nhood_sz)));   
+   point12=min(lbl_sz(2),(round(click_point(1,1)+nhood_sz)));
+   point21=max(1,(round(click_point(1,2)-nhood_sz)));
+   point22=min(lbl_sz(1),(round(click_point(1,2)+nhood_sz)));
+   nearby_frame=objects_lbl(point21:point22,point11:point12);
+   nearby_centroids=getApproximateCentroids(nearby_frame);
+   nearby_ids=unique(nearby_frame);
+   nearby_ids(1)=[];
+   dist_1=nearby_centroids(nearby_ids,1)-click_point(1,1);
+   dist_2=nearby_centroids(nearby_ids,2)-click_point(1,2);
+   nearby_distances=sqrt(dist_1.^2+dist_2.^2);
+   [dummy min_idx]=min(nearby_distances);
+   click_point=nearby_centroids(nearby_ids(min_idx),:);
+   obj_id=nearby_frame(round(click_point(1)),round(click_point(2)));
+end
 selectObjectByID(obj_id);
-blobs_lbl=msr_gui_struct.BlobsLabel;
-msr_gui_struct.SelectedBlobID=blobs_lbl(round(click_point(1,2)),round(click_point(1,1)));
 
 %end selectObject
 end

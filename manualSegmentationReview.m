@@ -20,6 +20,7 @@ msr_gui_struct.Image=input_args.Image.Value;
 msr_gui_struct.SelectMultiple=false;
 msr_gui_struct.SelectedBlobID=[];
 msr_gui_struct.SelectedObjectID=[];
+msr_gui_struct.SnapToNearest=true;
 %initialize the gui
 field_names=fieldnames(msr_gui_struct);
 gui_handle=findall(0,'Tag','ManualResegmentation');
@@ -47,6 +48,7 @@ msr_gui_struct.StatusTextHandle=findobj(children_handles,'tag','statusText');
 msr_gui_struct.CheckBoxPrevLabelHandle=findobj(children_handles,'tag','checkboxPrevLabel');
 msr_gui_struct.CheckBoxOverlayPrevLabelHandle=findobj(children_handles,'tag','checkboxOverlayPrevLabel');
 msr_gui_struct.CheckBoxSelectMultipleHandle=findobj(children_handles,'tag','checkboxSelectMultiple');
+msr_gui_struct.CheckBoxSnapToNearestHandle=findobj(children_handles,'tag','checkboxSnapNearest');
 if (isempty(previous_lbl))
     %disable show previous label checkbox
     set(msr_gui_struct.CheckBoxPrevLabelHandle,'Enable','off');

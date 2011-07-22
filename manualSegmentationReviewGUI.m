@@ -22,7 +22,7 @@ function varargout = manualSegmentationReviewGUI(varargin)
 
 % Edit the above text to modify the response to help manualSegmentationReviewGUI
 
-% Last Modified by GUIDE v2.5 18-Mar-2011 18:34:57
+% Last Modified by GUIDE v2.5 22-Mar-2011 00:08:22
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -206,3 +206,13 @@ function InvertSelectionButton_Callback(hObject, eventdata, handles)
 invertSelection();
 
 
+
+
+% --- Executes on button press in checkboxSnapNearest.
+function checkboxSnapNearest_Callback(hObject, eventdata, handles)
+% hObject    handle to checkboxSnapNearest (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkboxSnapNearest
+snapToNearest();
