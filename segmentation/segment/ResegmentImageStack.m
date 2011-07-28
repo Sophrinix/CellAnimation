@@ -1,30 +1,32 @@
-function ResegmentImageStack(imagesPath, propsPath, imFileBase, imFileExt, ...
-                             digitsForEnum, startIndex, endIndex, outputFolder)
-    disp('Resegmenting Images');
-    for(imNum=startIndex:endIndex)                
+function objSet = ResegmentImageStack(prevObjSet, directory)
+%
+%Resegments all undersegmented objects in all images in the given object
+%set
+%
+%INPUTS:
+%
+%
+%OUTPUTS:
+%
+  objSet = prevObjSet;
+  for(imIdx = 1:size(objSet,2))
+    wellName = objSet(imIdx).wellName;
+    imageName = objSet(imIdx).imageName;
         
-        disp(imNum);
+    %load image
+    im = imread([directory filesep wellName filesep imageName]);
         
-        %create end of file name
-        imNumStr = int2str(imNum);
-        while(length(imNumStr) < digitsForEnum)
-            imNumStr = ['0' imNumStr]; 
-        end
+    %get the correct object list
+    props = objSet(imIdx).props;
+    labels = objSet(imIdx).labels;
+
+    %find under-segmented objects
+    underSegObjs = find([props(:).under])
+    [props,labels] = Resegment(im, props, labels, underSegObjs);
         
-        %load image
-        im = imread([imagesPath '/' imFileBase imNumStr imFileExt]);
-        
-        %load properties and labels
-        load([propsPath '/' imFileBase imNumStr '.mat'], 's', 'l');
-        
-        %find under-segmented objects
-        underSegObjs = find([s(:).under])
-        [s,l] = Resegment(im, s, l, underSegObjs);
-        
-        %save output to file
-        save([outputFolder '/' imFileBase imNumStr '.mat'], 's', 'l');                      
-        
-    end
-    
-    
+    %save props and labels to objSet
+    objSet(imIdx).props = props;
+    objSet(imIdx).labels = labels;
+  end
+      
 end

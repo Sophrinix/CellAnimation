@@ -88,7 +88,7 @@ function [s,l] = Resegment(im, properties, labels, objids)
   i = imtophat(im2double(im), strel('disk', 50));
 
   for(obj=1:size(sNew,1))
-
+    sNew(obj).label = 0;
     sNew(obj).Intensity =  sum(i(sNew(obj).PixelIdxList));
 
     sNew(obj).bound = bounds{obj};
@@ -121,7 +121,7 @@ function [s,l] = Resegment(im, properties, labels, objids)
   s = s(order);    
 	
   for(obj = 1:size(s,1))
-	s(obj).label = label;
+	s(obj).label = obj;
   end	
     
 end

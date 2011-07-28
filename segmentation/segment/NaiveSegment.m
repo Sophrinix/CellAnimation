@@ -36,27 +36,27 @@ function [p,l] = NaiveSegment(image, varargin)
   end
 
   % Subtract background, in pixel radius (default 50) tophat filter
-  i      = imtophat(im2double(image), strel('disk', radius));
-  
+  i		 = imtophat(im2double(image), strel('disk', radius));
+  j 	 = i; 
   
   % maps the intensity values such that 1% of data is saturated at low and high intensities 
-  j      = imadjust(i);
+  i  = imadjust(i);
   
   % To Binary Image (default 30% theshold)
-  bw     = im2bw(j, backgroundThreshold);
+  i  = im2bw(i, backgroundThreshold);
 
   % Remove Noise
   if noiseThreshold > 0.0
-    noise = imtophat(bw, strel('disk', noiseThreshold));
-    bw = bw - noise;
+    noise = imtophat(i, strel('disk', noiseThreshold));
+    i = i - noise;
   end
   
   % Fill Holes
   if fillholes
-    bw     = imfill(bw, 'holes');
+    i     = imfill(i, 'holes');
   end
   
-  l = bwlabel(bw);
+  l = bwlabel(i);
   
   % Segment properties (with holes filled)
   p = regionprops(l,...
@@ -65,14 +65,14 @@ function [p,l] = NaiveSegment(image, varargin)
                   'FilledArea',      'EulerNumber',  'EquivDiameter',  ...
                   'Solidity',        'Perimeter',    'PixelIdxList',   ...
                   'PixelList',       'BoundingBox');
-  
+   
   % Compute intensities from background adjusted image
-  bounds = bwboundaries(bw);
+  bounds = bwboundaries(i);
   for obj=1:size(p,1)
 
 	p(obj).label = obj;    
 
-	p(obj).Intensity =  sum(i(p(obj).PixelIdxList));
+	p(obj).Intensity =  sum(j(p(obj).PixelIdxList));
     
     p(obj).bound = bounds{obj};
     
@@ -97,4 +97,9 @@ function [p,l] = NaiveSegment(image, varargin)
   
   p = ClassifyFirstPass(p);
   
+  clear i;
+  clear j;
+  clear bounds;
+  clear noise;
+ 
 end % NaiveSegment

@@ -2,10 +2,10 @@
 
 use strict;
 
-my @classifications = ("debris", "nucleus", "over", "under", "predivsion", "postdivision", "apoptotic", "newborn");
+my @classifications = ("debris", "nucleus", "under", "predivision", "postdivision", "newborn");
 
 my $name;
 foreach $name (@classifications)
 {
-  print("R --vanilla --slave --args '$ARGV[0]' '$ARGV[1]' '$name' < PredictImage.R\n");
+  system("R --vanilla --slave --args '$ARGV[0]' '$ARGV[1]' '$name' < PredictImage.R\n");
 }

@@ -3,8 +3,8 @@ function objSet = CSVToSet(objFile)
   %load matlab object objSet from the file given
   load(objFile);
 
-  names = {'debris', 		'nucleus', 		'over', 		'under', ...
-		   'predivision', 	'postdivision', 'apoptotic', 	'newborn'};
+  names = {'debris', 		'nucleus', 		 		'under', ...
+		   'predivision', 	'postdivision',  	'newborn'};
 
   for(nm=1:size(names,2))
     fileID = fopen([names{1,nm} '.csv']);

@@ -1,4 +1,4 @@
-function objSet = SegmentImageStack(startIndex, endIndex, directory, ...
+function SegmentImageStack(startIndex, endIndex, directory, ...
 									wellName, imageNameBase, fileExt, ...
 									digitsForEnum)
 %
@@ -11,30 +11,35 @@ function objSet = SegmentImageStack(startIndex, endIndex, directory, ...
 %OUTPUTS:
 %
 %
+
+  addpath(pwd);
+  cd(directory);
+  cd(wellName);
+  mkdir('output')
+  cd('output')
   
   if(fileExt(1) ~= '.')
     fileExt = ['.' fileExt];
   end
-  
-  objSet = [];
- 
+     
   for(imNum=startIndex:endIndex) 
-    %create end of file name
-    imNumStr = int2str(imNum);
-    while(length(imNumStr) < digitsForEnum)
-      imNumStr = ['0' imNumStr]; 
-    end
+    imNumStr = int2str(10^(digitsForEnum-1) + imNum);
+    imNumStr(1) = '0'
 
     %load image
-	[im, wellName, imageName] = LoadImage([directory filesep ...
-										   wellName filesep ...
-										   imageNameBase imNumStr fileExt]);
-	index = size(objSet,2) + 1;
-	objSet(index).wellName = wellName;
-	objSet(index).imageName = imageName;
+	[im, objSet.wellName, objSet.imageName] = ...
+		LoadImage([directory filesep ...
+				   wellName filesep ...
+				   imageNameBase imNumStr fileExt]);
 
     %segment
-    [objSet(index).props, objSet(index).labels] = NaiveSegment(im);
+    [objSet.props, objSet.labels] = NaiveSegment(im);
+
+    save([imageNameBase imNumStr '.mat'], 'objSet');
+
+    clear objSet;
+	clear im;
+    clear imNumStr;
   end
 
 end
