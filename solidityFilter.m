@@ -1,6 +1,30 @@
 function output_args=solidityFilter(input_args)
-%module to remove objects below or above a threshold solidity from a binary
-%image
+%Usage
+%This module is used to remove objects below or above a threshold solidity from a binary image.
+%
+%Input Structure Members
+%Image – The binary image from which objects will be removed.
+%MaxSolidity – Objects whose solidity is above this value will be removed from the image.
+%MinSolidity - Objects whose solidity is below this value will be removed from the image.
+%
+%Output Structure Members
+%Image – The filtered binary image.
+%
+%Example
+%
+%solidity_filter_function.InstanceName='SolidityFilter';
+%solidity_filter_function.FunctionHandle=@solidityFilterLabel;
+%solidity_filter_function.FunctionArgs.ObjectsLabel.FunctionInstance='AreaFilt
+%er';
+%solidity_filter_function.FunctionArgs.ObjectsLabel.OutputArg='LabelMatrix';
+%solidity_filter_function.FunctionArgs.MinSolidity.Value=0.69;
+%
+%…
+%
+%ap_filter_function.FunctionArgs.ObjectsLabel.FunctionInstance='SolidityFilter
+%';
+%ap_filter_function.FunctionArgs.ObjectsLabel.OutputArg='LabelMatrix';
+
 cells_lbl=bwlabeln(input_args.Image.Value);
 cells_props=regionprops(cells_lbl,'Solidity');
 field_names=fieldnames(input_args);

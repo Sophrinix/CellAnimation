@@ -1,6 +1,17 @@
 function []=assayCellPropsSingleImage(path_name)
-%assay to segment cells in an image subject to manual review then extract
-%their shape properties
+%Usage
+%This assay is used to segment objects in an image subject to manual review then extract their
+%shape properties.
+%
+%Important Parameters
+%path_name – The absolute image file name of the image to be analyzed.
+%Other important parameters are those listed in the module section for the important modules
+%listed below.
+%
+%Important Modules
+%clearSmallObjects, distanceWatershed, generateBinImgUsingLocAvg,
+%manualSegmentationReview, segmentObjectsUsingMarkers.
+
 global functions_list;
 functions_list=[];
 

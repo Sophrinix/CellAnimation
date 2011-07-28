@@ -1,6 +1,14 @@
 function []=assayCellCoverage(img_file_name)
-%assay to determine what percentage of the image is covered by foreground
-%objects
+%Usage
+%This assay is used to determine what percentage of an image is occupied by objects.
+%
+%Important Parameters
+%img_file_name – The absolute image file name of the image to be analyzed.
+%
+%Important Modules
+%manualSegmentationReview.
+
+
 dir_idx=strfind(img_file_name,'\');
 dir_idx=dir_idx(end);
 img_dir=img_file_name(1:dir_idx);

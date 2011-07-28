@@ -1,6 +1,33 @@
 function output_args=imNorm(input_args)
-%module to normalize image so that lowest value is zero and highest value is the
-%maximum allowed value for the specified intclass
+%Usage
+%This module is used to normalize an image so that the lowest pixel value is zero and the highest
+%pixel value is the maximum allowed value for the specified integer class.
+%
+%Input Structure Members
+%IntegerClass – The integer class of the image. Has to be an integer class supported by
+%MATLAB such as 'int8' or 'uint8'.
+%RawImage – The image to be processed.
+%
+%Output Structure Members
+%Image – The normalized image.
+%
+%Example
+%
+%normalize_image_to_16bit_function.InstanceName='NormalizeImageTo16Bit';
+%normalize_image_to_16bit_function.FunctionHandle=@imNorm;
+%normalize_image_to_16bit_function.FunctionArgs.RawImage.FunctionInstance='Rea
+%dImagesInSegmentationLoop';
+%normalize_image_to_16bit_function.FunctionArgs.RawImage.OutputArg='Image';
+%normalize_image_to_16bit_function.FunctionArgs.IntegerClass.Value='uint16';
+%image_read_loop_functions=addToFunctionChain(image_read_loop_functions,normal
+%ize_image_to_16bit_function);
+%
+%…
+%
+%resize_image_function.FunctionArgs.Image.FunctionInstance='NormalizeImageTo16
+%Bit';
+%resize_image_function.FunctionArgs.Image.OutputArg='Image';
+
 int_class=input_args.IntegerClass.Value;
 max_val=double(intmax(int_class));
 img_raw=input_args.RawImage.Value;

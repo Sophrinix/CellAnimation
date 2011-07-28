@@ -1,6 +1,47 @@
 function output_args=displayTracksData(input_args)
-%module to display and save images showing the cell boundaries and cell ids - no
-%mitosis data
+%Usage
+%This module is used to overlay cell outlines (using different colors to indicate different cell
+%generations) and cell labels on the original images after tracking and save the resulting image.
+%
+%Input Structure Members
+%CellsLabel – The label matrix containing the cell outlines for the current image.
+%CurFrame – Integer containing the current frame number.
+%CurrentTracks – The list of the tracks for the current image.
+%FileRoot – The root of the image file name to be used when generating the image file name for
+%the current image in combination with the current frame number.
+%Image – The original image which will be used to generate the image with overlayed outlines
+%and labels.
+%NumberFormat – A string indicating the number format of the file name to be used when saving
+%the overlayed image.
+%TracksLayout – Matrix describing the order of the columns in the tracks matrix.
+%
+%Output Structure Members
+%None.
+%
+%Example
+%
+%display_tracks_function.InstanceName='DisplayTracks';
+%display_tracks_function.FunctionHandle=@displayTracksData;
+%display_tracks_function.FunctionArgs.Image.FunctionInstance='ReadImagesInSegm
+%entationLoop';
+%display_tracks_function.FunctionArgs.Image.OutputArg='Image';
+%display_tracks_function.FunctionArgs.CellsLabel.FunctionInstance='ResizeCytoL
+%abel';
+%display_tracks_function.FunctionArgs.CellsLabel.OutputArg='Image';
+%display_tracks_function.FunctionArgs.CurrentTracks.FunctionInstance='IfIsEmpt
+%yPreviousCellsLabel';
+%display_tracks_function.FunctionArgs.CurrentTracks.OutputArg='NewTracks';
+%display_tracks_function.FunctionArgs.CurFrame.FunctionInstance='SegmentationL
+%oop';
+%display_tracks_function.FunctionArgs.CurFrame.OutputArg='LoopCounter';
+%display_tracks_function.FunctionArgs.TracksLayout.Value=tracks_layout;
+%display_tracks_function.FunctionArgs.FileRoot.Value=[track_dir ds
+%TrackStruct.ImageFileName];
+%display_tracks_function.FunctionArgs.NumberFormat.Value=TrackStruct.NumberFor
+%mat;
+%image_read_loop_functions=addToFunctionChain(image_read_loop_functions,displa
+%y_tracks_function);
+
 normalize_args.RawImage.Value=input_args.Image.Value;
 int_class='uint8';
 normalize_args.IntegerClass.Value=int_class;

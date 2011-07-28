@@ -1,7 +1,6 @@
 function []=assayFlCytoLNCapWG(well_folder)
-%assay for flourescent tracking of LNCap cells with a cytoplasm stain.
-%needs to be optimized. the pixel redistribution is terrible. a
-%different segmentation module might be better suited.
+
+
 global functions_list;
 functions_list=[];
 TrackStruct=[];

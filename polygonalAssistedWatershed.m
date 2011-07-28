@@ -1,7 +1,51 @@
 function output_args=polygonalAssistedWatershed(input_args)
-%polygonal assisted watershed module. used to segment blobs in a binary
-%image into objects
-%allow the watershed to split only non-convex blobs
+%Usage
+%This module is used to prevent a watershed segmentation module (can be another type of
+%segmentation module) from splitting convex objects. The assumption is that convex objects are
+%atomic and should not be split. This assumption works well for nuclear stains.
+%
+%Input Structure Members
+%ConvexObjectsIndex – List containing the index of convex objects. This list may be generated
+%using the getConvexObjects module.
+%ImageLabel – Label matrix containing the original objects before segmentation.
+%MinBlobArea – Objects resulting from segmentation that have an area smaller than this value
+%will be unsegmented.
+%WatershedLabel – Label matrix containing the objects after segmentation.
+%
+%Output Structure Members
+%LabelMatrix – A label matrix containing the objects segmented according to the segmentation in
+%WatershedLabel with the exception of convex objects which are left unaltered.
+%
+%Example
+%
+%polygonal_assisted_watershed_function.InstanceName='PolygonalAssistedWatershe
+%d';
+%polygonal_assisted_watershed_function.FunctionHandle=@polygonalAssistedWaters
+%hed;
+%polygonal_assisted_watershed_function.FunctionArgs.ImageLabel.FunctionInstanc
+%e='LabelNuclei';
+%polygonal_assisted_watershed_function.FunctionArgs.ImageLabel.OutputArg='Labe
+%lMatrix';
+%polygonal_assisted_watershed_function.FunctionArgs.WatershedLabel.FunctionIns
+%tance='DistanceWatershed';
+%polygonal_assisted_watershed_function.FunctionArgs.WatershedLabel.OutputArg='
+%LabelMatrix';
+%polygonal_assisted_watershed_function.FunctionArgs.ConvexObjectsIndex.Functio
+%nInstance='GetConvexObjects';
+%polygonal_assisted_watershed_function.FunctionArgs.ConvexObjectsIndex.OutputA
+%rg='ConvexObjectsIndex';
+%polygonal_assisted_watershed_function.FunctionArgs.MinBlobArea.Value=TrackStr
+%uct.MinNuclArea;
+%image_read_loop_functions=addToFunctionChain(image_read_loop_functions,polygo
+%nal_assisted_watershed_function);
+%
+%…
+%
+%segment_objects_using_markers_function.FunctionArgs.MarkersLabel.FunctionInst
+%
+%ance='PolygonalAssistedWatershed';
+%segment_objects_using_markers_function.FunctionArgs.MarkersLabel.OutputArg='L
+%abelMatrix';
 
 %determine bkg_ids - have to use area because ws_lbl splits the background
 %in two or more pieces

@@ -1,6 +1,33 @@
 function output_args=areaOverPerimeterFilterLabel(input_args)
-%area/perimeter filter module. used to eliminate montage noise which tends to have a
-%higher area over perimeter ratio than cells
+%Usage
+%This module is used to remove objects below and/or above a certain area/perimeter ratio from a
+%label matrix. Montages consisting of multiple images can exhibit noise at the points where the
+%individual images are joined. The objects from this type of noise have higher area/perimeter
+%ratio than true objects and can be removed using this filter.
+%
+%Input Structure Members
+%MaxAreaOverPerimeter – Objects with an AOP ratio larger than this value will be removed.
+%MinAreaOverPerimeter – Objects with an AOP ratio smaller than this value will be removed.
+%ObjectsLabel – The label matrix from which objects will be removed.
+%
+%Output Structure Members
+%LabelMatrix – The filtered label matrix.
+%
+%Example
+%
+%aop_filter_function.InstanceName='AOPFilter';
+%aop_filter_function.FunctionHandle=@ areaOverPerimeterFilterLabel;
+%aop_filter_function.FunctionArgs.ObjectsLabel.FunctionInstance='SegmentObject
+%sUsingMarkers';
+%aop_filter_function.FunctionArgs.ObjectsLabel.OutputArg='LabelMatrix';
+%aop_filter_function.FunctionArgs.MinAreaOverPerimeter.Value=TrackStruct.MinCy
+%toAOP;
+%image_read_loop_functions=addToFunctionChain(image_read_loop_functions,aop_fi
+%lter_function);
+%...
+%resize_cyto_label_function.FunctionArgs.Image.FunctionInstance='AOPFilter';
+%resize_cyto_label_function.FunctionArgs.Image.OutputArg='LabelMatrix';
+
 cells_lbl=input_args.ObjectsLabel.Value;
 cells_props=regionprops(cells_lbl,'Area','Perimeter');
 field_names=fieldnames(input_args);
