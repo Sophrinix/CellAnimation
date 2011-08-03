@@ -1,6 +1,5 @@
-function SegmentImageStack(startIndex, endIndex, directory, ...
-									wellName, imageNameBase, fileExt, ...
-									digitsForEnum)
+function SegmentImageStack(directory, wellName, imageNameBase, fileExt, ...
+						   digitsForEnum, startIndex, endIndex)
 %
 %Does naive segmentation an entire image stack, adding results to a new
 %object set
@@ -22,6 +21,8 @@ function SegmentImageStack(startIndex, endIndex, directory, ...
     fileExt = ['.' fileExt];
   end
      
+  digitsForEnum
+
   for(imNum=startIndex:endIndex) 
     imNumStr = int2str(10^(digitsForEnum-1) + imNum);
     imNumStr(1) = '0'

@@ -1,10 +1,4 @@
-function SetToCSV(directory, wellName, imageNameBase, digitsForEnum, ...
-				  startIndex, endIndex, filename)
-
-  addpath(pwd);
-  cd(directory);
-  cd(wellName);
-  cd('output');
+function SetToCSV(objSet, filename)
 
   fileID = fopen(filename, 'w');
 
@@ -27,12 +21,8 @@ function SetToCSV(directory, wellName, imageNameBase, digitsForEnum, ...
 
   fprintf(fileID, '\n');
 
-  for(imIdx = startIndex:endIndex)	
-    imNumStr = int2str(10^(digitsForEnum-1) + imIdx);
-    imNumStr(1) = '0'
-    load([imageNameBase imNumStr '.mat']);
-
-    for(objIdx = 1:size(objSet(imIdx).props, 1))
+  for(imIdx = 1:size(objSet))
+    for(objIdx = 1:size(objSet.props, 1))
 	  fprintf(fileID, '%s, %s, %d, %d',					... 
 			  objSet(imIdx).wellName, 					...
 			  objSet(imIdx).imageName, 					...

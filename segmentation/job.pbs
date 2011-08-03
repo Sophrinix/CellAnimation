@@ -1,13 +1,26 @@
 #!/bin/bash
 #PBS -M samuel.w.hooke@vanderbilt.edu
 #PBS -l nodes=1:ppn=1:x86
-#PBS -l walltime=01:00:00
+#PBS -l walltime=04:00:00
 #PBS -l mem=1gb
 #PBS -o testrun.out
 #PBS -j oe
 
-matlab <~/CellAnimation/segmentation/segment/AccreSegment.m
-perl Classify.pl '~/CellAnimation/segmentation/segment' 'testrun.csv'
-matlab <~/CellAnimation/segmentation/segment/AccreResegment.m
-perl Classify.pl '~/CellAnimation/segmentation/segment' 'testrun.csv'
-matlab <~/CellAnimation/segmentation/segment/AccreFinish.m
+export DIRECTORY="~"
+export WELLNAME="WellD10"
+export IMAGENAMEBASE="DsRed - Confocal - n"
+export FILEEXT=".tif"
+export DIGITSFORENUM=6 
+export STARTINDEX=1
+export ENDINDEX=388
+
+cd ~/CellAnimation/segmentation/segment
+
+matlab <AccreSegment.m
+perl Classify.pl "$DIRECTORY/$WELLNAME/output" "$IMAGENAMEBASE" \
+				  $STARTINDEX $ENDINDEX $DIGITSFORENUM
+matlab <AccreFinish.m 
+matlab <AccreResegment.m
+perl Classify.pl "$DIRECTORY/$WELLNAME/output" "$IMAGENAMEBASE" \
+				  $STARTINDEX $ENDINDEX $DIGITSFORENUM 
+matlab <AccreFinish.m

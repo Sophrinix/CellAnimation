@@ -27,24 +27,24 @@ function varargout = TrackingReview(varargin)
 % Last Modified by GUIDE v2.5 30-Jun-2011 10:18:08
 
 % Begin initialization code - DO NOT EDIT
-gui_Singleton = 1;
-gui_State = struct('gui_Name',       mfilename, ...
-                   'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @TrackingReview_OpeningFcn, ...
-                   'gui_OutputFcn',  @TrackingReview_OutputFcn, ...
-                   'gui_LayoutFcn',  [] , ...
-                   'gui_Callback',   []);
-if nargin && ischar(varargin{1})
+  gui_Singleton = 1;
+  gui_State = struct('gui_Name',       mfilename, ...
+                     'gui_Singleton',  gui_Singleton, ...
+                     'gui_OpeningFcn', @TrackingReview_OpeningFcn, ...
+                     'gui_OutputFcn',  @TrackingReview_OutputFcn, ...
+                     'gui_LayoutFcn',  [] , ...
+                     'gui_Callback',   []);
+  if(nargin && ischar(varargin{1}))
     gui_State.gui_Callback = str2func(varargin{1});
-end
+  end % if(nargin...
 
-if nargout
+  if(nargout)
     [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
-else
+  else
     gui_mainfcn(gui_State, varargin{:});
-end
-% End initialization code - DO NOT EDIT
-end
+  end % if(nargout)
+  
+end % End initialization code - DO NOT EDIT
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -58,7 +58,7 @@ function varargout = TrackingReview_OutputFcn(hObject, eventdata, handles)
   % Get default command line output from handles structure
   varargout{1} = handles.output;
 
-end
+end % TrackingReview_OutputFcn
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -82,9 +82,9 @@ function TrackingReview_OpeningFcn(hObject, eventdata, handles, varargin)
               'images object on command line']);
   else
     InitDisplay(handles, varargin{3});
-  end
+  end % if(size...
 
-end
+end % TrackingReview_OpeningFcn
 
 % --- Draws underlying images, sets up display variables
 function InitDisplay(handles, imagesStruct)
@@ -103,36 +103,18 @@ function InitDisplay(handles, imagesStruct)
       'String', 1:size(handles.images(handles.curIndex).s,1));
   handles.selected = 1;
 
-  %initialize numbers handles
-  handles.nums = struct();
-
-  %initialize previous outlines handles
-  handles.prevOutlines = struct();
-
-  %initialize rectangle object
-  handles.rectangle = handle(rectangle);
+  %initialize handles
+  handles.nums 				= struct();%overwritten numbers
+  handles.outlines 			= struct();%outlines around objects
+  handles.prevOutlines 		= struct();%outlines around prev objects
+  handles.rectangle 		= handle(rectangle);%rectangle
   delete(handles.rectangle);
-
-  %numStr = int2str(handles.curIndex + handles.startIndex - 1);
-  %while(length(numStr) < handles.digitsForEnum)
-  %    numStr = ['0' numStr];
-  %end
-
-  handles.image = zeros(size(handles.images(1).l));
-  %imread([handles.imagePath ...
-  %                        '/' ...
-  %                        handles.imageFileBase ...
-  %                        numStr ...
-  %                        handles.fileExt]);
-
-  axes(handles.ImageDisplay);
-  handles.h = imagesc(handles.image);
-  colormap gray;
-
   guidata(handles.output, handles);
+
+  set(handles.ImageDisplay, 'NextPlot', 'replacechildren');
   DrawDisplay(handles);
 
-end
+end % InitDisplay
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -144,34 +126,38 @@ end
 % --- Draws outlines, numbers, etc
 function DrawDisplay(handles)
 
+  handles = DeleteRectangle(handles);
+  handles = DeleteOutlines(handles);
+  handles = DeletePrevOutlines(handles);
+  handles = DeleteNums(handles);
+  guidata(handles.output, handles);
+
+  %initialize image
+  newplot;
+  imagesc(handles.image);
+  axis image;
+  colormap gray;
+  set(handles.ImageDisplay, 'NextPlot', 'replacechildren');
   hold on;
 
-  %draw outlines of objects (or only nuclei) in current image
-  handles = DeleteOutlines(handles);
-  handles = DrawOutlines(handles);
-
-  %draw rectangel around selected object
   handles = DrawRectangle(handles);
+  handles = DrawOutlines(handles);
 
   %draw track numbers, if applicable
   if(get(handles.DispNumsCheck, 'Value'))
     handles = DrawNums(handles);
-  end
+  end % if(get(...
 
   %draw outlines around objects from previous frame, if applicable
   if(get(handles.PrevOutlinesCheck, 'Value'))
     handles = DrawPrevOutlines(handles);
-  end
+  end % if(get(...
 
   set(handles.ImageNumInput, 'String', num2str(handles.curIndex));
-
+  set(get(handles.ImageDisplay, 'Children'), 'HitTest', 'off');
   guidata(handles.output, handles);
 
-  set(handles.h, 'HitTest', 'off');
-  set(handles.ImageDisplay, ...
-      'ButtonDownFcn',{@ImageDisplay_ButtonDownFcn,handles}) ;
-
-end
+end % DrawDisplay
 
 % --- Executes on mouse press over axes background.
 function ImageDisplay_ButtonDownFcn(hObject, eventdata, handles)
@@ -180,22 +166,19 @@ function ImageDisplay_ButtonDownFcn(hObject, eventdata, handles)
   x=int64(pos(1,1));
   y=int64(pos(1,2));
   s=size(handles.images(handles.curIndex).l);
-  if x > 0 && x <= s(2) && y > 0 && y <= s(1)
-    if handles.images(handles.curIndex).l(y,x) > 0
+  if(x > 0 && x <= s(2) && y > 0 && y <= s(1))
+    if(handles.images(handles.curIndex).l(y,x) > 0)
       set(handles.ObjectPopUp, 'Value', ...
           handles.images(handles.curIndex).l(y,x));        
-    end
-  end
+    end % if handles.image...
+  end % if(x...
+
   handles.selected = get(handles.ObjectPopUp, 'Value');
   handles = DeleteRectangle(handles);
   handles = DrawRectangle(handles);
-
-  set(handles.ImageDisplay, ...
-      'ButtonDownFcn',{@ImageDisplay_ButtonDownFcn,handles}) ;
-
   guidata(handles.output, handles);
 
-end
+end % ImageDisplay_ButtonDownFcn
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -217,9 +200,9 @@ function newHandles = DrawOutlines(handles)
            'Color', 'b', ...
            'LineWidth',1.25);
     set(newHandles.outlines.(['o' num2str(i)]), 'HitTest', 'off');
-  end
+  end % for(i=1...
 
-end
+end % DrawOutlines
 
 %removes outlines fromt the display, if present
 function newHandles = DeleteOutlines(handles)
@@ -230,13 +213,13 @@ function newHandles = DeleteOutlines(handles)
   for(i=1:size(outlines,1))
     if(newHandles.outlines.(outlines{i}) ~= 0)
       delete(newHandles.outlines.(outlines{i}));
-    end
+    end % if(newHandles...
     %clear handles.nums.(nums{i});
-  end
+  end % for(i...
   clear newHandles.outlines;
   newHandles.outlines = struct();
 
-end
+end % DeleteOutlines
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -258,7 +241,7 @@ function newHandles = DrawRectangle(handles)
               'LineWidth', 2);
   set(newHandles.rectangle, 'HitTest', 'off') ;
 
-end
+end % DrawRectangle
 
 %remove the rectangle around the selected object
 function newHandles = DeleteRectangle(handles)
@@ -268,9 +251,9 @@ function newHandles = DeleteRectangle(handles)
   %remove old rectangle
   if(ishandle(newHandles.rectangle))
     delete(newHandles.rectangle);
-  end
+  end % if(ishandle...
 
-end
+end % DeleteRectangle
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -285,10 +268,10 @@ function DispNumsCheck_Callback(hObject, eventdata, handles)
   handles = DeleteNums(handles);
   if(get(hObject, 'Value'))
     handles = DrawNums(handles);
-  end
+  end % if(get...
   guidata(handles.output, handles);
 
-end
+end %DispNumsCheck_Callback
 
 %adds track numbers to display over respective objects
 function newHandles = DrawNums(handles)
@@ -305,10 +288,10 @@ function newHandles = DrawNums(handles)
              num2str(trackNum), ...
              'Color', 'w');
       set(newHandles.nums.(['o' num2str(i)]), 'HitTest', 'off');
-    end
-  end
+    end % if(tracknum)
+  end % for(i=1:...
 
-end
+end % DrawNums
 
 %removes track numbers from display, if present
 function newHandles = DeleteNums(handles)
@@ -319,12 +302,12 @@ function newHandles = DeleteNums(handles)
   for(i=1:size(nums,1))
     if(newHandles.nums.(nums{i}) ~= 0)
       delete(newHandles.nums.(nums{i}));
-    end
-  end
+    end % if(newHandles...
+  end % for(1=1:...
   clear newHandles.nums;
   newHandles.nums = struct();
 
-end
+end % DeleteNums
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -343,11 +326,11 @@ function PrevOutlinesCheck_Callback(hObject, eventdata, handles)
     handles = DeletePrevOutlines(handles);
     if(get(hObject, 'Value'))
         handles = DrawPrevOutlines(handles);
-    end
+    end % if(get...
     guidata(handles.output, handles);
-  end
+  end % if(handles...
 
-end
+end % PrevOutlinesCheck_Callback
 
 %adds track numbers to display over respective objects
 function newHandles = DrawPrevOutlines(handles)
@@ -362,9 +345,9 @@ function newHandles = DrawPrevOutlines(handles)
            'Color', 'r', ...
            'LineWidth',1.25);
     set(newHandles.prevOutlines.(['o' num2str(i)]), 'HitTest', 'off');
-  end
+  end % for(i=1:...
 
-end
+end % DrawPrevOutlines
 
 %removes track numbers from display, if present
 function newHandles = DeletePrevOutlines(handles)
@@ -375,13 +358,12 @@ function newHandles = DeletePrevOutlines(handles)
   for(i=1:size(prevOutlines,1))
     if(newHandles.prevOutlines.(prevOutlines{i}) ~= 0)
       delete(newHandles.prevOutlines.(prevOutlines{i}));
-    end
-    %clear handles.nums.(nums{i});
-  end
+    end % if(newHandles...
+  end % for(i=1:...
   clear newHandles.prevOutlines;
   newHandles.prevOutlines = struct();
 
-end
+end % DeletePrevOutlines
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -413,9 +395,9 @@ function NextButton_Callback(hObject, eventdata, handles)
 
     guidata(handles.output, handles);
     DrawDisplay(handles);
-  end
+  end % if((handles.curIndex...
 
-end
+end % NextButton_Callback
 
 % --- Executes on button press in PrevImageButton.
 function PrevImageButton_Callback(hObject, eventdata, handles)
@@ -440,9 +422,9 @@ function PrevImageButton_Callback(hObject, eventdata, handles)
 
     guidata(handles.output, handles);
     DrawDisplay(handles);
-  end
+  end % if(handles.curIndex...
 
-end
+end % PrevImageButton_Callback
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -460,16 +442,17 @@ function ObjectPopUp_Callback(hObject, eventdata, handles)
   handles = DrawRectangle(handles);
   guidata(handles.output, handles);
 
-end
+end % ObjectPopUp_Callback
 
 % --- Executes during object creation, after setting all properties.
 function ObjectPopUp_CreateFcn(hObject, eventdata, handles)
 
-  if ispc && isequal(get(hObject,'BackgroundColor'), ...
-					 get(0,'defaultUicontrolBackgroundColor'))
+  if(ispc && isequal(get(hObject,'BackgroundColor'), ...
+					 get(0,'defaultUicontrolBackgroundColor')))
     set(hObject,'BackgroundColor','white');
-  end
-end
+  end % if(ispc...
+
+end % ObjectPopUp_CreateFcn
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -493,7 +476,7 @@ function ChangeTrackButton_Callback(hObject, eventdata, handles)
   guidata(handles.output, handles);
   DrawDisplay(handles);
 
-end
+end % ChangeTrackButton_Callback
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -512,10 +495,10 @@ function SaveButton_Callback(hObject, eventdata, handles)
     handles.saveFile = [path file];
   else
     save(handles.saveFile, 'images');
-  end
+  end % if(isempty...
   guidata(handles.output, handles);
 
-end
+end % SaveButton_Callback
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -550,17 +533,17 @@ function ImageNumInput_Callback(hObject, eventdata, handles)
 
     guidata(handles.output, handles);
     DrawDisplay(handles);
-  end
+  end % if(or(newIndex...
 
-end
+end % ImageNumInput_Callback
 
 % --- Executes during object creation, after setting all properties.
 function ImageNumInput_CreateFcn(hObject, eventdata, handles)
 
-  if ispc && isequal(get(hObject,'BackgroundColor'), ...
-					 get(0,'defaultUicontrolBackgroundColor'))
+  if(ispc && isequal(get(hObject,'BackgroundColor'), ...
+					 get(0,'defaultUicontrolBackgroundColor')))
     set(hObject,'BackgroundColor','white');
-  end
+  end % if(ispc...
 
-end
+end % ImageNumInput_CreateFcn
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
