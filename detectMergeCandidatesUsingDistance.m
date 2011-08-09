@@ -1,6 +1,43 @@
 function output_args=detectMergeCandidatesUsingDistance(input_args)
-%module to detect tracks that never are further than a small distance apart for
-%possible merging
+%Usage
+%This module is used to detect tracks that are never further than a small distance apart for
+%possible merging.
+%
+%Input Structure Members
+%MaxMergeDistance – Maximum distance between tracks. Any tracks that drift further apart than
+%this distance at any time point will be merged.
+%TrackIDs – Track IDs to be tested for merging.
+%Tracks – Tracks matrix including time stamps and object centroids.
+%TracksLayout – Matrix describing the order of the columns in the tracks matrix.%
+%
+%Output Structure Members
+%TracksToBeMerged – Paired list of the track IDs to be merged.
+%
+%Example
+%
+%detect_merge_candidates_function.InstanceName='DetectMergeCandidates';
+%detect_merge_candidates_function.FunctionHandle=@detectMergeCandidatesUsingDi
+%stance;
+%detect_merge_candidates_function.FunctionArgs.MaxMergeDistance.Value=TrackStr
+%uct.MaxMergeDist;
+%detect_merge_candidates_function.FunctionArgs.TrackIDs.FunctionInstance='GetT
+%rackIDs';
+%detect_merge_candidates_function.FunctionArgs.TrackIDs.OutputArg='TrackIDs';
+%detect_merge_candidates_function.FunctionArgs.Tracks.FunctionInstance='Segmen
+%tationLoop';
+%detect_merge_candidates_function.FunctionArgs.Tracks.OutputArg='Tracks';
+%detect_merge_candidates_function.FunctionArgs.TracksLayout.Value=tracks_layou
+%t;
+%functions_list=addToFunctionChain(functions_list,detect_merge_candidates_func
+%tion);
+%
+%…
+%
+%merge_tracks_function.FunctionArgs.TracksToBeMerged.FunctionInstance='DetectM
+%ergeCandidates';
+%merge_tracks_function.FunctionArgs.TracksToBeMerged.OutputArg='TracksToBeMerg
+%ed';
+
 untested_ids=input_args.TrackIDs.Value;
 tracks=input_args.Tracks.Value;
 max_merge_dist=input_args.MaxMergeDistance.Value;

@@ -1,6 +1,38 @@
 function output_args=overlayAncestry(input_args)
-%overlay ancestry module. color-code the cell outlines based on the
-%generation number. also, overlay the track ids for each cell.
+%Usage
+%This module is used to overlay the cell outlines (color-coded according to generation number)
+%and the track ids on top of the original cell image.
+%
+%Input Structure Members
+%AncestryLayout – Matrix describing the order of the columns in the ancestry matrix.
+%CurrentTracks – The set of tracks for the current image.
+%CellsLabel – The label matrix containing the detected cell shapes for the current image.
+%CellsAncestry – Matrix containing the ancestry records for the cells in the time-lapse movie.
+%ColorMap – Color map to be used in drawing the cell outlines for each generation. Each
+%generation will use the next color in the color map until all colors have been used. Afterwards,
+%the colors in the map are recycled.
+%Image – This is the original cell image.
+%ShowLabels – Boolean value. If set to false the cell IDs will not be overlayed.
+%ShowOutlines – Boolean value. If set to false the cell outlines will not be overlayed.
+%TracksLayout – Matrix describing the order of the columns in the tracks matrix.
+%
+%Output Structure Members
+%Image – The overlayed image.
+%
+%Example
+%
+%overlay_ancestry_args.Image.Value=img;
+%overlay_ancestry_args.CurrentTracks.Value=cur_tracks_struct.Tracks;
+%overlay_ancestry_args.CellsLabel.Value=label_struct.cells_lbl;
+%overlay_ancestry_args.CellsAncestry.Value=mtr_gui_struct.CellsAncestry;
+%overlay_ancestry_args.CurFrame.Value=frame_nr;
+%overlay_ancestry_args.ColorMap.Value=mtr_gui_struct.ColorMap;
+%overlay_ancestry_args.TracksLayout.Value=mtr_gui_struct.TracksLayout;
+%overlay_ancestry_args.AncestryLayout.Value=mtr_gui_struct.AncestryLayout;
+%overlay_ancestry_args.ShowLabels.Value=b_show_labels;
+%overlay_ancestry_args.ShowOutlines.Value=b_show_outlines;
+%overlay_ancestry_struct=overlayAncestry(overlay_ancestry_args);
+
 cur_img=input_args.Image.Value;
 cur_tracks=input_args.CurrentTracks.Value;
 cells_lbl=input_args.CellsLabel.Value;

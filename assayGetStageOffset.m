@@ -1,7 +1,22 @@
 function xy_offsets=assayGetStageOffset(file_root,frame_count,varargin)
-%assay to calculate the microscope stage offset at each frame by manually clicking on a
-%fixed point
-%optional arguments 'FrameStep','ImageExtenstion','NumberFormat','StartFrame'
+%Usage
+%This assay is used to calculate the microscope stage offset at each frame by manually clicking
+%on a fixed point at each frame.
+%
+%Important Parameters
+%file_root – The root file name of the image series. For example if the image series
+%is “image001.jpg”, “image002.jpg”, etc. the root file name will be “image”.
+%frame_count – The number of frames to analyze.
+%FrameStep – Optional. Read one out of every x frames when reading the image set. Default
+%value is one meaning every frame will be read.
+%ImageExtension – The image extension of the images in the series (usually, “.tif” or “.jpg”).
+%NumberFormat – String representing the format of the counter in the image series. Follows
+%sprintf format.
+%StartFrame – Index indicating starting image from which the image sequence will be read.
+%
+%Important Modules
+%None.
+
 global functions_list;
 functions_list=[];
 

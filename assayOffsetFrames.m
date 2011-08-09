@@ -1,7 +1,21 @@
 function []=assayOffsetFrames(file_root,frame_count,frame_offsets,varargin)
-%assay to offset and crop frames based on computed microscope stage offsets
-%at each frame
-%optional arguments 'FrameStep','ImageExtenstion','NumberFormat','StartFrame'
+%Usage
+%This module is used to offset and crop frames to remove incorrect offsets due to
+%errors in automatic stage return. Use with offset data acquired using an assay such as
+%assayGetStageOffset. The original images will be untouched and the cropped images will be
+%saved in a “cropped frames” directory under the original image folder.
+%
+%Important Parameters
+%file_root – The root file name of the image series. For example if the image series
+%is “image001.jpg”, “image002.jpg”, etc. the root file name will be “image”.
+%frame_count – The number of frames to analyze.
+%FrameStep – Optional. Read one out of every x frames when reading the image set. Default
+%value is one meaning every frame will be read.
+%ImageExtension – The image extension of the images in the series (usually, “.tif” or “.jpg”).
+%NumberFormat – String representing the format of the counter in the image series. Follows
+%sprintf format.
+%StartFrame – Index indicating starting image from which the image sequence will be read.
+
 global functions_list;
 functions_list=[];
 

@@ -1,5 +1,54 @@
 function output_args=detectMitoticEvents(input_args)
-%module to detect any mitotic events in cells stained using a nuclear stain
+%Usage
+%This module is used to detect mitotic events in time-lapse movies of cells stained with a nuclear
+%stain.
+%
+%Input Structure Members
+%MaxSplitArea – Maximum area a nucleus may have at the time it splits.
+%MaxSplitDistance – Nuclei that are further apart than this distance will not be considered as a
+%potential split pair.
+%MaxSplitEccentricity – Any nucleus with an eccentricity above this value will not be considered a
+%split candidate.
+%MinSplitEccentricity – Any nucleus with an eccentricity below this value will not be considered a
+%split candidate.
+%MinTimeForSplit – A cell needs to have a lifespan above this value to be considered a split
+%candidate.
+%Tracks – Tracks matrix including time stamps and object centroids.
+%TracksLayout – Matrix describing the order of the columns in the tracks matrix.
+%UntestedIDs - Track IDs to be tested for mitosis.
+%
+%Output Structure Members
+%SplitCells – List of mitotic cell pairs.
+%
+%Example
+%
+%detect_mitotic_events_function.InstanceName='DetectMitoticEvents';
+%detect_mitotic_events_function.FunctionHandle=@detectMitoticEvents;
+%detect_mitotic_events_function.FunctionArgs.Tracks.FunctionInstance='MergeTra
+%cks';
+%detect_mitotic_events_function.FunctionArgs.Tracks.OutputArg='Tracks';
+%detect_mitotic_events_function.FunctionArgs.UntestedIDs.FunctionInstance='Mak
+%eAncestryForFirstFrameCells';
+%detect_mitotic_events_function.FunctionArgs.UntestedIDs.OutputArg='UntestedID
+%s';
+%detect_mitotic_events_function.FunctionArgs.TracksLayout.Value=tracks_layout;
+%detect_mitotic_events_function.FunctionArgs.MaxSplitArea.Value=TrackStruct.Ma
+%xSplitArea;
+%detect_mitotic_events_function.FunctionArgs.MinSplitEccentricity.Value=TrackS
+%truct.MinSplitEcc;
+%detect_mitotic_events_function.FunctionArgs.MaxSplitEccentricity.Value=TrackS
+%truct.MaxSplitEcc;
+%detect_mitotic_events_function.FunctionArgs.MaxSplitDistance.Value=TrackStruc
+%t.MaxSplitDist;
+%detect_mitotic_events_function.FunctionArgs.MinTimeForSplit.Value=TrackStruct
+%.MinTimeForSplit;
+%functions_list=addToFunctionChain(functions_list,detect_mitotic_events_functi
+%on);
+%…
+%make_ancestry_for_cells_entering_frames_function.FunctionArgs.SplitCells.Func
+%tionInstance='DetectMitoticEvents';
+%make_ancestry_for_cells_entering_frames_function.FunctionArgs.SplitCells.Outp
+%utArg='SplitCells';
 
 tracks=input_args.Tracks.Value;
 tracks_layout=input_args.TracksLayout.Value;

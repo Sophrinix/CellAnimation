@@ -1,6 +1,33 @@
 function []=assayFluoNuclTestCADir(well_folder)
-%assay for nuclear tracking of highly directional cells using CellAnimation
-%algorithm
+%Usage
+%This module is used to track fast highly directional cells that have been stained using a nuclear
+%stain.
+%
+%Important Parameters
+%well_folder – String that specifies the absolute location of the directory which contains
+%the time-lapse images. Needs to be specified every time the assay is run. For example,
+%assayBrightFieldCytoTestNN(‘c:\test_movie’).
+%TrackStruct.DS – The directory separator to be used (‘\’ for Windows, ‘/’ for Linux/Unix).
+%TrackStruct.FrameCount – The number of frames to track.
+%TrackStruct.ImgExt – String indicating the image file extension. Usually, “.jpg” or “.tif”.
+%TrackStruct.ImageFileName – The root file name of the images in the sequence. For
+%example, if the image names in the time-lapse sequence are “Experiment-0002_Position(8)
+%_t001.jpg”,”Experiment-0002_Position(8)_t002.jpg”, etc., the root image file name
+%is “Experiment-0002_Position(8)_t”.
+%TrackStruct.NumberFormat – The number format of the counter in the image file name. For
+%example '%03d' for an image file name containing 3 digits such as “image001.jpg”, '%04d' for an
+%image containing 4 digits such as “image0001.jpg”, etc.
+%TrackStruct.StartFrame – Integer indicating at which frame the tracking should start.
+%TrackStruct.TimeFrame – The time frame between consecutive images.
+%Other important parameters are those listed in the module section for the important modules
+%listed below.
+%
+%Important Modules
+%areaFilterLabel, areaOverPerimeterFilterLabel, assignCellToTrackUsingAll, clearSmallObjects,
+%detectMergeCandidatesUsingDistance, detectMitoticEvents, distanceWatershed,
+%generateBinImgUsingLocAvg, getConvexObjects, polygonalAssistedWatershed,
+%removeShortTracks, segmentObjectsUsingMarkers, solidityFilterLabel, splitTracks.
+
 global functions_list;
 functions_list=[];
 TrackStruct=[];
