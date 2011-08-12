@@ -1,5 +1,4 @@
-function [s,l] = Resegment(im, properties, labels, objids)
-  
+function [s,l] = Resegment(im, properties, labels, objids)  
 %
 %segments undersegmented objects into smaller objects
 %
@@ -64,7 +63,7 @@ function [s,l] = Resegment(im, properties, labels, objids)
     for(i=1:(box(4)))
       for(j=1:(box(3)))
         l(i+floor(box(2)),j+floor(box(1))) = bw(k,m);
-        blankSlate(i+floor(box(2)),j+floor(box(1))) = bw(k,m);
+        %blankSlate(i+floor(box(2)),j+floor(box(1))) = bw(k,m);
         m = m + 1;
       end
       k = k + 1;
@@ -73,55 +72,52 @@ function [s,l] = Resegment(im, properties, labels, objids)
         
   end        
     
-  s(objids) = [];
-
-  sNew = regionprops(logical(blankSlate), ...
+  %s(objids) = [];
+  clear s;
+  l = bwlabel(l);
+  s = regionprops(logical(l), ...
                      'Area',            'Centroid',     'MajorAxisLength',...
                      'MinorAxisLength', 'Eccentricity', 'ConvexArea',     ...
                      'FilledArea',      'EulerNumber',  'EquivDiameter',  ...
                      'Solidity',        'Perimeter',    'PixelIdxList',   ...
-                     'PixelList',       'BoundingBox');               
+                     'PixelList',       'BoundingBox')               
 
   % Compute intensities from background adjusted image, determine
   % edge condition (yes/no)
-  bounds = bwboundaries(blankSlate);
+  bounds = bwboundaries(l);
   i = imtophat(im2double(im), strel('disk', 50));
 
-  for(obj=1:size(sNew,1))
-    sNew(obj).label = 0;
-    sNew(obj).Intensity =  sum(i(sNew(obj).PixelIdxList));
+  for(obj=1:size(s,1))
+    s(obj).label = obj;
+    s(obj).Intensity =  sum(i(s(obj).PixelIdxList));
 
-    sNew(obj).bound = bounds{obj};
+    s(obj).bound = bounds{obj};
 
-    sNew(obj).edge    = 0;
-    if(find(sNew(obj).PixelList(:,1) == 1))
-      sNew(obj).edge = 1;
+    s(obj).edge    = 0;
+    if(find(s(obj).PixelList(:,1) == 1))
+      s(obj).edge = 1;
     end
-    if find(sNew(obj).PixelList(:,2) == 1)
-      sNew(obj).edge = 1;
+    if find(s(obj).PixelList(:,2) == 1)
+      s(obj).edge = 1;
     end
-    if find(sNew(obj).PixelList(:,1) == size(i,2) )
-      sNew(obj).edge = 1;
+    if find(s(obj).PixelList(:,1) == size(i,2) )
+      s(obj).edge = 1;
     end
-    if find(sNew(obj).PixelList(:,2) == size(i,1) )
-      sNew(obj).edge = 1;
+    if find(s(obj).PixelList(:,2) == size(i,1) )
+      s(obj).edge = 1;
     end                 
   end
 
-  sNew = ClassifyFirstPass(sNew);
+  s = ClassifyFirstPass(s)
     
-  for(i=1:size(sNew,1))
-    s(size(s,1)+1) = sNew(i); 
-  end
+  %for(i=1:size(sNew,1))
+  %  s(size(s,1)+1) = sNew(i); 
+  %end
     
   %relabel    
-  l = bwlabel(l);    
-  edges = [s(:).BoundingBox];
-  [unused, order] = sort(edges(1:4:size(edges,2)));
-  s = s(order);    
+
+  %edges = [s(:).BoundingBox];
+  %[unused, order] = sort(edges(1:4:size(edges,2)));
+  %s = s(order);    
 	
-  for(obj = 1:size(s,1))
-	s(obj).label = obj;
-  end	
-    
 end
