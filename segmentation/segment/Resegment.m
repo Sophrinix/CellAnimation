@@ -20,10 +20,11 @@ function [s,l] = Resegment(im, properties, labels, objids)
 %
 
   l = labels;
-  s = properties;
+  s = properties
 
   blankSlate = zeros(size(im));
-    
+  mask = blankSlate;
+
   for(n=1:size(objids,2))
         
     %box region containing the object(s) to  be resegmented
@@ -32,47 +33,36 @@ function [s,l] = Resegment(im, properties, labels, objids)
     subImage = zeros(box(4), box(3));
         
     %copy relevant section of the image to smaller image
-    m=1;
-    k=1;
-    for(i=1:(box(4)))
-      for(j=1:(box(3)))
-        subImage(k,m) = l(i+floor(box(2)),j+floor(box(1)));
-        m = m + 1;
-      end
-      k = k + 1;
-      m=1;
+    bounds = s(objids(n)).bound;
+    for(i=1:size(bounds,1))
+      blankSlate(bounds(i,1), bounds(i,2)) = l(bounds(i,1), bounds(i,2));
+      mask(bounds(i,1), bounds(i,2)) = l(bounds(i,1), bounds(i,2));
     end
-        
+    blankSlate = imfill(blankSlate, 'holes');
+    mask = imfill(mask, 'holes');
+
+    %remove object from labels (to be replaced with new segmentation
+    l = xor(l, mask);
+     
     %perform distance transform
-    distTransform = -bwdist(~subImage, 'cityblock');
+    distTransform = -bwdist(~blankSlate, 'cityblock');
     %calculate a watershed
     waterShed = watershed(distTransform);
     %use watershed to seperate objects
-    bw = subImage & waterShed;
+    bw = blankSlate & waterShed;
 
     %remove noise
     noise = imtophat(bw, strel('disk', 3));
     bw = bw - noise;
-        
-    %allocate an empty image the size of the original
-    %this is used to find the properties of the new objects while
-    %maintaining the correct position (centroid) in the old image
-    %without affecting the properties of pre-existing objects
-    m=1;
-    k=1;
-    for(i=1:(box(4)))
-      for(j=1:(box(3)))
-        l(i+floor(box(2)),j+floor(box(1))) = bw(k,m);
-        %blankSlate(i+floor(box(2)),j+floor(box(1))) = bw(k,m);
-        m = m + 1;
-      end
-      k = k + 1;
-      m=1;
-    end    
-        
-  end        
-    
-  %s(objids) = [];
+
+    %insert subImage into l
+    l = l | bw;
+
+    mask = zeros(size(mask));
+    blankSlate = mask;
+	   
+  end
+       
   clear s;
   l = bwlabel(l);
   s = regionprops(logical(l), ...
@@ -80,7 +70,7 @@ function [s,l] = Resegment(im, properties, labels, objids)
                      'MinorAxisLength', 'Eccentricity', 'ConvexArea',     ...
                      'FilledArea',      'EulerNumber',  'EquivDiameter',  ...
                      'Solidity',        'Perimeter',    'PixelIdxList',   ...
-                     'PixelList',       'BoundingBox')               
+                     'PixelList',       'BoundingBox'); 
 
   % Compute intensities from background adjusted image, determine
   % edge condition (yes/no)
@@ -109,15 +99,5 @@ function [s,l] = Resegment(im, properties, labels, objids)
   end
 
   s = ClassifyFirstPass(s)
-    
-  %for(i=1:size(sNew,1))
-  %  s(size(s,1)+1) = sNew(i); 
-  %end
-    
-  %relabel    
-
-  %edges = [s(:).BoundingBox];
-  %[unused, order] = sort(edges(1:4:size(edges,2)));
-  %s = s(order);    
-	
+  	
 end

@@ -10,9 +10,9 @@ function ResegmentImageStack(directory, wellName, imageNameBase, fileExt, ...
 %OUTPUTS:
 %
   for(imNum = startIndex:endIndex)
-    imNumStr = int2str(10^(digitsForEnum-1) + imNum);
-    imNumStr(1) = '0';
-        
+    imNumStr = sprintf('%%0%dd', digitsForEnum);
+    imNumStr = sprintf(imNumStr, imNum);        
+    
     %load objSet for image
     load([directory filesep wellName filesep 'output' filesep ...
 		  imageNameBase imNumStr '.mat']);
