@@ -7,8 +7,9 @@ startIndex		= str2num(getenv('STARTINDEX'));
 endIndex		= str2num(getenv('ENDINDEX'));
 
 for(i=startIndex:endIndex)
-  imNumStr = int2str(10^(digitsForEnum-1)+i);
-  imNumStr(1) = '0';
+   
+  imNumStr = sprintf('%%0%dd', digitsForEnum);
+  imNumStr = sprintf(imNumStr, imNum);
 
   %load the current objSet
   load([directory filesep wellName filesep 'output' filesep ...

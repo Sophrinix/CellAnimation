@@ -7,12 +7,12 @@
 #PBS -j oe
 
 export DIRECTORY="~"
-export WELLNAME="WellD10"
+export WELLNAME="WellC05"
 export IMAGENAMEBASE="DsRed - Confocal - n"
 export FILEEXT=".tif"
 export DIGITSFORENUM=6 
 export STARTINDEX=1
-export ENDINDEX=388
+export ENDINDEX=250
 
 cd ~/CellAnimation/segmentation/segment
 

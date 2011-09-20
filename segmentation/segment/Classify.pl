@@ -21,8 +21,8 @@ foreach $name (@classifications)
   for($image = $ARGV[2]; $image <= $ARGV[3]; $image++)
   {
     $imNumStr = sprintf("%0$ARGV[4]d", $image);
-    system("~/R-2.13.0/bin/R --vanilla --slave --args " .
-#    system("R --vanilla --slave --args " . 
+#    system("~/R-2.13.0/bin/R --vanilla --slave --args " .
+    system("R --vanilla --slave --args " . 
 					  "'$ARGV[0]' " . 
 				      "'$ARGV[1]$imNumStr' " .
 				      "'$name' " . 

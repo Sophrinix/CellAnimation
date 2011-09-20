@@ -11,7 +11,7 @@ f <- formula(paste(args[[3]], " ~ Area + MajorAxisLength + MinorAxisLength +
 
 model <- ada(f,
 			 data=d,
-			 iter=100,
+			 iter=1000,
 			 type="discrete",
 			 control=rpart.control(maxdepth=8))
 

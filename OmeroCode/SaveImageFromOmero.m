@@ -5,5 +5,7 @@ function SaveImageFromOmero(gateway, wellid, timepoint, imagefilename, fmt)
 
     %save the image locally, for use by Segment Review
     imwrite(img, imagefilename, fmt);
+
+    clear img;
     
 end

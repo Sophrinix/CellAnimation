@@ -21,11 +21,9 @@ function SegmentImageStack(directory, wellName, imageNameBase, fileExt, ...
     fileExt = ['.' fileExt];
   end
      
-  digitsForEnum
-
-  for(imNum=startIndex:endIndex) 
-    imNumStr = int2str(10^(digitsForEnum-1) + imNum);
-    imNumStr(1) = '0'
+  for(imNum=startIndex:endIndex)
+    imNumStr = sprintf('%%0%dd', digitsForEnum);
+    imNumStr = sprintf(imNumStr, imNum);
 
     %load image
 	[im, objSet.wellName, objSet.imageName] = ...
