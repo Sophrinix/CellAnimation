@@ -190,7 +190,7 @@ for i=1:length(layer_conditions)
         new_selection_idx=false(nr_of_vals,1);
     else
         b_pct=false;
-        threshold_val=str2num(edit_val);
+        threshold_val=str2double(edit_val);
     end
                 
     switch cur_condition.ComboOperator

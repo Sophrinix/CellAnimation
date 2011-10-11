@@ -59,10 +59,10 @@ global dependencies_index;
 
 instance_name=function_struct.InstanceName;
 cur_idx=dependencies_index.get(instance_name);
-loop_args=function_struct.FunctionArgs;
-start_loop=loop_args.StartLoop.Value;
-end_loop=loop_args.EndLoop.Value;
-increment_loop=loop_args.IncrementLoop.Value;
+input_args=function_struct.FunctionArgs;
+start_loop=input_args.StartLoop.Value;
+end_loop=input_args.EndLoop.Value;
+increment_loop=input_args.IncrementLoop.Value;
 loop_functions=function_struct.LoopFunctions;
 
 for i=start_loop:increment_loop:end_loop

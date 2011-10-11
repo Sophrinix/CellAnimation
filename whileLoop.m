@@ -110,25 +110,39 @@ updateArgs(instance_name,function_struct.FunctionArgs,'input');
 input_args=function_struct.FunctionArgs;
 loop_functions=function_struct.LoopFunctions;
 
-test_function_instance=function_struct.TestFunction.InstanceName;
-test_function_handle=function_struct.TestFunction.FunctionHandle;
-test_function_dependecy_idx=dependencies_index.get(test_function_instance);
-test_function_dependency_item=dependencies_list{test_function_dependecy_idx};
-test_output_name=input_args.TestResult.OutputArg;
-test_output=test_function_handle(test_function_dependency_item.FunctionArgs);
+test_function=input_args.TestFunction;
+test_names=fieldnames(test_function);
+%propagate any updated input args to the loop functions
+dependency_item=dependencies_list{cur_idx};
+updateArgs(instance_name,dependency_item.FunctionArgs,'input');
 
-while(test_output.(test_output_name))
-    for j=1:size(loop_functions,1)
-        loop_function_instance_name=loop_functions{j}.InstanceName;
-        callFunction(loop_function_instance_name,false);
-    end
-    dependency_item=dependencies_list{cur_idx};
-    %propagate any updated input args to the loop functions
-    updateArgs(instance_name,dependency_item.FunctionArgs,'input');
-    output_args=makeOutputStruct(function_struct);
-    updateArgs(instance_name,output_args,'output');
+if (max(strcmp('FunctionInstance',test_names))==1)
+    test_function_instance=input_args.TestFunction.FunctionInstance;
+    test_function_dependecy_idx=dependencies_index.get(test_function_instance);
     test_function_dependency_item=dependencies_list{test_function_dependecy_idx};
+    test_function_handle=test_function_dependency_item.FunctionHandle;
+    test_output_name=input_args.TestFunction.OutputArg;
     test_output=test_function_handle(test_function_dependency_item.FunctionArgs);
+    while(test_output.(test_output_name))
+        for j=1:size(loop_functions,1)
+            loop_function_instance_name=loop_functions{j}.InstanceName;
+            callFunction(loop_function_instance_name,false);
+        end       
+        output_args=makeOutputStruct(function_struct);
+        updateArgs(instance_name,output_args,'output');
+        test_function_dependency_item=dependencies_list{test_function_dependecy_idx};
+        test_output=test_function_handle(test_function_dependency_item.FunctionArgs);
+    end
+else
+    %really this only makes sense for debugging purposes
+    while(input_args.TestFunction.Value)
+        for j=1:size(loop_functions,1)
+            loop_function_instance_name=loop_functions{j}.InstanceName;
+            callFunction(loop_function_instance_name,false);
+        end
+        output_args=makeOutputStruct(function_struct);
+        updateArgs(instance_name,output_args,'output');        
+    end
 end
 
 

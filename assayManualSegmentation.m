@@ -1,62 +1,34 @@
-function []=assayManualSegmentation(well_folder)
+function []=assayManualSegmentation()
 %assay to review segmentation.
 %This assay can only be used after cells have been segmented using another
 %assay!
 
 global functions_list;
 functions_list=[];
-TrackStruct=[];
-TrackStruct.ImgExt='.tif';
-ds='\'  %directory symbol
-TrackStruct.DS=ds;
-root_folder=well_folder;
-TrackStruct.ImageFileName='Cell Tracker Red - Confocal - n';
-%low hepsin expressing - not really wildtype
-TrackStruct.ImageFileBase=[well_folder ds TrackStruct.ImageFileName];
-%hepsin overexpressing
-% TrackStruct.ImageFileBase=[well_folder ds 'llh_hep_lm7_t'];
-TrackStruct.StartFrame=2;
-TrackStruct.FrameCount=45;
-TrackStruct.TimeFrame=8; %minutes
-TrackStruct.FrameStep=1; %read every x frames
-TrackStruct.NumberFormat='%06d';
-
-name_idx=find(well_folder==ds,2,'last');
-%generate a unique well name
-well_name=well_folder((name_idx(1)+1):end);
-well_name(name_idx(2)-name_idx(1))=[];
-well_name(well_name==' ')=[];
-TrackStruct.OutputFolder=[root_folder ds 'output' ds well_name];
-track_dir=[TrackStruct.OutputFolder ds 'track'];
-TrackStruct.TrackDir=track_dir;
-mkdir(track_dir);
-man_review_dir=[TrackStruct.OutputFolder ds 'manual_segmentation'];
-TrackStruct.ManualDir=man_review_dir;
-mkdir(man_review_dir);
-TrackStruct.SegFileRoot=[track_dir ds 'grayscale'];
-TrackStruct.ManFileRoot=[man_review_dir ds 'grayscale'];
+%script variables
+ImageFolder='C:/peter/cropped';
+ImageFilesRoot='peter';
+ImageExtension='.tif';
+StartFrame=1;
+FrameCount=10;
+FrameStep=1;
+NumberFormat='%06d';
+OutputFolder=[ImageFolder '/output'];
+TracksFolder=[OutputFolder '/track'];
+ManualReviewFolder=[OutputFolder '/manual_segmentation'];
+SegmentationFilesRoot=[TracksFolder '/grayscale'];
+ManualFilesRoot=[ManualReviewFolder '/grayscale'];
+ImageFileBase=[ImageFolder '/' ImageFilesRoot];
+%end script variables
 
 
-
-TrackStruct.Channel='';
-TrackStruct.MinCytoArea=30;
-TrackStruct.MinNuclArea=30;
-TrackStruct.bClearBorder=false;
-TrackStruct.ClearBorderDist=0;
-TrackStruct.WatershedMed=2;
-
-display_trackstruct_function.InstanceName='DisplayTrackStruct';
-display_trackstruct_function.FunctionHandle=@displayVariable;
-display_trackstruct_function.FunctionArgs.Variable.Value=TrackStruct;
-display_trackstruct_function.FunctionArgs.VariableName.Value='TrackStruct';
-functions_list=addToFunctionChain(functions_list,display_trackstruct_function);
 %threshold images
 image_read_loop_functions=[];
 image_read_loop.InstanceName='SegmentationLoop';
 image_read_loop.FunctionHandle=@forLoop;
-image_read_loop.FunctionArgs.StartLoop.Value=TrackStruct.StartFrame;
-image_read_loop.FunctionArgs.EndLoop.Value=(TrackStruct.StartFrame+TrackStruct.FrameCount-1)*TrackStruct.FrameStep;
-image_read_loop.FunctionArgs.IncrementLoop.Value=TrackStruct.FrameStep;
+image_read_loop.FunctionArgs.StartLoop.Value=StartFrame;
+image_read_loop.FunctionArgs.EndLoop.Value=(StartFrame+FrameCount-1)*FrameStep;
+image_read_loop.FunctionArgs.IncrementLoop.Value=FrameStep;
 image_read_loop.FunctionArgs.MatchingGroups.Value=[]; %need to add another provider
 image_read_loop.FunctionArgs.MatchingGroups.FunctionInstance='IfIsEmptyPreviousCellsLabel';
 image_read_loop.FunctionArgs.MatchingGroups.OutputArg='MatchingGroups';
@@ -73,11 +45,11 @@ image_read_loop_functions=addToFunctionChain(image_read_loop_functions,display_c
 
 make_file_name_function.InstanceName='MakeImageNamesInSegmentationLoop';
 make_file_name_function.FunctionHandle=@makeImgFileName;
-make_file_name_function.FunctionArgs.FileBase.Value=TrackStruct.ImageFileBase;
+make_file_name_function.FunctionArgs.FileBase.Value=ImageFileBase;
 make_file_name_function.FunctionArgs.CurFrame.FunctionInstance='SegmentationLoop';
 make_file_name_function.FunctionArgs.CurFrame.OutputArg='LoopCounter';
-make_file_name_function.FunctionArgs.NumberFmt.Value=TrackStruct.NumberFormat;
-make_file_name_function.FunctionArgs.FileExt.Value=TrackStruct.ImgExt;
+make_file_name_function.FunctionArgs.NumberFmt.Value=NumberFormat;
+make_file_name_function.FunctionArgs.FileExt.Value=ImageExtension;
 image_read_loop_functions=addToFunctionChain(image_read_loop_functions,make_file_name_function);
 
 read_image_function.InstanceName='ReadImagesInSegmentationLoop';
@@ -95,17 +67,17 @@ image_read_loop_functions=addToFunctionChain(image_read_loop_functions,enhance_c
 
 make_cur_mat_name_function.InstanceName='MakeCurLabelName';
 make_cur_mat_name_function.FunctionHandle=@makeImgFileName;
-make_cur_mat_name_function.FunctionArgs.FileBase.Value=TrackStruct.SegFileRoot;
+make_cur_mat_name_function.FunctionArgs.FileBase.Value=SegmentationFilesRoot;
 make_cur_mat_name_function.FunctionArgs.CurFrame.FunctionInstance='SegmentationLoop';
 make_cur_mat_name_function.FunctionArgs.CurFrame.OutputArg='LoopCounter';
-make_cur_mat_name_function.FunctionArgs.NumberFmt.Value=TrackStruct.NumberFormat;
+make_cur_mat_name_function.FunctionArgs.NumberFmt.Value=NumberFormat;
 make_cur_mat_name_function.FunctionArgs.FileExt.Value='.mat';
 image_read_loop_functions=addToFunctionChain(image_read_loop_functions,make_cur_mat_name_function);
 
 load_current_label_function.InstanceName='LoadCurrentLabel';
 load_current_label_function.FunctionHandle=@loadCellsLabel;
-load_current_label_function.FunctionArgs.MatFileName.FunctionInstance='MakeCurLabelName';
-load_current_label_function.FunctionArgs.MatFileName.OutputArg='FileName';
+load_current_label_function.FunctionArgs.FileName.FunctionInstance='MakeCurLabelName';
+load_current_label_function.FunctionArgs.FileName.OutputArg='FileName';
 image_read_loop_functions=addToFunctionChain(image_read_loop_functions,load_current_label_function);
 
 get_previous_frame_nr_function.InstanceName='GetPreviousFrameNr';
@@ -117,17 +89,17 @@ image_read_loop_functions=addToFunctionChain(image_read_loop_functions,get_previ
 
 make_mat_name_function.InstanceName='MakePreviousLabelName';
 make_mat_name_function.FunctionHandle=@makeImgFileName;
-make_mat_name_function.FunctionArgs.FileBase.Value=TrackStruct.ManFileRoot;
+make_mat_name_function.FunctionArgs.FileBase.Value=ManualFilesRoot;
 make_mat_name_function.FunctionArgs.CurFrame.FunctionInstance='GetPreviousFrameNr';
 make_mat_name_function.FunctionArgs.CurFrame.OutputArg='Sum';
-make_mat_name_function.FunctionArgs.NumberFmt.Value=TrackStruct.NumberFormat;
+make_mat_name_function.FunctionArgs.NumberFmt.Value=NumberFormat;
 make_mat_name_function.FunctionArgs.FileExt.Value='.mat';
 image_read_loop_functions=addToFunctionChain(image_read_loop_functions,make_mat_name_function);
 
 load_previous_label_function.InstanceName='LoadPreviousLabel';
 load_previous_label_function.FunctionHandle=@loadCellsLabel;
-load_previous_label_function.FunctionArgs.MatFileName.FunctionInstance='MakePreviousLabelName';
-load_previous_label_function.FunctionArgs.MatFileName.OutputArg='FileName';
+load_previous_label_function.FunctionArgs.FileName.FunctionInstance='MakePreviousLabelName';
+load_previous_label_function.FunctionArgs.FileName.OutputArg='FileName';
 image_read_loop_functions=addToFunctionChain(image_read_loop_functions,load_previous_label_function);
 
 refine_segmentation_function.InstanceName='RefineSegmentation';
@@ -156,8 +128,8 @@ save_cells_label_function.FunctionArgs.CellsLabel.FunctionInstance='ReviewSegmen
 save_cells_label_function.FunctionArgs.CellsLabel.OutputArg='LabelMatrix';
 save_cells_label_function.FunctionArgs.CurFrame.FunctionInstance='SegmentationLoop';
 save_cells_label_function.FunctionArgs.CurFrame.OutputArg='LoopCounter';
-save_cells_label_function.FunctionArgs.FileRoot.Value=TrackStruct.ManFileRoot;
-save_cells_label_function.FunctionArgs.NumberFormat.Value=TrackStruct.NumberFormat;
+save_cells_label_function.FunctionArgs.FileRoot.Value=ManualFilesRoot;
+save_cells_label_function.FunctionArgs.NumberFormat.Value=NumberFormat;
 image_read_loop_functions=addToFunctionChain(image_read_loop_functions,save_cells_label_function);
 
 image_read_loop.LoopFunctions=image_read_loop_functions;

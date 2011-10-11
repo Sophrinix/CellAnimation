@@ -21,8 +21,8 @@ label_name_args.NumberFmt.Value=mtr_gui_struct.NumberFormat;
 label_name_args.FileExt.Value='.mat';
 file_name_struct=makeImgFileName(label_name_args);
 
-load_label_args.MatFileName.Value=file_name_struct.FileName;
-label_struct=loadMatFile(load_label_args);
+load_label_args.FileName.Value=file_name_struct.FileName;
+label_struct=loadCellsLabel(load_label_args);
 
 cur_tracks_args.CurFrame.Value=frame_nr;
 cur_tracks_args.OffsetFrame.Value=0;
@@ -36,7 +36,7 @@ cur_tracks_struct=getCurrentTracks(cur_tracks_args);
 
 overlay_ancestry_args.Image.Value=img;
 overlay_ancestry_args.CurrentTracks.Value=cur_tracks_struct.Tracks;
-overlay_ancestry_args.CellsLabel.Value=label_struct.cells_lbl;
+overlay_ancestry_args.CellsLabel.Value=label_struct.LabelMatrix;
 overlay_ancestry_args.CellsAncestry.Value=mtr_gui_struct.CellsAncestry;
 overlay_ancestry_args.CurFrame.Value=frame_nr;
 overlay_ancestry_args.ColorMap.Value=mtr_gui_struct.ColorMap;
@@ -52,7 +52,7 @@ mtr_gui_struct.ImageHandle=image(overlay_ancestry_struct.Image,'Parent',mtr_gui_
 %set the function handle for a mouse click in the objects image
 set(mtr_gui_struct.ImageHandle,'buttondownfcn','mouseClickInTrackingFrame');
 %update the cells label
-mtr_gui_struct.CellsLabel=label_struct.cells_lbl;
+mtr_gui_struct.CellsLabel=label_struct.LabelMatrix;
 mtr_gui_struct.FrameTracks=cur_tracks_struct.Tracks;
 
 %end updateTrackImage

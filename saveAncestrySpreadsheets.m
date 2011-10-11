@@ -43,6 +43,11 @@ column_names=...
     'Cell ID,Time,Centroid 1,Centroid 2,Area,Eccentricity,MajorAxisLength,MinorAxisLength,Orientation,Perimeter,Solidity';
 disp('Saving 2D stats...')
 xls_file=input_args.ShapesXlsFile.Value;
+save_dir_idx=find(xls_file=='/',1,'last');
+save_dir=xls_file(1:(save_dir_idx-1));
+if ~isdir(save_dir)
+    mkdir(save_dir);
+end
 delete(xls_file);
 dlmwrite(xls_file,column_names,'');
 dlmwrite(xls_file,tracks,'-append');

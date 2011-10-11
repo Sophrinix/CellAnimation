@@ -21,7 +21,13 @@ function output_args=saveTracks(input_args)
 %functions_list=addToFunctionChain(functions_list,save_tracks_function);
 
 tracks=input_args.Tracks.Value;
-save(input_args.TracksFileName.Value,'tracks');
+file_name=input_args.TracksFileName.Value;
+save_dir_idx=find(file_name=='/',1,'last');
+save_dir=file_name(1:(save_dir_idx-1));
+if ~isdir(save_dir)
+    mkdir(save_dir);
+end
+save(file_name,'tracks');
 output_args=[];
 
 %end saveTracks

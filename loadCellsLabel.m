@@ -25,7 +25,7 @@ function output_args=loadCellsLabel(input_args)
 %Label';
 %display_ancestry_function.FunctionArgs.CellsLabel.OutputArg='cells_lbl';
 
-mat_file_name=input_args.MatFileName.Value;
+mat_file_name=input_args.FileName.Value;
 try
     load_struct=load(mat_file_name);
 catch

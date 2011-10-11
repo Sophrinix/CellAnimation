@@ -1,4 +1,4 @@
-function output_arg=getMaxTrackID(input_arg)
+function output_args=getMaxTrackID(input_args)
 %Usage
 %This module is used to return the current maximum track ID from a track matrix.
 %
@@ -28,7 +28,7 @@ function output_arg=getMaxTrackID(input_arg)
 %rackID';
 %assign_cells_to_tracks_loop.FunctionArgs.MaxTrackID.OutputArg='MaxTrackID';
 
-output_arg.MaxTrackID=max(input_arg.Tracks.Value(:,input_arg.TrackIDCol.Value));
+output_args.MaxTrackID=max(input_args.Tracks.Value(:,input_args.TrackIDCol.Value));
 
 %end getMaxTrackID
 end

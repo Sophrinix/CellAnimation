@@ -22,7 +22,13 @@ function output_args=saveAncestry(input_args)
 %functions_list=addToFunctionChain(functions_list,save_ancestry_function);
 
 cells_ancestry=input_args.CellsAncestry.Value;
-save(input_args.AncestryFileName.Value,'cells_ancestry');
+file_name=input_args.AncestryFileName.Value;
+save_dir_idx=find(file_name=='/',1,'last');
+save_dir=file_name(1:(save_dir_idx-1));
+if ~isdir(save_dir)
+    mkdir(save_dir);
+end
+save(file_name,'cells_ancestry');
 output_args=[];
 
 %end saveTracks
