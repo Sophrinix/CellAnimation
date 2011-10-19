@@ -78,6 +78,9 @@ fun_text=[fun_text 10 'end'];
 
 %write the wrapped function module to disk
 [file_name path_name]=uiputfile('*.m','Save Module as:',[fun_name{1} '_Wrapper']);
+if (file_name==0)
+    return;
+end
 fid=fopen([path_name file_name],'wt');
 fwrite(fid,fun_text);
 fclose(fid);

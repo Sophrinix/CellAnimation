@@ -1,9 +1,9 @@
 function []=assayOffsetFrames()
 %Usage This module is used to offset and crop frames to remove incorrect offsets due 
-% to errors in automatic stage return. Use with offset data acquired using an 
-%assay  such as assayGetStageOffset. The original images will be untouched and the cropped 
-%images will  be saved in a âÿÿcropped framesâÿ? directory under the original image 
-%folder.
+%    to errors in automatic stage return. Use with offset data 
+%acquired  using  an  assay  such as assayGetStageOffset. The original images 
+%will be  untouched and  the cropped  images will  be saved 
+%in a âÿÿcropped  framesâÿ? directory under  the original image  folder.
 
 global functions_list;
 functions_list=[];
@@ -19,6 +19,7 @@ FrameStep=1;
 FrameCount=10;
 %end script variables
 
+iffirstframeelsefunctions=[];
 if_first_frame_functions=[];
 image_read_loop_functions=[];
 
@@ -80,8 +81,8 @@ iffirstframe.FunctionArgs.LoadOffsets_Offsets.FunctionInstance='LoadOffsets';
 iffirstframe.FunctionArgs.LoadOffsets_Offsets.OutputArg='Offsets';
 iffirstframe.KeepValues.CalculateCropSize_CropSize.FunctionInstance='CalculateCropSize';
 iffirstframe.KeepValues.CalculateCropSize_CropSize.OutputArg='CropSize';
+iffirstframe.ElseFunctions=iffirstframeelsefunctions;
 iffirstframe.IfFunctions=if_first_frame_functions;
-iffirstframe.ElseFunctions=[];
 image_read_loop_functions=addToFunctionChain(image_read_loop_functions,iffirstframe);
 
 getcurrentoffset.InstanceName='GetCurrentOffset';

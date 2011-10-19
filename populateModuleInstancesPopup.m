@@ -3,6 +3,7 @@ function current_selection=populateModuleInstancesPopup(handles)
 
 modules_list=handles.ModulesList;
 module_instances=cellfun(@(x) x.InstanceName, modules_list,'UniformOutput',false);
+module_instances=sort(module_instances);
 set(handles.popupModuleInstance,'String',module_instances);
 current_selection=module_instances{1};
 

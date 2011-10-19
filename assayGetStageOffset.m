@@ -1,6 +1,31 @@
 function []=assayGetStageOffset()
-%Usage This assay is used to calculate the microscope stage offset at each frame by 
-%  manually clicking on a fixed point at each frame.
+%assayGetStageOffset - This assay is used to calculate the microscope stage offset at each frame 
+%  by manually  clicking on a fixed point in every image. ImageFolder 
+%-  String  variable that specifies the absolute location of the directory which 
+%contains the   time-lapse  images. An example of such a string variable 
+%would be 'c:/sample  images/high-density'. ImageFilesRoot -  String variable specifying the root image 
+%file name. The root  image file name   for a set of 
+%images is the image file  name of any of the   images 
+%without the number or the file  extension. For example, if the file  
+%name  is 'Experiment-0002_Position(8)_t021.tif' the root image  file name will be 'Experiment-0002_Position(8)_t'. ImageFileBase 
+%-  The path name to the images.  This value is generated from 
+%the ImageFolder   and the ImageFilesRoot and should  not be changed. ImageExtension 
+%- String variable specifying the  image file extension including  the preceding dot. 
+%For example  if the file name  is 'image003.jpg' the  image extension 
+%is '.jpg'. NumberFormat - String value specifying the number  of digits  in 
+%the image file names in  the sequence. For example if  the  
+%image file name is 'image020.jpg' the value for  the NumberFormat is '%03d',  
+% while if the file name is 'image000020.jpg' the value should  be '%06d'. 
+%StartFrame   - Number specifying the first image in the sequence to be 
+%analyzed. The  minimum   value for this variable depends on the numbering 
+%of the image  sequence so  if  the first image in the 
+%sequence is 'image003.tif' then  the minimum value  is 3. FrameStep - Number 
+%specifying the step size when  reading images. Set this  variable to 1 
+% to read every image in  the sequence, 2 to read  every 
+%other image and  so on. FrameCount  - Number specifying how many images 
+% from the image sequence should be processed.  XYOffsets - Initial value for 
+%the stage  offsets array. Set to zero by  default. Important Modules - 
+%None.
 
 global functions_list;
 functions_list=[];
@@ -69,8 +94,39 @@ processingloop.FunctionArgs.StartLoop.Value=StartFrame;
 processingloop.FunctionArgs.EndLoop.Value=(StartFrame+FrameCount-1)*FrameStep;
 processingloop.FunctionArgs.IncrementLoop.Value=FrameStep;
 processingloop.FunctionArgs.OffsetArray.Value=XYOffsets;
+processingloop.KeepValues.SetOffset_Array.FunctionInstance='SetOffset';
+processingloop.KeepValues.SetOffset_Array.OutputArg='Array';
 processingloop.LoopFunctions=image_read_loop_functions;
 functions_list=addToFunctionChain(functions_list,processingloop);
+
+getfirstoffset.InstanceName='GetFirstOffset';
+getfirstoffset.FunctionHandle=@getArrayVal;
+getfirstoffset.FunctionArgs.Index.Value=1;
+getfirstoffset.FunctionArgs.Array.FunctionInstance='ProcessingLoop';
+getfirstoffset.FunctionArgs.Array.OutputArg='SetOffset_Array';
+functions_list=addToFunctionChain(functions_list,getfirstoffset);
+
+replicatefirstoffset.InstanceName='ReplicateFirstOffset';
+replicatefirstoffset.FunctionHandle=@repmat_Wrapper;
+replicatefirstoffset.FunctionArgs.RepeatDim.Value=[FrameCount 1];
+replicatefirstoffset.FunctionArgs.Matrix.FunctionInstance='GetFirstOffset';
+replicatefirstoffset.FunctionArgs.Matrix.OutputArg='ArrayVal';
+functions_list=addToFunctionChain(functions_list,replicatefirstoffset);
+
+subtractfirstoffset.InstanceName='SubtractFirstOffset';
+subtractfirstoffset.FunctionHandle=@subtractFunction;
+subtractfirstoffset.FunctionArgs.Number2.FunctionInstance='ReplicateFirstOffset';
+subtractfirstoffset.FunctionArgs.Number2.OutputArg='Matrix';
+subtractfirstoffset.FunctionArgs.Number1.FunctionInstance='ProcessingLoop';
+subtractfirstoffset.FunctionArgs.Number1.OutputArg='SetOffset_Array';
+functions_list=addToFunctionChain(functions_list,subtractfirstoffset);
+
+saveoffsets.InstanceName='SaveOffsets';
+saveoffsets.FunctionHandle=@saveOffsets;
+saveoffsets.FunctionArgs.FileName.Value=[ImageFolder '/xyoffsets.mat'];
+saveoffsets.FunctionArgs.XYOffsets.FunctionInstance='SubtractFirstOffset';
+saveoffsets.FunctionArgs.XYOffsets.OutputArg='Difference';
+functions_list=addToFunctionChain(functions_list,saveoffsets);
 
 
 global dependencies_list;

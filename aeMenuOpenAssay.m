@@ -126,10 +126,18 @@ if (module_struct.IsParent)
             module_struct.ChainVars={'ElseFunctions','IfFunctions'};
             search_pattern=[module_var '.ElseFunctions=(\w*);'];
             chains=regexp(file_text,search_pattern,'tokens','once');
-            module_struct.Chains(1)=chains;
+            if isempty(chains)
+                module_struct.Chains{1}=lower([module_struct.InstanceName module_struct.ChainVars{1}]);
+            else
+                module_struct.Chains(1)=chains;
+            end
             search_pattern=[module_var '.IfFunctions=(\w*);'];
             chains=regexp(file_text,search_pattern,'tokens','once');
-            module_struct.Chains(2)=chains;
+            if isempty(chains)
+                module_struct.Chains{2}=[module_struct.InstanceName module_struct.ChainVars{2}];
+            else
+                module_struct.Chains(2)=chains;
+            end
     end        
 else
     module_struct.Chains={};

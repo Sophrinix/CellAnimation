@@ -1,6 +1,10 @@
 function []=assayCellCoverage()
-%Usage This assay is used to determine what percentage of a brightfield image is occupied 
-%by objects.
+%assayCellCoverage - This assay is used to determine what percentage of an image is occupied 
+% by objects.  ImageFileName - String variable specifying the absolute image file name 
+%of  the image to be  analyzed. ImageDirectory - String variable specifying the 
+%directory where  the image to be analyzed is located. MaskFileName - String variable 
+%specifying the file  name of the resulting binary image from which  the 
+%object percentage is calculated.  Important Modules - manualSegmentationReview.
 
 global functions_list;
 functions_list=[];

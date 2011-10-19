@@ -42,8 +42,8 @@ switch module_name
     case 'if_statement'
         module_struct.IsParent=true;
         module_struct.ChainVars={'ElseFunctions','IfFunctions'};
-        module_struct.Chains{1}=[module_instance module_struct.ChainVars{1}];
-        module_struct.Chains{2}=[module_instance module_struct.ChainVars{2}];        
+        module_struct.Chains{1}=lower([module_instance module_struct.ChainVars{1}]);
+        module_struct.Chains{2}=lower([module_instance module_struct.ChainVars{2}]);        
     otherwise
         module_struct.IsParent=false;
         module_struct.ChainVars={};
@@ -122,7 +122,7 @@ module_text=formatModuleItem(module_struct);
 if isempty(cur_module)
     %special case - empty list
     assay_list=module_text;
-    insert_idx=1;
+    insert_idx=0;
 elseif (selection_idx==length(assay_list))
     %special case - at the end of the list
     assay_list=[assay_list; module_text];

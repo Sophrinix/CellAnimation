@@ -22,7 +22,7 @@ function varargout = assayEditorGUI(varargin)
 
 % Edit the above text to modify the response to help assayEditorGUI
 
-% Last Modified by GUIDE v2.5 03-Oct-2011 14:00:46
+% Last Modified by GUIDE v2.5 11-Oct-2011 15:39:28
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 0;
@@ -173,6 +173,9 @@ function listboxCurrentAssay_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 modules_list=get(hObject,'String');
+if isempty(modules_list)
+    return;
+end
 selection_idx=get(hObject,'Value');
 selection_text=modules_list{selection_idx};
 chain_struct=false;
@@ -403,4 +406,16 @@ function menuImportScriptVariables_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 importScriptVariables(handles);
 
+
+% --------------------------------------------------------------------
+function menuRunAssay_Callback(hObject, eventdata, handles)
+% hObject    handle to menuRunAssay (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+ cur_pointer=get(gcf,'Pointer');
+ set(gcf,'Pointer','watch');
+ drawnow();
+ assay_cmd=handles.CurrentAssay(1:(end-2));
+ run(assay_cmd);
+ set(gcf,'Pointer',cur_pointer);
 

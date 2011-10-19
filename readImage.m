@@ -1,5 +1,5 @@
 function output_args=readImage(input_args)
-%read image module
+%simple wrapper for the MATLAB imread function
 image_name=input_args.ImageName.Value;
 img_channel=input_args.ImageChannel.Value;
 img_to_proc=imread(image_name);

@@ -8,7 +8,7 @@ while isempty(strfind(tl,module_name))
     tl=fgetl(fi);
 end
 tl=fgetl(fi);
-while (length(tl)>1)&&(tl(1)=='%')
+while (length(tl)>0)&&(tl(1)=='%')
     module_description=[module_description ' ' tl(2:end)];
     tl=fgetl(fi);
 end

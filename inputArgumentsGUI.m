@@ -72,6 +72,8 @@ module_struct=handles.ModuleStruct;
 %update the window title
 win_title=['Edit Module Parameters - ' module_struct.InstanceName ' - ' module_struct.ModuleName];
 set(handles.figure1,'Name',win_title);
+%show the module description
+set(handles.editStatus,'String',getModuleDescription([module_struct.ModuleName '.m']));
 %populate the dialog boxes
 populateInputStringsListbox(handles);
 populateModuleInstancesPopup(handles);
