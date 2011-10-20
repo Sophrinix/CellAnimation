@@ -1,5 +1,5 @@
 function moveModule(handles,move_dir)
-%move a module up or down in the assay list
+%helper function for assayEditorGUI. move a module up or down in the assay list
 assay_list=get(handles.listboxCurrentAssay,'String');
 selection_idx=get(handles.listboxCurrentAssay,'Value');
 if (selection_idx==1)&&(move_dir==-1)

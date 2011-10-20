@@ -3,74 +3,50 @@ function output_args=manualSegmentationReview(input_args)
 %This module is used to manually correct errors in automatic segmentation. The module loads
 %a GUI for each frame with all the available segmentation corrections. To start the user has to
 %
-%select between blob correction and object correction by clicking on the “Select Blob” or “Select
-%Object” button. A blob is a contiguous region as defined by the background pixels and it may
+%select between blob correction and object correction by clicking on the "Select Blob" or "Select
+%Object" button. A blob is a contiguous region as defined by the background pixels and it may
 %contain one or more objects. An object is the set of pixels with the same non-zero ID in the label
 %matrix. An object may span multiple blobs.
 %
-%In general (with the exception of the “Restore Blob” operation), an object or blob must be
+%In general (with the exception of the "Restore Blob" operation), an object or blob must be
 %selected before an operation can be performed on it. Selection is performed by clicking on the
-%object or blob of interest. A selected item is indicated by a checkerboard pattern. If the “Select
-%Multiple” box is checked clicking on an unselected item adds it to the selection.
+%object or blob of interest. A selected item is indicated by a checkerboard pattern. If the "Select
+%Multiple" box is checked clicking on an unselected item adds it to the selection.
 %
 %The types of operations that may be performed on a blob are resegmentation, deletion and
 %restoration. To resegment a blob one needs to indicate how many objects the new blob will
-%contain and their approximate boundaries. Clicking on the selected blob after the “Resegment
-%Blob” button has been pressed indicates that the pixels at those locations belong to the first
-%object in the blob. To move to the next object press the letter “n” on the keyboard and click
+%contain and their approximate boundaries. Clicking on the selected blob after the "Resegment
+%Blob" button has been pressed indicates that the pixels at those locations belong to the first
+%object in the blob. To move to the next object press the letter "n" on the keyboard and click
 %within the blob to indicate rough boundaries. The boundaries do not have to be specified
 %precisely and a blob may be separated into two objects in as few as two clicks. Once all
-%the objects have been defined press the letter “d” on the keyboard and the blob will be
+%the objects have been defined press the letter "d" on the keyboard and the blob will be
 %resegmented. During resegmentaion all the pixels in the blob are assigned to objects using a
 %nearest-neighbor classifier based on the pixels selected by the user. A blob may be deleted by
-%selecting it and then clicking the “Remove Blob” button. To restore a blob removed by mistake
-%click on the “Restore Blob” button. The GUI will display the “Raw Label” image which shows all
+%selecting it and then clicking the "Remove Blob" button. To restore a blob removed by mistake
+%click on the "Restore Blob" button. The GUI will display the "Raw Label" image which shows all
 %the blobs present after thresholding before any removal by filters or manual deletions. Choose
 %the blob to restore by clicking on it.
 %
 %Two types of operations can be performed on objects: joining and deletion. To join a number of
-%objects into a single object click on the “Join Objects” button then select the objects you want to
+%objects into a single object click on the "Join Objects" button then select the objects you want to
 %join by clicking on them. When you are done with object selection and want to join the objects
-%press the “d” letter on the keyboard. To delete an object select it then click on the “Remove
-%Object” button.
+%press the "d" letter on the keyboard. To delete an object select it then click on the "Remove
+%Object" button.
 %
-%Once all the corrections have been performed click on the “Save Changes & Continue” button to
+%Once all the corrections have been performed click on the "Save Changes & Continue" button to
 %save your changes and move on to the next frame.
 %
 %Input Structure Members
-%Image – The microscopy image for the current ObjectsLabel.
-%ObjectsLabel – The label matrix containing the objects for which the automatic segmentation will
+%Image - The microscopy image for the current ObjectsLabel.
+%ObjectsLabel - The label matrix containing the objects for which the automatic segmentation will
 %be evaluated or corrected.
-%PreviousLabel – The label matrix containing objects from the previous time step.
-%RawLabel – The label matrix containing the objects before filtering.
+%PreviousLabel - The label matrix containing objects from the previous time step.
+%RawLabel - The label matrix containing the objects before filtering.
 %
 %Output Structure Members
-%LabelMatrix – The label matrix containing manual corrections if any.
-%
-%Example
-%
-%review_segmentation_function.InstanceName='ReviewSegmentation';
-%
-%review_segmentation_function.FunctionHandle=@manualSegmentationReview;
-%review_segmentation_function.FunctionArgs.ObjectsLabel.FunctionInstance='Segm
-%entObjectsUsingMarkers';
-%review_segmentation_function.FunctionArgs.ObjectsLabel.OutputArg='LabelMatrix
-%';
-%review_segmentation_function.FunctionArgs.RawLabel.FunctionInstance='LabelObj
-%ects';
-%review_segmentation_function.FunctionArgs.RawLabel.OutputArg='LabelMatrix';
-%review_segmentation_function.FunctionArgs.PreviousLabel.Value=[];
-%review_segmentation_function.FunctionArgs.Image.FunctionInstance='NormalizeIm
-%ageTo16Bit';
-%review_segmentation_function.FunctionArgs.Image.OutputArg='Image';
-%functions_list=addToFunctionChain(functions_list,review_segmentation_function
-%);
-%
-%…
-%
-%get_region_props_function.FunctionArgs.LabelMatrix.FunctionInstance='ReviewSe
-%gmentation';
-%get_region_props_function.FunctionArgs.LabelMatrix.OutputArg='LabelMatrix';
+%LabelMatrix - The label matrix containing manual corrections if any.
+
 
 global msr_gui_struct;
 

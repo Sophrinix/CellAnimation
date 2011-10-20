@@ -1,5 +1,6 @@
 function aeMenuOpenAssay(hObject, eventdata, handles)
-
+%helper function for assayEditorGUI. used to implement the "Open Assay"
+%functionality
 [dlg_ok, selected_assay]=openAssayGUI();
 if (~dlg_ok)
     return;

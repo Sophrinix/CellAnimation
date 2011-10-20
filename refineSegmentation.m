@@ -1,37 +1,12 @@
 function output_args=refineSegmentation(input_args)
-%Usage
-%This module is used to retain only objects in a label matrix that are nearest to objects in another
-%matrix.
-%
-%Input Structure Members
-%CurrentLabel â€“ The label matrix from which objects may be removed if they donâ€™t have an object
-%to which they are nearest in the PreviousLabel matrix.
-%PreviousLabel â€“ The objects in this label will determine the objects that will be retain in the
-%current label.
-%
-%Output Structure Members
-%LabelMatrix â€“ The filtered label matrix.
-%
-%Example
-%
-%refine_segmentation_function.InstanceName='RefineSegmentation';
-%refine_segmentation_function.FunctionHandle=@refineSegmentation;
-%refine_segmentation_function.FunctionArgs.CurrentLabel.FunctionInstance='Segm
-%entObjectsUsingMarkers';
-%refine_segmentation_function.FunctionArgs.CurrentLabel.OutputArg='LabelMatrix
-%';
-%refine_segmentation_function.FunctionArgs.PreviousLabel.FunctionInstance='Res
-%izePreviousLabel';
-%refine_segmentation_function.FunctionArgs.PreviousLabel.OutputArg='Image';
-%image_read_loop_functions=addToFunctionChain(image_read_loop_functions,refine
-%_segmentation_function);
-%
-%â€¦
-%
-%review_segmentation_function.FunctionArgs.ObjectsLabel.FunctionInstance='Refi
-%neSegmentation';
-%review_segmentation_function.FunctionArgs.ObjectsLabel.OutputArg='LabelMatrix
-%';
+% Usage
+% This module is used to retain only objects in a label matrix that are nearest to objects in another matrix.
+% Input Structure Members
+% CurrentLabel – The label matrix from which objects may be removed if they don’t have an object to which they are nearest in the PreviousLabel matrix.
+% PreviousLabel – The objects in this label will determine the objects that will be retained in the current label.
+% Output Structure Members
+% LabelMatrix – The filtered label matrix.
+
 
 prev_label=input_args.PreviousLabel.Value;
 cur_label=input_args.CurrentLabel.Value;

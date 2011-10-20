@@ -1,4 +1,6 @@
 function selectObjectByID(obj_id)
+%helper function for manual segmentation review. select the object with
+%id=obj_id
 global msr_gui_struct;
 
 objects_lbl=msr_gui_struct.ObjectsLabel;

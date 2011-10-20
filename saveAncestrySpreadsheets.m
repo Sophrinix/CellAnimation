@@ -1,35 +1,15 @@
 function output_args=saveAncestrySpreadsheets(input_args)
-%Usage
-%This module is used to save the tracks and ancestry records spreadsheets.
-%
-%Input Structure Members
-%CellsAncestry â€“ Matrix containing the ancestry records for the cells in the time-lapse movie.
-%ProlXlsFile â€“ The desired file name for the spreadsheet containing the ancestry records.
-%ShapesXlsFile â€“ The desired file name for the spreadsheet containing the tracks and shape
-%parameters data.
-%Tracks â€“ The tracks matrix to be processed.
-%TracksLayout â€“ Matrix describing the order of the columns in the tracks matrix.
-%
-%Output Structure Members
-%None.
-%
-%Example
-%
-%save_ancestry_spreadsheets.InstanceName='SaveAncestrySpreadsheets';
-%save_ancestry_spreadsheets.FunctionHandle=@saveAncestrySpreadsheets;
-%save_ancestry_spreadsheets.FunctionArgs.Tracks.FunctionInstance='RemoveShortT
-%racks';
-%save_ancestry_spreadsheets.FunctionArgs.Tracks.OutputArg='Tracks';
-%save_ancestry_spreadsheets.FunctionArgs.CellsAncestry.FunctionInstance='Remov
-%eShortTracks';
-%save_ancestry_spreadsheets.FunctionArgs.CellsAncestry.OutputArg='CellsAncestr
-%y';
-%save_ancestry_spreadsheets.FunctionArgs.TracksLayout.Value=tracks_layout;
-%save_ancestry_spreadsheets.FunctionArgs.ShapesXlsFile.Value=TrackStruct.Shape
-%sXlsFile;
-%save_ancestry_spreadsheets.FunctionArgs.ProlXlsFile.Value=TrackStruct.ProlXls
-%File;
-%functions_list=addToFunctionChain(functions_list,save_ancestry_spreadsheets);
+% Usage
+% This module is used to save the tracks and ancestry records spreadsheets.
+% Input Structure Members
+% CellsAncestry – Matrix containing the ancestry records for the cells in the time-lapse movie.
+% ProlXlsFile – The desired file name for the spreadsheet containing the ancestry records.
+% ShapesXlsFile – The desired file name for the spreadsheet containing the tracks and shape parameters data.
+% Tracks – The tracks matrix to be processed.
+% TracksLayout – Matrix describing the order of the columns in the tracks matrix.
+% Output Structure Members
+% None.
+
 
 tracks=input_args.Tracks.Value;
 cells_ancestry=input_args.CellsAncestry.Value;

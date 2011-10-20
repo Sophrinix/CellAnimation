@@ -1,5 +1,6 @@
 function exportScriptVariables(handles)
-%export the current set of script variables to a file
+%helper function for assayEditorGUI. Used to export the current set of
+%script variables to a file.
 
 [file_name path_name]=uiputfile('*.m','Export Script Variables to:');
 if (file_name==0)

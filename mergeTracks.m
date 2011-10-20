@@ -1,51 +1,18 @@
 function output_args=mergeTracks(input_args)
-%Usage
-%This module is used to merge a list of track pairs. This module is not used to determine whether
-%a set of tracks should be merged. Other modules are provided for that purpose such as
-%detectMergeCandidatesUsingDistance.
-%
-%Input Structure Members
-%FrameCount â€“ The number of frames that are being processed.
-%FrameStep â€“ How many frames to skip when reading frames. Setting this value to one will
-%cause all the frames to be read.
-%NumberFormat â€“ A string indicating the number format of the file name to be used when saving
-%the overlayed image.
-%SegFileRoot â€“ The root of the data file name containing the segmented objects.
-%StartFrame â€“ The first frame in the processed set.
-%TimeFrame â€“ Time interval between consecutive frames.
-%Tracks â€“ The current set of tracks.
-%TracksLayout â€“ Matrix describing the order of the columns in the tracks matrix.
-%TracksToBeMerged â€“ The matrix of track IDs to be merged. Primary IDs (the IDs which will
-%remain after the merge) are listed in the first column and secondary IDs (the IDs which will be
-%removed after the merge) are listed in the second column of the matrix.
-%
-%Output Structure Members
-%Tracks â€“ The new track set with the results from the merge incorporated.
-%
-%Example
-%
-%merge_tracks_function.InstanceName='MergeTracks';
-%merge_tracks_function.FunctionHandle=@mergeTracks;
-%merge_tracks_function.FunctionArgs.Tracks.FunctionInstance='SegmentationLoop'
-%;
-%merge_tracks_function.FunctionArgs.Tracks.OutputArg='Tracks';
-%merge_tracks_function.FunctionArgs.TracksToBeMerged.FunctionInstance='DetectM
-%ergeCandidates';
-%merge_tracks_function.FunctionArgs.TracksToBeMerged.OutputArg='TracksToBeMerg
-%ed';
-%merge_tracks_function.FunctionArgs.TracksLayout.Value=tracks_layout;
-%merge_tracks_function.FunctionArgs.FrameCount.Value=TrackStruct.FrameCount;
-%merge_tracks_function.FunctionArgs.StartFrame.Value=TrackStruct.StartFrame;
-%merge_tracks_function.FunctionArgs.TimeFrame.Value=TrackStruct.TimeFrame;
-%merge_tracks_function.FunctionArgs.SegFileRoot.Value=TrackStruct.SegFileRoot;
-%merge_tracks_function.FunctionArgs.FrameStep.Value=TrackStruct.FrameStep;
-%merge_tracks_function.FunctionArgs.NumberFormat.Value=TrackStruct.NumberForma
-%t;
-%functions_list=addToFunctionChain(functions_list,merge_tracks_function);
-%â€¦
-%get_track_ids_after_merge_function.FunctionArgs.Tracks.FunctionInstance='Merg
-%eTracks';
-%get_track_ids_after_merge_function.FunctionArgs.Tracks.OutputArg='Tracks';
+% Usage
+% This module is used to merge a list of track pairs. This module is not used to determine whether a set of tracks should be merged. Other modules are provided for that purpose, such as detectMergeCandidatesUsingDistance.
+% Input Structure Members
+% FrameCount – The number of frames that are being processed.
+% FrameStep – How many frames to skip when reading frames. Setting this value to one will cause all the frames to be read.
+% NumberFormat – A string indicating the number format of the file name to be used when saving the overlayed image.
+% SegFileRoot – The root of the data file name containing the segmented objects.
+% StartFrame – The first frame in the processed set.
+% TimeFrame – Time interval between consecutive frames.
+% Tracks – The current set of tracks.
+% TracksLayout – Matrix describing the order of the columns in the tracks matrix.
+% TracksToBeMerged – The matrix of track IDs to be merged. Primary IDs (the IDs which will remain after the merge) are listed in the first column and secondary IDs (the IDs which will be removed after the merge) are listed in the second column of the matrix.
+% Output Structure Members
+% Tracks – The new track set with the results from the merge incorporated.
 
 tracks=input_args.Tracks.Value;
 tracks_to_be_merged=input_args.TracksToBeMerged.Value;

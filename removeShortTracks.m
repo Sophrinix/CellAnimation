@@ -1,40 +1,15 @@
 function output_args=removeShortTracks(input_args)
-%Usage
-%This module is used to erase tracks with a lifespan shorter than a specified period of time.
-%
-%Input Structure Members
-%AncestryLayout â€“ Matrix describing the order of the columns in the ancestry matrix.
-%Tracks â€“ The tracks matrix to be processed.
-%CellsAncestry â€“ Matrix containing the ancestry records for the cells in the time-lapse movie.
-%TracksLayout â€“ Matrix describing the order of the columns in the tracks matrix.
-%MinLifespan â€“ Tracks with a lifespan shorter than this value will be erased.
-%
-%Output Structure Members
-%Tracks â€“ The filtered tracks matrix.
-%
-%Example
-%
-%remove_short_tracks_function.InstanceName='RemoveShortTracks';
-%remove_short_tracks_function.FunctionHandle=@removeShortTracks;
-%remove_short_tracks_function.FunctionArgs.Tracks.FunctionInstance='SplitTrack
-%s';
-%remove_short_tracks_function.FunctionArgs.Tracks.OutputArg='Tracks';
-%remove_short_tracks_function.FunctionArgs.CellsAncestry.FunctionInstance='Spl
-%itTracks';
-%remove_short_tracks_function.FunctionArgs.CellsAncestry.OutputArg='CellsAnces
-%try';
-%remove_short_tracks_function.FunctionArgs.TracksLayout.Value=tracks_layout;
-%remove_short_tracks_function.FunctionArgs.AncestryLayout.Value=ancestry_layou
-%t;
-%remove_short_tracks_function.FunctionArgs.MinLifespan.Value=30; %minutes
-%functions_list=addToFunctionChain(functions_list,remove_short_tracks_function
-%);
-%
-%â€¦
-%
-%save_updated_tracks_function.FunctionArgs.Tracks.FunctionInstance='RemoveShor
-%tTracks';
-%save_updated_tracks_function.FunctionArgs.Tracks.OutputArg='Tracks';
+% Usage
+% This module is used to erase tracks with a lifespan shorter than a specified period of time.
+% Input Structure Members
+% AncestryLayout – Matrix describing the order of the columns in the ancestry matrix.
+% Tracks – The tracks matrix to be processed.
+% CellsAncestry – Matrix containing the ancestry records for the cells in the time-lapse movie.
+% TracksLayout – Matrix describing the order of the columns in the tracks matrix.
+%  MinLifespan – Tracks with a lifespan shorter than this value will be erased.
+% Output Structure Members
+% Tracks – The filtered tracks matrix.
+
 
 tracks=input_args.Tracks.Value;
 ancestry=input_args.CellsAncestry.Value;

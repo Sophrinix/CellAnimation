@@ -1,5 +1,5 @@
 function [module_struct is_chain chain_name]=getModuleStruct(list_text,selection_idx,handles)
-%get the module struct corresponding to the current selection
+%helper function for assayEditorGUI. get the module struct corresponding to the current selection
 selection_text=list_text{selection_idx};
 sublevel_depth=getSelectionLevel(selection_text);
 is_control=false;

@@ -1,5 +1,5 @@
 function vars_text=addScriptVars(handles)
-%create a text file defining the script variables
+%helper function for assayEditorGUI. create a text file defining the script variables
 
 vars_text=['%script variables' 10];
 script_vars=handles.ScriptVariables;

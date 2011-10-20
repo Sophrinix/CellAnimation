@@ -1,5 +1,5 @@
 function addModuleToAssay(handles)
-%add a module to the current assay
+%helper function for assayEditorGUI. add a module to the current assay
 assay_list=get(handles.listboxCurrentAssay,'String');
 selection_idx=get(handles.listboxCurrentAssay,'Value');
 

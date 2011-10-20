@@ -1,32 +1,13 @@
 function output_args=eccentricityFilterLabel(input_args)
-%Usage
-%This module is used to remove objects below and/or above a certain eccentricity from a label
-%matrix.
-%
-%Input Structure Members
-%MaxEccentricity â€“ Any object with an eccentricity higher than this value will be removed.
-%MinEccentricity â€“ Any object with an eccentricity lower than this value will be removed.
-%ObjectsLabel â€“ The label matrix from which the objects will be removed.
-%
-%Output Structure Members
-%LabelMatrix â€“ The filtered label matrix.
-%
-%Example
-%
-%eccentricity_filter_function.InstanceName='EccentricityFilter';
-%eccentricity_filter_function.FunctionHandle=@eccentricityFilterLabel;
-%eccentricity_filter_function.FunctionArgs.ObjectsLabel.FunctionInstance='Segm
-%entObjectsUsingMarkers';
-%eccentricity_filter_function.FunctionArgs.ObjectsLabel.OutputArg='LabelMatrix
-%';
-%eccentricity_filter_function.FunctionArgs.MaxEccentricity.Value=0.95;
-%
-%â€¦
-%
-%resize_cyto_label_function.FunctionArgs.Image.FunctionInstance=â€™EccentricityF
-%ilter';
-%
-%resize_cyto_label_function.FunctionArgs.Image.OutputArg='LabelMatrix';
+% Usage
+% This module is used to remove objects below and/or above a certain eccentricity from a label matrix.
+% Input Structure Members
+% MaxEccentricity – Any object with an eccentricity higher than this value will be removed.
+% MinEccentricity – Any object with an eccentricity lower than this value will be removed.
+% ObjectsLabel – The label matrix from which the objects will be removed.
+% Output Structure Members
+% LabelMatrix – The filtered label matrix.
+
 
 cells_lbl=input_args.ObjectsLabel.Value;
 cells_props=regionprops(cells_lbl,'Eccentricity');

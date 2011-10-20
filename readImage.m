@@ -1,5 +1,10 @@
 function output_args=readImage(input_args)
 %simple wrapper for the MATLAB imread function
+%Input Structure Members
+%ImageName - Path to the image to be loaded.
+%Output Structure Members
+%Image - The image matrix.
+
 image_name=input_args.ImageName.Value;
 img_channel=input_args.ImageChannel.Value;
 img_to_proc=imread(image_name);

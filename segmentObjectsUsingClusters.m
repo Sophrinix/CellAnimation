@@ -1,45 +1,14 @@
 function output_args=segmentObjectsUsingClusters(input_args)
-%Usage
-%This module is used to segment objects in a label matrix using hierarchical clustering.
-%
-%Input Structure Members
-%ClusterDistance â€“ The height threshold for the cluster tree. All leaves below this value will be
-%grouped in a cluster. See documentation for the MATLAB function cluster for more details.
-%MinimumObjectArea â€“ Objects with an area smaller than this value will be unsegmented and
-%distributed between the neighboring objects.
-%ObjectsLabel â€“ The label matrix containing the objects to be segmented.
-%ObjectReduce â€“ Used to reduce the size of the objects. If the objects are too large the clustering
-%function will run out of memory. When this happens set ObjectReduce to a value lower than
-%one.
-%
-%Output Structure Members
-%LabelMatrix â€“ The label matrix containing the segmented objects.
-%
-%Example
-%
-%segment_objects_using_clusters_function.InstanceName='SegmentObjectsUsingClus
-%ters';
-%segment_objects_using_clusters_function.FunctionHandle=@segmentObjectsUsingCl
-%usters;
-%segment_objects_using_clusters_function.FunctionArgs.ObjectsLabel.FunctionIns
-%tance='LabelNuclei';
-%segment_objects_using_clusters_function.FunctionArgs.ObjectsLabel.OutputArg='
-%LabelMatrix';
-%segment_objects_using_clusters_function.FunctionArgs.ObjectReduce.Value=Track
-%Struct.ObjectReduce;
-%segment_objects_using_clusters_function.FunctionArgs.MinimumObjectArea.Value=
-%TrackStruct.MinNuclArea;
-%segment_objects_using_clusters_function.FunctionArgs.ClusterDistance.Value=Tr
-%ackStruct.ClusterDist;
-%image_read_loop_functions=addToFunctionChain(image_read_loop_functions,segmen
-%t_objects_using_clusters_function);
-%
-%â€¦
-%
-%segment_objects_using_markers_function.FunctionArgs.MarkersLabel.FunctionInst
-%ance='SegmentObjectsUsingClusters';
-%segment_objects_using_markers_function.FunctionArgs.MarkersLabel.OutputArg='L
-%abelMatrix';
+% Usage
+% This module is used to segment objects in a label matrix using hierarchical clustering.
+% Input Structure Members
+% ClusterDistance – The height threshold for the cluster tree. All leaves below this value will be grouped in a cluster. See documentation for the MATLAB function cluster for more details.
+% MinimumObjectArea – Objects with an area smaller than this value will be unsegmented and distributed between the neighboring objects.
+% ObjectsLabel – The label matrix containing the objects to be segmented.
+% ObjectReduce – Used to reduce the size of the objects. If the objects are too large the clustering function will run out of memory. When this happens set ObjectReduce to a value lower than one.
+% Output Structure Members
+% LabelMatrix – The label matrix containing the segmented objects.
+
 
 cells_lbl=input_args.ObjectsLabel.Value;
 %should only set obj_reduce to a value smaller than 1 if the

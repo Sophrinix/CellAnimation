@@ -1,5 +1,5 @@
 function removeModuleFromAssay(handles)
-%remove the selected module from the assay
+%helper function for assayEditorGUI. remove the selected module from the assay
 
 %get the selected module struct
 assay_list=get(handles.listboxCurrentAssay,'String');

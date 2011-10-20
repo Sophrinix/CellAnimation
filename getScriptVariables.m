@@ -1,5 +1,5 @@
 function script_variables=getScriptVariables(selected_assay)
-%read any script variables from the assay text
+%helper function for assayEditorGUI. read any script variables from the assay text
 
 file_text=fileread(selected_assay);
 %extract the script variables section

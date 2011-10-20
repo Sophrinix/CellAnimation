@@ -1,24 +1,11 @@
 function output_args=distanceWatershed(input_args)
-%Usage
-%This module is used to compute the distance watershed of a binary image.
-%
-%Input Structure Members
-%Image â€“ The binary image for which the distance watershed will be computed.
-%MedianFilterNhood â€“ The size of the median filter which will be used to smooth the watershed.
-%
-%Output Structure Members
-%LabelMatrix â€“ The result of the distance watershed.
-%
-%Example
-%
-%distance_watershed_function.InstanceName='DistanceWatershed';
-%distance_watershed_function.FunctionHandle=@distanceWatershed;
-%distance_watershed_function.FunctionArgs.Image.FunctionInstance='ClearSmallOb
-%jects';
-%distance_watershed_function.FunctionArgs.Image.OutputArg='Image';
-%distance_watershed_function.FunctionArgs.MedianFilterNhood.Value=3;
-%functions_list=addToFunctionChain(functions_list,distance_watershed_function)
-%;
+% Usage
+% This module is used to compute the distance watershed of a binary image.
+% Input Structure Members
+% Image – The binary image for which the distance watershed will be computed.
+% MedianFilterNhood – The size of the median filter which will be used to smooth the watershed.
+% Output Structure Members
+% LabelMatrix – The result of the distance watershed.
 
 img_neg=~input_args.Image.Value;
 img_dist=bwdist(img_neg);

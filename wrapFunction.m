@@ -1,5 +1,5 @@
 function wrapFunction(handles)
-%wrap a MATLAB function in a CellAnimation wrapper so it can be used as a
+%helper function for assayEditorGUI. wrap a MATLAB function in a CellAnimation wrapper so it can be used as a
 %module in a CA assay
 
 %select the function

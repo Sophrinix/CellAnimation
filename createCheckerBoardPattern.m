@@ -1,5 +1,6 @@
 function checkerboard_pattern=createCheckerBoardPattern(selected_object)
-
+%helper function for manual segmentation review. create a checkerboard
+%pattern to indicate the selected object
 cur_obj_size=sum(selected_object(:));
 checkerboard_pattern=repmat([0;intmax('uint8')],floor(cur_obj_size/2),1);
 if (rem(cur_obj_size,2))

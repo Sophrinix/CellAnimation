@@ -1,8 +1,6 @@
 function module_struct=updateArgValue(handles)
-%update manual argument value
-% if isempty(handles.SelectionValue)
-%     return;
-% end
+%helper function for assayEditorGUI. update manual argument value
+
 if strcmp(handles.ArgType,'Output')
     module_struct=handles.ModuleStruct;
     return;

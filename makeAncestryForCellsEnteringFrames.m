@@ -1,60 +1,17 @@
 function output_args=makeAncestryForCellsEnteringFrames(input_args)
-%Usage
-%This module is used to add ancestry records for cells entering the field of view after the first
-%frame (not the result of a mitotic event in the field of view).
-%
-%Input Structure Members
-%CellsAncestry â€“ Current cell ancestry records.
-%FirstFrameIDs â€“ The IDs of tracks starting in the first frame.
-%SplitCells â€“ The IDs of tracks that are the result of mitosis.
-%TimeCol â€“ The index of the time column in the tracks matrix.
-%TrackIDCol â€“ The index of the track ID column in the tracks matrix.
-%TrackIDs â€“ The IDs of all the tracks.
-%Tracks â€“ The matrix containing all the tracks.
-%
-%Output Structure Members
-%CellsAncestry â€“ The current cell ancestry record with ancestry of cells entering the field of view
-%after the first frame appended to the end.
-%
-%Example
-%
-%make_ancestry_for_cells_entering_frames_function.InstanceName='MakeAncestryFo
-%rCellsEnteringFrames';
-%make_ancestry_for_cells_entering_frames_function.FunctionHandle=@makeAncestry
-%ForCellsEnteringFrames;
-%make_ancestry_for_cells_entering_frames_function.FunctionArgs.SplitCells.Func
-%tionInstance='DetectMitoticEvents';
-%make_ancestry_for_cells_entering_frames_function.FunctionArgs.SplitCells.Outp
-%utArg='SplitCells';
-%make_ancestry_for_cells_entering_frames_function.FunctionArgs.TrackIDs.Functi
-%onInstance='GetTrackIDsAfterMerge';
-%make_ancestry_for_cells_entering_frames_function.FunctionArgs.TrackIDs.Output
-%Arg='TrackIDs';
-%make_ancestry_for_cells_entering_frames_function.FunctionArgs.FirstFrameIDs.F
-%unctionInstance='MakeAncestryForFirstFrameCells';
-%make_ancestry_for_cells_entering_frames_function.FunctionArgs.FirstFrameIDs.O
-%utputArg='FirstFrameIDs';
-%make_ancestry_for_cells_entering_frames_function.FunctionArgs.CellsAncestry.F
-%unctionInstance='MakeAncestryForFirstFrameCells';
-%make_ancestry_for_cells_entering_frames_function.FunctionArgs.CellsAncestry.O
-%utputArg='CellsAncestry';
-%make_ancestry_for_cells_entering_frames_function.FunctionArgs.Tracks.Function
-%Instance='MergeTracks';
-%make_ancestry_for_cells_entering_frames_function.FunctionArgs.Tracks.OutputAr
-%g='Tracks';
-%
-%make_ancestry_for_cells_entering_frames_function.FunctionArgs.TimeCol.Value=t
-%racks_layout.TimeCol;
-%make_ancestry_for_cells_entering_frames_function.FunctionArgs.TrackIDCol.Valu
-%e=tracks_layout.TrackIDCol;
-%functions_list=addToFunctionChain(functions_list,make_ancestry_for_cells_ente
-%ring_frames_function);
-%
-%â€¦
-%
-%split_tracks_function.FunctionArgs.CellsAncestry.FunctionInstance='MakeAncest
-%ryForCellsEnteringFrames';
-%split_tracks_function.FunctionArgs.CellsAncestry.OutputArg='CellsAncestry';
+% Usage
+% This module is used to add ancestry records for cells entering the field of view after the first frame (not the result of a mitotic event in the field of view).
+% Input Structure Members
+% CellsAncestry – Current cell ancestry records.
+% FirstFrameIDs – The IDs of tracks starting in the first frame.
+% SplitCells – The IDs of tracks that are the result of mitosis.
+% TimeCol – The index of the time column in the tracks matrix.
+% TrackIDCol – The index of the track ID column in the tracks matrix.
+% TrackIDs – The IDs of all the tracks.
+% Tracks – The matrix containing all the tracks.
+% Output Structure Members
+% CellsAncestry – The current cell ancestry record with ancestry of cells entering the field of view after the first frame appended to the end.
+
 
 split_cells=input_args.SplitCells.Value;
 track_ids=input_args.TrackIDs.Value;

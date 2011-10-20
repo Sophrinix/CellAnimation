@@ -1,5 +1,5 @@
 function input_args=getInputArgs(module_path)
-%extract the input args from the specified module
+%helper function for assayEditorGUI. extract the input args from the specified module
 
 module_name=module_path(1:(end-2));
 switch(module_name)

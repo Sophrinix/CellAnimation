@@ -7,7 +7,7 @@ function output_args=subtractFunction(input_args)
 %Number2 - The variable to be subtracted.
 %
 %Output Structure Members
-%Difference - The result of the addition.
+%Difference - The result of the subtraction.
 
 
 arg_1=input_args.Number1.Value;

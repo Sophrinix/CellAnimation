@@ -1,5 +1,5 @@
 function output_args=equalFunction(input_args)
-%module to compare two values
+%module to compare two values. outdated, use compareValues instead.
 
 arg_1=input_args.Number1.Value;
 arg_2=input_args.Number2.Value;

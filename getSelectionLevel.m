@@ -1,5 +1,5 @@
 function selection_level=getSelectionLevel(selection_text)
-%get the level of the chain this module is attached to in the current assay
+%helper function for assayEditorGUI. get the level of the chain this module is attached to in the current assay
 %get the number of whitespaces
 search_pattern=['[^&]*(&nbsp;)*\w*<'];
 ws=regexp(selection_text,search_pattern,'tokens');

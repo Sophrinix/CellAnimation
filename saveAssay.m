@@ -1,5 +1,5 @@
 function saveAssay(handles,file_name,path)
-%write the assay to file
+%helper function for assayEditorGUI. write the current assay to file
 if (file_name==0)
     return;
 end

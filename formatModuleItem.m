@@ -1,5 +1,5 @@
 function module_text=formatModuleItem(module_struct)
-%format a module item for display in the assay list box
+%helper function for assayEditorGUI. format a module item for display in the assay list box
 
 module_level=module_struct.Level;
 if (module_struct.IsParent)

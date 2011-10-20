@@ -1,5 +1,5 @@
 function updateOutputArgPopup(handles)
-%update the list of output args for the current module
+%helper function for assayEditorGUI. update the list of output args for the current module
 %enable the popup boxes
 %disable the manual edit box
 set(handles.editManualValue,'Enable','on');

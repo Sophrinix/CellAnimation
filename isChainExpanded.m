@@ -1,5 +1,5 @@
 function [is_expanded selection_level]=isChainExpanded(listbox_list,selection_idx)
-%determine the state of the current chain: expanded or collapsed
+%helper function for assayEditorGUI. determine the state of the current chain: expanded or collapsed
 selection_text=listbox_list{selection_idx};
 selection_level=getSelectionLevel(selection_text);
 if (selection_idx==length(listbox_list))

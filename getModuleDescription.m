@@ -1,5 +1,5 @@
 function module_description=getModuleDescription(module_path)
-%get the description of a module from the module file
+%helper function for assayEditorGUI. get the description of a module from the module file
 module_description='';
 fi=fopen(module_path);
 module_name=module_path(1:(end-2));

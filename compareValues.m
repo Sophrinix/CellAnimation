@@ -3,28 +3,13 @@ function output_args=compareValues(input_args)
 %This module is used to compare two numerical values using the specified operation.
 %
 %Input Structure Members
-%Arg1 – First numerical value.
-%Arg2 – Second numerical value.
-%Operation – String representing the mathematical operation to be performed.
-%Currently, ‘>’,’<’,’>=’,’<=’ and ’==’ are supported.
+%Arg1 - First numerical value.
+%Arg2 - Second numerical value.
+%Operation - String representing the mathematical operation to be performed.
+%Currently, ">","<",">=","<=" and "==" are supported.
 %
 %Output Structure Members
-%BooleanOut – The result of the operation. Can be either 1 (true) or 0 (false).
-%
-%Example
-%
-%label_to_bw_function.InstanceName='LabelToBW';
-%label_to_bw_function.FunctionHandle=@compareValues;
-%label_to_bw_function.FunctionArgs.Operation.Value='>';
-%label_to_bw_function.FunctionArgs.Arg1.FunctionInstance='ReviewSegmentation';
-%label_to_bw_function.FunctionArgs.Arg1.OutputArg='LabelMatrix';
-%label_to_bw_function.FunctionArgs.Arg2.Value=0;
-%functions_list=addToFunctionChain(functions_list,label_to_bw_function);
-%
-%…
-%
-%save_bw_image_function.FunctionArgs.SaveData.FunctionInstance='LabelToBW';
-%save_bw_image_function.FunctionArgs.SaveData.OutputArg='BooleanOut';
+%BooleanOut - The result of the operation. Can be either 1 (true) or 0 (false).
 
 switch input_args.Operation.Value
     case '>'

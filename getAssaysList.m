@@ -1,5 +1,5 @@
 function assays_list=getAssaysList()
-%build a list of assays in the current directory
+%helper function for assayEditorGUI. build a list of assays in the current directory
 %get alll the .m files
 
 m_files=dir('*.m');

@@ -1,5 +1,6 @@
 function removeProvider(handles)
-%remove the selected provider
+%helper function for assayEditorGUI. remove the selected provider from the
+%selected input argument
 assay_list=get(handles.listboxInputArgumens,'String');
 selection_idx=get(handles.listboxInputArgumens,'Value');
 selection_text=assay_list{selection_idx};

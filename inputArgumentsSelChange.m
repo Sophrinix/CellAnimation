@@ -1,5 +1,5 @@
 function inputArgumentsSelChange(handles)
-%callback for inputArgumentsGUI
+%helper function for assayEditorGUI. callback for inputArgumentsGUI
 
 if strcmp(handles.SelectionType,'ArgValue')&&~(handles.Erased)
     handles.ModuleStruct=updateArgValue(handles);

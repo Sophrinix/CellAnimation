@@ -1,5 +1,5 @@
 function populateInputStringsListbox(handles)
-%update the  
+%helper function for assayEditorGUI. update the input arguments listbox  
 
 module_struct=handles.ModuleStruct;
 module_path=[module_struct.ModuleName '.m'];

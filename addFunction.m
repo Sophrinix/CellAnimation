@@ -3,11 +3,11 @@ function output_args=addFunction(input_args)
 %This module adds two variables.
 %
 %Input Structure Members
-%Number1 – The first variable to be added.
-%Number2 – The second variable to be added.
+%Number1 - The first variable to be added.
+%Number2 - The second variable to be added.
 %
 %Output Structure Members
-%Sum – The result of the addition.
+%Sum - The result of the addition.
 %
 %Example
 %
@@ -19,8 +19,6 @@ function output_args=addFunction(input_args)
 %get_previous_frame_nr_function.FunctionArgs.Number2.Value=-1;
 %image_read_loop_functions=addToFunctionChain(image_read_loop_functions,get_pr
 %evious_frame_nr_function);
-%
-%…
 %
 %make_mat_name_function.FunctionArgs.CurFrame.FunctionInstance='GetPreviousFra
 %meNr';

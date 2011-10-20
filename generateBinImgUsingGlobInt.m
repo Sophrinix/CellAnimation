@@ -1,38 +1,16 @@
 function output_args=generateBinImgUsingGlobInt(input_args)
-%Usage
-%This module is used to convert a grayscale image to binary using a global intensity threshold.
-%
-%Input Structure Members
-%ClearBorder â€“ If this value is set to true objects that are within ClearBorderDist of the image
-%edges will be erased.
-%ClearBorderDist â€“ Objects that are within this distance from the edges of the image will be
-%erased if ClearBorder is set to true.
-%Pixel intensities greater than the threshold intensity are converted to 1 in the binary image.
-%Image â€“ Grayscale image to be converted.
-%IntensityThresholdPct â€“ This is a percentage of the intensity range of the image. The threshold
-%intensity value is calculated as IntensityThresholdPct*double(max_pixel-min_pixel)+min_pixel.
-%
-%Output Structure Members
-%Image â€“ Resulting binary image.
-%
-%Example
-%
-%cyto_global_int_filter_function.InstanceName='CytoGlobalBrightnessIntensityFi
-%lter';
-%cyto_global_int_filter_function.FunctionHandle=@generateBinImgUsingGlobInt;
-%cyto_global_int_filter_function.FunctionArgs.Image.FunctionInstance='ResizeIm
-%age';
-%cyto_global_int_filter_function.FunctionArgs.Image.OutputArg='Image';
-%cyto_global_int_filter_function.FunctionArgs.IntensityThresholdPct.Value=0.1;
-%cyto_global_int_filter_function.FunctionArgs.ClearBorder.Value=true;
-%
-%cyto_global_int_filter_function.FunctionArgs.ClearBorderDist.Value=2;
-%image_read_loop_functions=addToFunctionChain(image_read_loop_functions,
-%cyto_global_int_filter_function);
-%â€¦
-%fill_holes_cyto_images_function.FunctionArgs.Image.FunctionInstance='CytoGlob
-%alBrightnessIntensityFilter';
-%fill_holes_cyto_images_function.FunctionArgs.Image.OutputArg='Image';
+% Usage
+% This module is used to convert a grayscale image to binary using a global intensity threshold.
+% Input Structure Members
+% ClearBorder – If this value is set to true, objects that are within ClearBorderDist of the image edges will be erased.
+% ClearBorderDist – Objects that are within this distance from the edges of the image will be erased if ClearBorder is set to true.
+% Pixel intensities greater than the threshold intensity are converted to 1 in the binary image.
+% Image – Grayscale image to be converted.
+% IntensityThresholdPct – This is a percentage of the intensity range of the image. The threshold intensity value is calculated as IntensityThresholdPct*double(max_pixel-min_pixel)+min_pixel.
+% 
+% Output Structure Members
+% Image – Resulting binary image.
+
 
 max_pixel=max(input_args.Image.Value(:));
 min_pixel=min(input_args.Image.Value(:));

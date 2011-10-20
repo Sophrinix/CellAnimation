@@ -1,37 +1,11 @@
 function output_args=segmentObjectsUsingMarkers(input_args)
-%Usage
-%This module is used to segment objects in a label matrix using markers from another label
-%matrix.
-%
-%Input Structure Members
-%MarkersLabel â€“ The label matrix containing the marker objects.
-%ObjectsLabel â€“ The label matrix containing the objects to be segmented.
-%
-%Output Structure Members
-%LabelMatrix â€“ Label matrix containing the segmented objects.
-%
-%Example
-%
-%segment_objects_using_markers_function.InstanceName='SegmentObjectsUsingMarke
-%rs';
-%segment_objects_using_markers_function.FunctionHandle=@segmentObjectsUsingMar
-%kers;
-%segment_objects_using_markers_function.FunctionArgs.MarkersLabel.FunctionInst
-%ance='SegmentObjectsUsingClusters';
-%segment_objects_using_markers_function.FunctionArgs.MarkersLabel.OutputArg='L
-%abelMatrix';
-%segment_objects_using_markers_function.FunctionArgs.ObjectsLabel.FunctionInst
-%ance='LabelCytoplasm';
-%segment_objects_using_markers_function.FunctionArgs.ObjectsLabel.OutputArg='L
-%abelMatrix';
-%image_read_loop_functions=addToFunctionChain(image_read_loop_functions,segmen
-%t_objects_using_markers_function);
-%
-%â€¦
-%
-%area_filter_function.FunctionArgs.ObjectsLabel.FunctionInstance='SegmentObjec
-%tsUsingMarkers';
-%area_filter_function.FunctionArgs.ObjectsLabel.OutputArg='LabelMatrix';
+% Usage
+% This module is used to segment objects in a label matrix using markers from another label matrix.
+% Input Structure Members
+% MarkersLabel – The label matrix containing the marker objects.
+% ObjectsLabel – The label matrix containing the objects to be segmented.
+% Output Structure Members
+% LabelMatrix – Label matrix containing the segmented objects.
 
 nuclei_lbl=input_args.MarkersLabel.Value;
 cyto_lbl=input_args.ObjectsLabel.Value;

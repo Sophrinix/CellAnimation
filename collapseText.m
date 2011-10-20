@@ -1,5 +1,5 @@
 function new_list=collapseText(listbox_list,selection_idx,sublevel_depth)
-%collapse the submodules belonging to the current module
+%helper function for assayEditorGUI. collapse the submodules belonging to the current module
 list_head=listbox_list(1:selection_idx);
 list_tail=listbox_list((selection_idx+1):end);
 items_level=cellfun(@getSelectionLevel,list_tail);

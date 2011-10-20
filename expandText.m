@@ -1,4 +1,6 @@
 function new_list=expandText(listbox_list,selection_idx,modules_list,modules_map,sublevel_depth)
+%helper function for assayEditorGUI. used to show the submodules in the
+%currently selected submodule list
 %get the name of the module which contains this chain
 i=1;
 while 1

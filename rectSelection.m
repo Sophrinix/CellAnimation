@@ -1,4 +1,11 @@
 function output_args=rectSelection(input_args)
+%simple wrapper for MATLAB imrect function.
+%Input Structure Members
+%ParentHandle - Handle to the image where the freehand region will be
+%drawn.
+%Output Structure Members
+%XYPosition - The xmin,ymin coordinates of the rectangle.
+%RectSize - The width and height of the rectangle.
 
 parent_handle=input_args.ParentHandle.Value;
 region_handle=imrect(parent_handle,[]);

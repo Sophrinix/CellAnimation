@@ -1,5 +1,5 @@
 function aeMenuNewAssay(hObject, eventdata, handles)
-
+%helper function for assayEditorGUI. used to implement the "New Assay".
 handles.CurrentAssay='';
 handles.AssayDescription='';
 handles.ScriptVariables={};

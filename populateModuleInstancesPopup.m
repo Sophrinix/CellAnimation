@@ -1,5 +1,5 @@
 function current_selection=populateModuleInstancesPopup(handles)
-%populate the module instance popup
+%helper function for assayEditorGUI. populate the module instance popup
 
 modules_list=handles.ModulesList;
 module_instances=cellfun(@(x) x.InstanceName, modules_list,'UniformOutput',false);

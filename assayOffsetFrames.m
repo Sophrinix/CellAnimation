@@ -1,9 +1,33 @@
 function []=assayOffsetFrames()
-%Usage This module is used to offset and crop frames to remove incorrect offsets due 
-%    to errors in automatic stage return. Use with offset data 
-%acquired  using  an  assay  such as assayGetStageOffset. The original images 
-%will be  untouched and  the cropped  images will  be saved 
-%in a âÿÿcropped  framesâÿ? directory under  the original image  folder.
+%Usage  This module is used to offset and crop frames to remove incorrect offsets 
+% due to errors in automatic stage return. Use with offset data acquired using 
+%an  assay such as assayGetStageOffset.  The original images will be untouched and 
+%the cropped  images will be saved in a ÿcropped framesÿ directory under the 
+%original image folder.   Script Variables  ImageFolder - String variable that specifies 
+%the absolute location of  the directory which contains the time-lapse images. An example 
+%of such a string variable  would be ÿc:/sample images/high-densityÿ.  ImageFilesRoot - String 
+%variable specifying the root image file  name. The root image file name for 
+%a set of images is the image  file name of any of the 
+%images without the number or the file extension.  For example, if the file 
+%name is 'Experiment-0002_Position(8)_t021.tif' the root image file name will  be 'Experiment-0002_Position(8)_t'.  ImageFileBase 
+%ÿ String variable specifying the path name to the images.  This value is 
+%generated from the ImageFolder and the ImageFilesRoot and should not be  changed.  
+%CroppedImagesFolder ÿ String variable specifying the folder where the cropped images will  be 
+%saved. Set by default to a folder named ÿcroppedÿ within the original images  
+%folder.  ImageExtension ÿ String variable specifying the image file extension including the preceding 
+% dot. For example, if the file name is ÿimage003.jpgÿ the image extension is 
+%'.jpg'.   NumberFormat ÿ String value specifying the number of digits in the 
+%image file  names in the sequence. For example, if the image file name 
+%is ÿimage020.jpgÿ the  value for the NumberFormat is '%03d', while if the file 
+%name is ÿimage000020.jpgÿ the  value should be ÿ%06dÿ.  StartFrame ÿ Number specifying 
+%the first image in the  sequence to be analyzed. The minimum value for 
+%this variable depends on the numbering  of the image sequence, so if the 
+%first image in the sequence is ÿimage003.tifÿ  then the minimum value is 3. 
+% FrameStep - Number specifying the step size  when reading images. Set this 
+%variable to 1 to read every image in the  sequence, 2 to read 
+%every other image and so on.  FrameCount ÿ Number  specifying how many 
+%images from the image sequence should be processed.   Important  Module - 
+%None.
 
 global functions_list;
 functions_list=[];

@@ -1,5 +1,5 @@
 function addOutputArgument(handles)
-%add an output argument provider to the currently selected input argument
+%helper function for assayEditorGUI. add an output argument provider to the currently selected input argument
 assay_list=get(handles.listboxInputArgumens,'String');
 selection_idx=get(handles.listboxInputArgumens,'Value');
 selection_text=assay_list{selection_idx};

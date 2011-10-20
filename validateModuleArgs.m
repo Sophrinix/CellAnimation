@@ -1,5 +1,5 @@
 function module_struct=validateModuleArgs(handles)
-%remove any parameters that refer to modules which are no longer part of
+%helper function for assayEditorGUI. remove any parameters that refer to modules which are no longer part of
 %the assay
 module_struct=handles.ModuleStruct;
 output_modules=cellfun(@(x) x{2},module_struct.OutputArgs,'UniformOutput',false);
