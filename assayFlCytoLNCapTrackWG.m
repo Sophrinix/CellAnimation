@@ -1,100 +1,107 @@
 function []=assayFlCytoLNCapTrackWG()
 %assayFlCytoLNCapTrackWG - This assay is used to automatically track cells that have been segmented using 
-%another assay.  ImageFolder - String variable that specifies the absolute location of the 
-%directory which contains the  time-lapse images. An example of such a string variable 
-%would be 'c:/sample images/high-density'. ImageFilesRoot - String variable specifying the root image file name. 
-%The root image file name  for a set of images is the image 
-%file name of any of the  images without the number or the file 
-%extension. For example, if the file name  is 'Experiment-0002_Position(8)_t021.tif' the root image file 
-%name will be 'Experiment-0002_Position(8)_t'. ImageExtension - String variable specifying the image file extension including 
-%the preceding dot. For example  if the file name is 'image003.jpg' the image 
-%extension is '.jpg'. StartFrame - Number specifying the first image in the sequence to 
-%be analyzed. The minimum  value for this variable depends on the numbering of 
-%the image sequence so if  the first image in the sequence is 'image003.tif' 
-%then the minimum value is 3. FrameCount - Number specifying how many images from 
-%the image sequence should be processed. TimeFrame - Number specifying the time between consecutive 
+% another assay.  ImageFolder - String variable that specifies the absolute location of 
+%the  directory which contains the  time-lapse images. An example of such a 
+%string variable  would be 'c:/sample images/high-density'. ImageFilesRoot - String variable specifying the root 
+%image file name.  The root image file name  for a set of 
+%images is the image  file name of any of the  images without 
+%the number or the file  extension. For example, if the file name  
+%is 'Experiment-0002_Position(8)_t021.tif' the root image file  name will be 'Experiment-0002_Position(8)_t'. ImageExtension - String 
+%variable specifying the image file extension including  the preceding dot. For example  
+%if the file name is 'image003.jpg' the image  extension is '.jpg'. StartFrame - 
+%Number specifying the first image in the sequence to  be analyzed. The minimum 
+% value for this variable depends on the numbering of  the image sequence 
+%so if  the first image in the sequence is 'image003.tif'  then the 
+%minimum value is 3. FrameCount - Number specifying how many images from  the 
+%image sequence should be processed. TimeFrame - Number specifying the time between consecutive  
 %images in minutes. FrameStep - Number specifying the step size when reading images. Set 
-%this variable to 1  to read every image in the sequence, 2 to 
-%read every other image and  so on. NumberFormat - String value specifying the 
-%number of digits in the image file names in  the sequence. For example 
-%if the image file name is 'image020.jpg' the value for  the NumberFormat is 
-%'%03d', while if the file name is 'image000020.jpg' the value should  be '%06d'. 
-%MaxFramesMissing - Number specifying for how many frames a cell may be disappear before 
-%its  track is ended. OutputFolder - The folder where the overlayed images and 
-%track data will be saved. By  default this value is set to a 
-%folder named 'output' within the folder where  the images to be analyzed are 
-%located. AncestryFolder - The folder where the overlayed images and ancestry data will be 
-%saved. By  default this value is set to a folder named 'ancestry' within 
-%the output folder. AncestrySpreadsheet - The path name to the spreadsheet containing the ancestry 
-%data. By default this  value is set to a file named 'ancestry.csv' within 
+% this variable to 1  to read every image in the sequence, 2 
+%to  read every other image and  so on. NumberFormat - String value 
+%specifying the  number of digits in the image file names in  the 
+%sequence. For example  if the image file name is 'image020.jpg' the value for 
+% the NumberFormat is  '%03d', while if the file name is 'image000020.jpg' the 
+%value should  be '%06d'.  MaxFramesMissing - Number specifying for how many frames 
+%a cell may be disappear before  its  track is ended. OutputFolder - 
+%The folder where the overlayed images and  track data will be saved. By 
+% default this value is set to a  folder named 'output' within the 
+%folder where  the images to be analyzed are  located. AncestryFolder - The 
+%folder where the overlayed images and ancestry data will be  saved. By  
+%default this value is set to a folder named 'ancestry' within  the output 
+%folder. AncestrySpreadsheet - The path name to the spreadsheet containing the ancestry  data. 
+%By default this  value is set to a file named 'ancestry.csv' within  
 %the ancestry folder. ShapesSpreadsheet - The path name to the spreadsheet containing the position 
-%and shape properties for  each cell in the timelapse sequence at every time 
-%point. By default this is  set to to a file named 'shapes.csv' within 
-%the ancestry folder. TracksFolder - The folder where the label matrixes containing the cell 
-%outlines are saved. By  default this value is set to a folder named 
-%'track' within the output folder. SegmentationFilesRoot - The root file name of the label 
-%matrixes containing the cell outlines. ImageFileBase - The path name to the images. This 
-%value is generated from the ImageFolder  and the ImageFilesRoot and should not be 
-%changed. MaxSearchRadius - Number specifying the absolute lower bound for the search radius to 
-%prevent selecting  too few candidate objects for a track. Used by assignCellToTrackUsingAll module. 
-%MinSearchRadius - Number specifying the absolute higher bound for the search radius to prevent 
-%selecting  too many candidate objects for a track. Used by assignCellToTrackUsingAll module. MinSecondDistance 
-%- Number specifying the minimum significant distance between the closest candidate object to a 
-% track and the second closest. Used to determine when distance should be used 
+% and shape properties for  each cell in the timelapse sequence at every 
+%time  point. By default this is  set to to a file named 
+%'shapes.csv' within  the ancestry folder. TracksFolder - The folder where the label matrixes 
+%containing the cell  outlines are saved. By  default this value is set 
+%to a folder named  'track' within the output folder. SegmentationFilesRoot - The root 
+%file name of the label  matrixes containing the cell outlines. ImageFileBase - The 
+%path name to the images. This  value is generated from the ImageFolder  
+%and the ImageFilesRoot and should not be  changed. MaxSearchRadius - Number specifying the 
+%absolute lower bound for the search radius to  prevent selecting  too few 
+%candidate objects for a track. Used by assignCellToTrackUsingAll module.  MinSearchRadius - Number specifying 
+%the absolute higher bound for the search radius to prevent  selecting  too 
+%many candidate objects for a track. Used by assignCellToTrackUsingAll module. MinSecondDistance  - Number 
+%specifying the minimum significant distance between the closest candidate object to a   
+%track and the second closest. Used to determine when distance should be used  
 %as  a ranking parameter. Used by assignCellToTrackUsingAll module. MaxDistRatio - Number specifying the 
-%maximum allowed distance ratio between the two nearest candidate objects.  If the ratio 
-%is higher than this value distance ranking will not be used.  Used by 
-%assignCellToTrackUsingAll module. MaxAngleDiff - Number specifying the maximum allowed angle difference between a track 
-%and a candidate  object. If the angle is larger than this value direction 
-%ranking will not be  used for this object. Used by assignCellToTrackUsingAll module. NrParamsForSureMatch 
-%- Number specifying the minimum number of closest matches between a candidate object parameters 
-% and a track's object parameters that make the candidate object a sure match 
-%to  the track. Used by assignCellToTrackUsingAll module. SearchRadiusPct - Number specifying the size 
-%of the neighborhood from which candidate objects for matching  the track are selected. 
-%It is a multiple of the distance to the nearest  candidate in the 
-%current frame. Setting this variable equal to 1 turns this module  into a 
-%nearest-neighbor algorithm (only the nearest cell can be a candidate). It does  not 
-%make sense to have a value lower than 1. Used by assignCellToTrackUsingAll module. MaxSplitArea 
+% maximum allowed distance ratio between the two nearest candidate objects.  If the 
+%ratio  is higher than this value distance ranking will not be used.  
+%Used by  assignCellToTrackUsingAll module. MaxAngleDiff - Number specifying the maximum allowed angle difference 
+%between a track  and a candidate  object. If the angle is larger 
+%than this value direction  ranking will not be  used for this object. 
+%Used by assignCellToTrackUsingAll module. NrParamsForSureMatch  - Number specifying the minimum number of closest 
+%matches between a candidate object parameters   and a track's object parameters that 
+%make the candidate object a sure match  to  the track. Used by 
+%assignCellToTrackUsingAll module. SearchRadiusPct - Number specifying the size  of the neighborhood from which 
+%candidate objects for matching  the track are selected.  It is a multiple 
+%of the distance to the nearest  candidate in the  current frame. Setting 
+%this variable equal to 1 turns this module  into a  nearest-neighbor algorithm 
+%(only the nearest cell can be a candidate). It does  not  make 
+%sense to have a value lower than 1. Used by assignCellToTrackUsingAll module. MaxSplitArea  
 %- Number specifying the maximum area a nucleus may be and still be considered 
-% as a part of a possible mitotic event. Used by detectMitoticEvents module. MaxSplitDistance 
-%- Number specifying the maximum distance a new nucleus may be from another nucleus 
-% and still be considered as part of a possible mitotic event. Used by 
-%detectMitoticEvents  module. MinSplitEccentricity - Number specifying the minimum eccentricity a new nucleus may 
-%have and still be  considered as part of a possible mitotic event. Used 
-%by detectMitoticEvents module. MaxSplitEccentricity - Number specifying the maximum eccentricity a new nucleus may 
-%have and still be  considered as part of a possible mitotic event. Used 
-%by detectMitoticEvents module. MinTimeForSplit - Number specifying the minimum time in minutes a track 
-%needs to exist before  it is considered for a possible mitotic event. Used 
-%by detectMitoticEvents module. MinLifespan - Number specifying the minimum length in frames a frame 
-%has to be to  not be removed by the removeShortTracks module. FrontParams - 
-%Numeric array specifying a set of column indices from the shape and motility  
-%parameters matrix. The parameters in those columns will be heavily weighted, and have more 
+%  as a part of a possible mitotic event. Used by detectMitoticEvents module. 
+%MaxSplitDistance  - Number specifying the maximum distance a new nucleus may be from 
+%another nucleus   and still be considered as part of a possible mitotic 
+%event. Used by  detectMitoticEvents  module. MinSplitEccentricity - Number specifying the minimum eccentricity 
+%a new nucleus may  have and still be  considered as part of 
+%a possible mitotic event. Used  by detectMitoticEvents module. MaxSplitEccentricity - Number specifying the 
+%maximum eccentricity a new nucleus may  have and still be  considered as 
+%part of a possible mitotic event. Used  by detectMitoticEvents module. MinTimeForSplit - Number 
+%specifying the minimum time in minutes a track  needs to exist before  
+%it is considered for a possible mitotic event. Used  by detectMitoticEvents module. MinLifespan 
+%- Number specifying the minimum length in frames a frame  has to be 
+%to  not be removed by the removeShortTracks module. FrontParams -  Numeric array 
+%specifying a set of column indices from the shape and motility   parameters 
+%matrix. The parameters in those columns will be heavily weighted, and have more  
 % influence in determining the best match for a track from a list of 
-%objects.  Used by assignCellToTrackUsingAll module. DefaultParamWeights - Numeric array specifying a set of 
-%weights that is assigned to each shape  and motility parameter based on its 
-%prediction power. Parameters with high prediction power are  assigned high weights and parameters 
-%with low prediction power are assigned lower weights. Used  by assignCellToTrackUsingAll module. DistanceRankingOrder 
-%- Numeric array specifying the default order of shape and motility parameters for slow 
-% moving objects when it cannot be determined based on prediction power. Used by 
-%assignCellToTrackUsingAll  module. DirectionRankingOrder - Numeric array specifying the default order of shape and 
-%motility parameters for fast  moving directional objects when it cannot be determined based 
-%on prediction power. Used by  assignCellToTrackUsingAll module. RelevantParametersIndex - Boolean array specifying column 
-%indexes in the shape and motility matrix that have  been determined to be 
-%irrelevant for tracking. This indicates to the module not to  use the parameters 
-%those columns in computing track assignment probabilities. The order of column  indexes is 
-%provided in TracksLayout variable. Used by assignCellToTrackUsingAll module. UnknownParamWeights - Numeric array specifying a 
+% objects.  Used by assignCellToTrackUsingAll module. DefaultParamWeights - Numeric array specifying a set 
+%of  weights that is assigned to each shape  and motility parameter based 
+%on its  prediction power. Parameters with high prediction power are  assigned high 
+%weights and parameters  with low prediction power are assigned lower weights. Used  
+%by assignCellToTrackUsingAll module. DistanceRankingOrder  - Numeric array specifying the default order of shape 
+%and motility parameters for slow   moving objects when it cannot be determined 
+%based on prediction power. Used by  assignCellToTrackUsingAll  module. DirectionRankingOrder - Numeric array 
+%specifying the default order of shape and  motility parameters for fast  moving 
+%directional objects when it cannot be determined based  on prediction power. Used by 
+% assignCellToTrackUsingAll module. RelevantParametersIndex - Boolean array specifying column  indexes in the shape 
+%and motility matrix that have  been determined to be  irrelevant for tracking. 
+%This indicates to the module not to  use the parameters  those columns 
+%in computing track assignment probabilities. The order of column  indexes is  provided 
+%in TracksLayout variable. Used by assignCellToTrackUsingAll module. UnknownParamWeights - Numeric array specifying a  
 %set of weights to be assigned to shape and  motility parameters when the 
-%prediction power of the parameters cannot be determined. Used by  assignCellToTrackUsingAll module. UnknownRankingOrder 
-%- Numeric array specifying the order of the shape and motility parameters when their 
-% predictive power cannot be determined. If the objects cannot be categorized as either 
-%slow-moving  or fast directional the parameter order provided in this variable is used. 
-%Used by  assignCellToTrackUsingAll module. Important Modules - assignCellToTrackUsingAll, detectMitoticEvents, splitTracks.
+% prediction power of the parameters cannot be determined. Used by  assignCellToTrackUsingAll module. 
+%UnknownRankingOrder  - Numeric array specifying the order of the shape and motility parameters 
+%when their   predictive power cannot be determined. If the objects cannot be 
+%categorized as either  slow-moving  or fast directional the parameter order provided in 
+%this variable is used.  Used by  assignCellToTrackUsingAll module. Important Modules - assignCellToTrackUsingAll, 
+%detectMitoticEvents, splitTracks.
 
 global functions_list;
 functions_list=[];
 %script variables
-ImageFolder='C:/peter/cropped';
-ImageFilesRoot='peter';
+ImageFolder='C:/sample movies/low density';
+ImageFilesRoot='low density sample';
 ImageExtension='.tif';
 StartFrame=1;
 FrameCount=10;

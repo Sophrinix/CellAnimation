@@ -1,50 +1,55 @@
 function []=assayFlCytoLNCapTracksReviewWG()
 %assayFlCytoLNCapTracksReviewWG - This assay is used to manually review the automatic tracks generated using a 
-%tracking assay.  ImageFolder - String variable that specifies the absolute location of the 
-%directory which contains the  time-lapse images. An example of such a string variable 
-%would be 'c:/sample images/high-density'. ImageFilesRoot - String variable specifying the root image file name. 
-%The root image file name  for a set of images is the image 
-%file name of any of the  images without the number or the file 
-%extension. For example, if the file name  is 'Experiment-0002_Position(8)_t021.tif' the root image file 
-%name will be 'Experiment-0002_Position(8)_t'. ImageExtension - String variable specifying the image file extension including 
-%the preceding dot. For example  if the file name is 'image003.jpg' the image 
-%extension is '.jpg'. StartFrame - Number specifying the first image in the sequence to 
-%be analyzed. The minimum  value for this variable depends on the numbering of 
-%the image sequence so if  the first image in the sequence is 'image003.tif' 
-%then the minimum value is 3. FrameCount - Number specifying how many images from 
-%the image sequence should be processed. TimeFrame - Number specifying the time between consecutive 
-%images in minutes. FrameStep - Number specifying the step size when reading images. Set 
-%this variable to 1  to read every image in the sequence, 2 to 
-%read every other image and  so on. NumberFormat - String value specifying the 
-%number of digits in the image file names in  the sequence. For example 
-%if the image file name is 'image020.jpg' the value for  the NumberFormat is 
-%'%03d', while if the file name is 'image000020.jpg' the value should  be '%06d'. 
-%MaxFramesMissing - Number specifying for how many frames a cell may be disappear before 
-%its  track is ended. OutputFolder - The folder where the overlayed images and 
-%track data will be saved. By  default this value is set to a 
-%folder named 'output' within the folder where  the images to be analyzed are 
-%located. AncestryFolder - The folder where the overlayed images and ancestry data will be 
-%saved. By  default this value is set to a folder named 'ancestry' within 
-%the output folder. AncestrySpreadsheet - The path name to the spreadsheet containing the ancestry 
-%data. By default this  value is set to a file named 'ancestry.csv' within 
-%the ancestry folder. ShapesSpreadsheet - The path name to the spreadsheet containing the position 
-%and shape properties for  each cell in the timelapse sequence at every time 
-%point. By default this is  set to to a file named 'shapes.csv' within 
-%the ancestry folder. TracksFolder - The folder where the label matrixes containing the cell 
-%outlines are saved. By  default this value is set to a folder named 
-%'track' within the output folder. SegmentationFilesRoot - The root file name of the label 
-%matrixes containing the cell outlines. ImageFileBase - The path name to the images. This 
-%value is generated from the ImageFolder  and the ImageFilesRoot and should not be 
-%changed. Important Modules - manualTrackingReview.
+%  tracking assay.  ImageFolder - String variable that specifies the absolute location 
+%of  the  directory which contains the  time-lapse images. An example of 
+%such a  string variable  would be 'c:/sample images/high-density'. ImageFilesRoot - String variable 
+%specifying the root  image file name.  The root image file name  
+%for a set of  images is the image  file name of any 
+%of the  images without  the number or the file  extension. For 
+%example, if the file name   is 'Experiment-0002_Position(8)_t021.tif' the root image file  
+%name will be 'Experiment-0002_Position(8)_t'. ImageExtension - String  variable specifying the image file extension 
+%including  the preceding dot. For example   if the file name is 
+%'image003.jpg' the image  extension is '.jpg'. StartFrame -  Number specifying the first 
+%image in the sequence to  be analyzed. The minimum   value for 
+%this variable depends on the numbering of  the image sequence  so if 
+% the first image in the sequence is 'image003.tif'  then the  minimum 
+%value is 3. FrameCount - Number specifying how many images from  the  
+%image sequence should be processed. TimeFrame - Number specifying the time between consecutive  
+% images in minutes. FrameStep - Number specifying the step size when reading images. 
+%Set   this variable to 1  to read every image in the 
+%sequence, 2  to  read every other image and  so on. NumberFormat 
+%- String value  specifying the  number of digits in the image file 
+%names in  the  sequence. For example  if the image file name 
+%is 'image020.jpg' the value for   the NumberFormat is  '%03d', while if 
+%the file name is 'image000020.jpg' the  value should  be '%06d'.  MaxFramesMissing 
+%- Number specifying for how many frames  a cell may be disappear before 
+% its  track is ended. OutputFolder -  The folder where the overlayed 
+%images and  track data will be saved. By   default this value 
+%is set to a  folder named 'output' within the  folder where  
+%the images to be analyzed are  located. AncestryFolder - The  folder where 
+%the overlayed images and ancestry data will be  saved. By   default 
+%this value is set to a folder named 'ancestry' within  the output  
+%folder. AncestrySpreadsheet - The path name to the spreadsheet containing the ancestry  data. 
+% By default this  value is set to a file named 'ancestry.csv' within 
+%  the ancestry folder. ShapesSpreadsheet - The path name to the spreadsheet containing 
+%the position   and shape properties for  each cell in the timelapse 
+%sequence at every  time  point. By default this is  set to 
+%to a file named  'shapes.csv' within  the ancestry folder. TracksFolder - The 
+%folder where the label matrixes  containing the cell  outlines are saved. By 
+% default this value is set  to a folder named  'track' within 
+%the output folder. SegmentationFilesRoot - The root  file name of the label  
+%matrixes containing the cell outlines. ImageFileBase - The  path name to the images. 
+%This  value is generated from the ImageFolder   and the ImageFilesRoot and 
+%should not be  changed. Important Modules - manualTrackingReview.
 
 global functions_list;
 functions_list=[];
 %script variables
-ImageFolder='C:/peter/cropped';
-ImageFilesRoot='peter';
+ImageFolder='C:/sample movies/low density';
+ImageFilesRoot='low density sample';
 ImageExtension='.tif';
 StartFrame=1;
-FrameCount=9;
+FrameCount=71;
 TimeFrame=15;
 FrameStep=1;
 NumberFormat='%06d';

@@ -412,10 +412,17 @@ function menuRunAssay_Callback(hObject, eventdata, handles)
 % hObject    handle to menuRunAssay (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
- cur_pointer=get(gcf,'Pointer');
- set(gcf,'Pointer','watch');
+ cur_pointer=get(handles.figure1,'Pointer');
+ set(handles.figure1,'Pointer','watch');
  drawnow();
  assay_cmd=handles.CurrentAssay(1:(end-2));
- run(assay_cmd);
- set(gcf,'Pointer',cur_pointer);
+ clear functions;
+ try
+     run(assay_cmd);
+ catch run_error
+     set(handles.figure1,'Pointer',cur_pointer);
+     rethrow(run_error);
+ end
+     
+ set(handles.figure1,'Pointer',cur_pointer);
 

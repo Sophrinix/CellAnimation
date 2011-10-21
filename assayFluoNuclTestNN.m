@@ -1,93 +1,98 @@
 function []=assayFluoNuclTestNN()
 %assayFluoNuclTestNN - This module is used to track cells that have been stained using a 
-%nuclear stain  using a nearest-neighbor algorithm. The assay tracks the cells, detects mitotic 
-%events and records  tracking data, cell shape parameters and ancestry information to spreadsheets. 
-%For each tracked image,  an overlayed image is saved to disk that displays 
-%the detected cell outlines, cell  IDs and cell generation. ImageFolder - String variable 
-%that specifies the absolute location of the directory which contains the  time-lapse images. 
-%An example of such a string variable would be 'c:/sample images/high-density'. ImageFilesRoot - String 
-%variable specifying the root image file name. The root image file name  for 
-%a set of images is the image file name of any of the  
-%images without the number or the file extension. For example, if the file name 
-% is 'Experiment-0002_Position(8)_t021.tif' the root image file name will be 'Experiment-0002_Position(8)_t'. ImageExtension - String 
-%variable specifying the image file extension including the preceding dot. For example  if 
-%the file name is 'image003.jpg' the image extension is '.jpg'. StartFrame - Number specifying 
-%the first image in the sequence to be analyzed. The minimum  value for 
+% nuclear stain  using a nearest-neighbor algorithm. The assay tracks the cells, detects 
+%mitotic  events and records  tracking data, cell shape parameters and ancestry information 
+%to spreadsheets.  For each tracked image,  an overlayed image is saved to 
+%disk that displays  the detected cell outlines, cell  IDs and cell generation. 
+%ImageFolder - String variable  that specifies the absolute location of the directory which 
+%contains the  time-lapse images.  An example of such a string variable would 
+%be 'c:/sample images/high-density'. ImageFilesRoot - String  variable specifying the root image file name. 
+%The root image file name  for  a set of images is the 
+%image file name of any of the   images without the number or 
+%the file extension. For example, if the file name   is 'Experiment-0002_Position(8)_t021.tif' the 
+%root image file name will be 'Experiment-0002_Position(8)_t'. ImageExtension - String  variable specifying the 
+%image file extension including the preceding dot. For example  if  the file 
+%name is 'image003.jpg' the image extension is '.jpg'. StartFrame - Number specifying  the 
+%first image in the sequence to be analyzed. The minimum  value for  
 %this variable depends on the numbering of the image sequence so if  the 
-%first image in the sequence is 'image003.tif' then the minimum value is 3. FrameCount 
-%- Number specifying how many images from the image sequence should be processed. TimeFrame 
-%- Number specifying the time between consecutive images in minutes. FrameStep - Number specifying 
-%the step size when reading images. Set this variable to 1  to read 
-%every image in the sequence, 2 to read every other image and  so 
-%on. NumberFormat - String value specifying the number of digits in the image file 
-%names in  the sequence. For example if the image file name is 'image020.jpg' 
-%the value for  the NumberFormat is '%03d', while if the file name is 
-%'image000020.jpg' the value should  be '%06d'. MaxFramesMissing - Number specifying for how many 
-%frames a cell may be disappear before its  track is ended. OutputFolder - 
-%The folder where the overlayed images and track data will be saved. By  
-%default this value is set to a folder named 'output' within the folder where 
-% the images to be analyzed are located. AncestryFolder - The folder where the 
+% first image in the sequence is 'image003.tif' then the minimum value is 3. 
+%FrameCount  - Number specifying how many images from the image sequence should be 
+%processed. TimeFrame  - Number specifying the time between consecutive images in minutes. FrameStep 
+%- Number specifying  the step size when reading images. Set this variable to 
+%1  to read  every image in the sequence, 2 to read every 
+%other image and  so  on. NumberFormat - String value specifying the number 
+%of digits in the image file  names in  the sequence. For example 
+%if the image file name is 'image020.jpg'  the value for  the NumberFormat 
+%is '%03d', while if the file name is  'image000020.jpg' the value should  
+%be '%06d'. MaxFramesMissing - Number specifying for how many  frames a cell may 
+%be disappear before its  track is ended. OutputFolder -  The folder where 
+%the overlayed images and track data will be saved. By   default this 
+%value is set to a folder named 'output' within the folder where   
+%the images to be analyzed are located. AncestryFolder - The folder where the  
 %overlayed images and ancestry data will be saved. By  default this value is 
-%set to a folder named 'ancestry' within the output folder. AncestrySpreadsheet - The path 
-%name to the spreadsheet containing the ancestry data. By default this  value is 
-%set to a file named 'ancestry.csv' within the ancestry folder. ShapesSpreadsheet - The path 
-%name to the spreadsheet containing the position and shape properties for  each cell 
-%in the timelapse sequence at every time point. By default this is  set 
-%to to a file named 'shapes.csv' within the ancestry folder. TracksFolder - The folder 
-%where the label matrixes containing the cell outlines are saved. By  default this 
-%value is set to a folder named 'track' within the output folder. SegmentationFilesRoot - 
-%The root file name of the label matrixes containing the cell outlines. ImageFileBase - 
-%The path name to the images. This value is generated from the ImageFolder  
-%and the ImageFilesRoot and should not be changed. BrightnessThresholdPct - Number specifying the percentage 
-%threshold value for the image generated by the generateBinImgUsingLocAvg  filter. Any pixel in 
-%the original image smaller than the threshold value times the  corresponding value in 
+% set to a folder named 'ancestry' within the output folder. AncestrySpreadsheet - The 
+%path  name to the spreadsheet containing the ancestry data. By default this  
+%value is  set to a file named 'ancestry.csv' within the ancestry folder. ShapesSpreadsheet 
+%- The path  name to the spreadsheet containing the position and shape properties 
+%for  each cell  in the timelapse sequence at every time point. By 
+%default this is  set  to to a file named 'shapes.csv' within the 
+%ancestry folder. TracksFolder - The folder  where the label matrixes containing the cell 
+%outlines are saved. By  default this  value is set to a folder 
+%named 'track' within the output folder. SegmentationFilesRoot -  The root file name of 
+%the label matrixes containing the cell outlines. ImageFileBase -  The path name to 
+%the images. This value is generated from the ImageFolder   and the ImageFilesRoot 
+%and should not be changed. BrightnessThresholdPct - Number specifying the percentage  threshold value 
+%for the image generated by the generateBinImgUsingLocAvg  filter. Any pixel in  the 
+%original image smaller than the threshold value times the  corresponding value in  
 %the local average image below this value will be set to  zero while 
-%the rest will be set to one. ObjectArea - Number specifying the threshold area 
-%for the areaFilterLabel, clearSmallObjects, segmentObjectsUsingClusters filters. Objects below  this value will be removed 
-%from the filtered image. Strel - String variable specifying the type of filter used 
-%to generate the local average  image in generateBinImgUsingLocAvg. Currently 'disk' is the only 
-%value supported. StrelSize - Number specifying the size of the local neighborhood used to 
-%calculate the average  for each pixel in the local average image generated by 
-%the generateBinImgUsingLocAvg module. ClearBorder - Boolean value specifying whether objects next to or touching 
-%the image border in  the binary images generated by the generateBinImgUsingGradient module will 
-%be erased (true) or not  (false). ClearBorderDist - Number specifying how close to 
-%the border objects may be and still be  erased if the ClearBorder parameter 
-%is set to true in the generateBinImgUsingGradient module. MedianFilterSize - Number specifying the size 
-%of the median filter used by the distanceWatershed module.  Setting this to a 
-%higher integer value will reduce the number of objects detected  by the module 
+% the rest will be set to one. ObjectArea - Number specifying the threshold 
+%area  for the areaFilterLabel, clearSmallObjects, segmentObjectsUsingClusters filters. Objects below  this value will 
+%be removed  from the filtered image. Strel - String variable specifying the type 
+%of filter used  to generate the local average  image in generateBinImgUsingLocAvg. Currently 
+%'disk' is the only  value supported. StrelSize - Number specifying the size of 
+%the local neighborhood used to  calculate the average  for each pixel in 
+%the local average image generated by  the generateBinImgUsingLocAvg module. ClearBorder - Boolean value 
+%specifying whether objects next to or touching  the image border in  the 
+%binary images generated by the generateBinImgUsingGradient module will  be erased (true) or not 
+% (false). ClearBorderDist - Number specifying how close to  the border objects may 
+%be and still be  erased if the ClearBorder parameter  is set to 
+%true in the generateBinImgUsingGradient module. MedianFilterSize - Number specifying the size  of the 
+%median filter used by the distanceWatershed module.  Setting this to a  higher 
+%integer value will reduce the number of objects detected  by the module  
 %and can be used to prevent oversegmentation. MinSolidity - Number specifying a threshold solidity 
-%value for the solidityFilterLabelObjects filter. Objects whose solidity  is below this value will 
-%be removed from the filtered image. MinAreaOverPerimeter - Number specifying a threshold AOP ratio 
-%value for the areaOverPerimeterFilterLabel filter. Objects with  an AOP ratio smaller than this 
-%value will be removed. ResizeImageScale - Number specifying by what ratio the images will 
-%be resized before they are  processed. By default this value is set to 
-%0.5. Used by the resizeImage module. ApproximationDistance - Number specifying how close the convex 
-%hull in the getConvexObjects module approximates the  object outline. By default this value 
-%is set to 2.5. Setting it to a  lower value will result in 
-%convex hulls that more closely resemble the object outlines  however this increases the 
-%chance of detecting insignificant concavities. MaxMergeDistance - Number specifying the maximum distance that one 
-%track may be from another track  for the duration and still be considered 
-%for possible merging with the other track.  Used by detectMergeCandidatesUsingDistance module. MaxSplitArea - 
-%Number specifying the maximum area a nucleus may be and still be considered  
+% value for the solidityFilterLabelObjects filter. Objects whose solidity  is below this value 
+%will  be removed from the filtered image. MinAreaOverPerimeter - Number specifying a threshold 
+%AOP ratio  value for the areaOverPerimeterFilterLabel filter. Objects with  an AOP ratio 
+%smaller than this  value will be removed. ResizeImageScale - Number specifying by what 
+%ratio the images will  be resized before they are  processed. By default 
+%this value is set to  0.5. Used by the resizeImage module. ApproximationDistance - 
+%Number specifying how close the convex  hull in the getConvexObjects module approximates the 
+% object outline. By default this value  is set to 2.5. Setting it 
+%to a  lower value will result in  convex hulls that more closely 
+%resemble the object outlines  however this increases the  chance of detecting insignificant 
+%concavities. MaxMergeDistance - Number specifying the maximum distance that one  track may be 
+%from another track  for the duration and still be considered  for possible 
+%merging with the other track.  Used by detectMergeCandidatesUsingDistance module. MaxSplitArea -  Number 
+%specifying the maximum area a nucleus may be and still be considered   
 %as a part of a possible mitotic event. Used by detectMitoticEvents module. MaxSplitDistance - 
-%Number specifying the maximum distance a new nucleus may be from another nucleus  
-%and still be considered as part of a possible mitotic event. Used by detectMitoticEvents 
-% module. MinSplitEccentricity - Number specifying the minimum eccentricity a new nucleus may have 
-%and still be  considered as part of a possible mitotic event. Used by 
-%detectMitoticEvents module. MaxSplitEccentricity - Number specifying the maximum eccentricity a new nucleus may have 
-%and still be  considered as part of a possible mitotic event. Used by 
-%detectMitoticEvents module. MinTimeForSplit - Number specifying the minimum time in minutes a track needs 
-%to exist before  it is considered for a possible mitotic event. Used by 
-%detectMitoticEvents module. MinLifespan - Number specifying the minimum length in frames a frame has 
-%to be to  not be removed by the removeShortTracks module. Important Modules - 
-% areaFilterLabel, areaOverPerimeterFilterLabel, assignCellToTrackUsingNN, clearSmallObjects, detectMergeCandidatesUsingDistance, detectMitoticEvents, distanceWatershed, generateBinImgUsingLocAvg, getConvexObjects, polygonalAssistedWatershed, removeShortTracks, segmentObjectsUsingMarkers, solidityFilterLabel, 
-%splitTracks.
+% Number specifying the maximum distance a new nucleus may be from another nucleus 
+%  and still be considered as part of a possible mitotic event. Used 
+%by detectMitoticEvents   module. MinSplitEccentricity - Number specifying the minimum eccentricity a new 
+%nucleus may have  and still be  considered as part of a possible 
+%mitotic event. Used by  detectMitoticEvents module. MaxSplitEccentricity - Number specifying the maximum eccentricity 
+%a new nucleus may have  and still be  considered as part of 
+%a possible mitotic event. Used by  detectMitoticEvents module. MinTimeForSplit - Number specifying the 
+%minimum time in minutes a track needs  to exist before  it is 
+%considered for a possible mitotic event. Used by  detectMitoticEvents module. MinLifespan - Number 
+%specifying the minimum length in frames a frame has  to be to  
+%not be removed by the removeShortTracks module. Important Modules -   areaFilterLabel, areaOverPerimeterFilterLabel, 
+%assignCellToTrackUsingNN, clearSmallObjects, detectMergeCandidatesUsingDistance, detectMitoticEvents, distanceWatershed, generateBinImgUsingLocAvg, getConvexObjects, polygonalAssistedWatershed, removeShortTracks, segmentObjectsUsingMarkers, solidityFilterLabel,  splitTracks.
 
 global functions_list;
 functions_list=[];
 %script variables
-ImageFolder='C:/peter/cropped';
-ImageFilesRoot='peter';
+ImageFolder='C:/sample movies/low density';
+ImageFilesRoot='low density sample';
 ImageExtension='.tif';
 StartFrame=1;
 FrameCount=10;

@@ -1,0 +1,33 @@
+%script variables
+ImageFolder='C:/kam/H929_No_Position(8)';
+ImageFilesRoot='Experiment-0002_Position(8)_t';
+ImageExtension='.jpg';
+StartFrame=1;
+FrameCount=10;
+TimeFrame=15;
+FrameStep=1;
+NumberFormat='%03d';
+MaxFramesMissing=0;
+OutputFolder=[ImageFolder '/output'];
+AncestryFolder=[OutputFolder '/ancestry'];
+AncestrySpreadsheet=[AncestryFolder 'ancestry.csv'];
+ShapesSpreadsheet=[AncestryFolder 'shapes.csv'];
+TracksFolder=[OutputFolder '/track'];
+SegmentationFilesRoot=[TracksFolder '/grayscale'];
+ImageFileBase=[ImageFolder '/' ImageFilesRoot];
+GradientThreshold=1500;
+ObjectArea=200;
+ObjectReduce=1;
+ClusterDist=21.5;
+ClearBorder=true;
+ClearBorderDist=2;
+ResizeImageScale=0.5;
+ApproximationDistance=2.5;
+MaxMergeDistance=23;
+MaxSplitArea=400;
+MaxSplitDistance=45;
+MinSplitEccentricity=0.5;
+MaxSplitEccentricity=0.95;
+MinTimeForSplit=900;
+MinLifespan=30;
+%end script variables
