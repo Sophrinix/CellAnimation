@@ -1,11 +1,12 @@
-directory		= getenv('DIRECTORY');
-wellName		= getenv('WELLNAME');
-imageNameBase 	= getenv('IMAGENAMEBASE');
-fileExt			= getenv('FILEEXT');
-digitsForEnum	= str2num(getenv('DIGITSFORENUM'));
-startIndex		= str2num(getenv('STARTINDEX'));
-endIndex		= str2num(getenv('ENDINDEX'));
-frameStep		= str2num(getenv('FRAMESTEP'));
+directory		= '~/Work/Images';
+wellName		= 'Well F05';
+imageNameBase 	= 'DsRed - Confocal - n';
+fileExt			= '.tif';
+digitsForEnum	= 6;
+startIndex		= 0;
+endIndex		= 25;
+frameStep		= 4;
+
 
 for(imNum=startIndex:endIndex)
 	imNumStr = sprintf('%%0%dd', digitsForEnum);
@@ -28,7 +29,7 @@ for(imNum=startIndex:endIndex)
 						wellName filesep ...
 						'output' filesep ...
 						imageNameBase imNumStr '.csv']);
-	
+
 	save([	directory filesep ...
 			wellName filesep ...
 			'output' filesep ...
@@ -37,7 +38,5 @@ for(imNum=startIndex:endIndex)
 	clear objSet;
 	clear imNumStr;
 	clear im;
-	clear underSegObjs;
+	clear underSegObj;
 end
-
-exit;

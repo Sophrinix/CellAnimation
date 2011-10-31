@@ -1,28 +1,25 @@
-directory		= getenv('DIRECTORY');
-wellName		= getenv('WELLNAME');
-imageNameBase 	= getenv('IMAGENAMEBASE');
-fileExt			= getenv('FILEEXT');
-digitsForEnum	= str2num(getenv('DIGITSFORENUM'));
-startIndex		= str2num(getenv('STARTINDEX'));
-endIndex		= str2num(getenv('ENDINDEX'));
-frameStep		= str2num(getenv('FRAMESTEP'));
+directory		= '~/Work/Images';
+wellName		= 'Well F05';
+imageNameBase 	= 'DsRed - Confocal - n';
+fileExt			= '.tif';
+digitsForEnum	= 6;
+startIndex		= 0;
+endIndex		= 25;
+frameStep		= 4;
 
 mkdir([directory filesep wellName filesep 'output']);
 
 %export each object set as a csv file for interfacing with R
 for(imNum=startIndex:endIndex)
-  
 	imNumStr = sprintf('%%0%dd', digitsForEnum);
-  	imNumStr = sprintf(imNumStr, imNum * frameStep);
-  	%load image 
-  	[im, objSet.wellName, objSet.imageName] = ...
-    	LoadImage([	directory filesep ...
+	imNumStr = sprintf(imNumStr, imNum * framestep)
+
+	[im, objSet.wellName, objSet.imageName] = ...
+		LoadImage([	directory filesep ...
 					wellName filesep ...
 					imageNameBase imNumStr fileExt]);
 
-	%segment
 	[objSet.props, objSet.labels] = NaiveSegment(im);
-
 
 	SetToCSV(objSet, [	directory filesep ...
 						wellName filesep ...
@@ -35,8 +32,6 @@ for(imNum=startIndex:endIndex)
 			imageNameBase imNumStr '.mat'], 'objSet');
 
 	clear objSet;
-	clear im;
 	clear imNumStr;
+	clear im;
 end
-
-exit;
