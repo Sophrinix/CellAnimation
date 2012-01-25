@@ -1,8 +1,12 @@
 function output_args=imageErode(input_args)
-%module shell for the Matlab imerode(im,se) function
+%simple wrapper for the Matlab imerode(im,se) function
+%Input Structure Members
+%Image - The grayscale image to be processed.
+%Output Structure Members
+%Image - The filtered image.
 img=input_args.Image.Value;
 se=input_args.StructuralElement.Value;
-output_args.ErodedImage=imerode(img,se);
+output_args.Image=imerode(img,se);
 
 %end imageErode
 end

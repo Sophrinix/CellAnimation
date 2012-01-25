@@ -35,8 +35,14 @@ status_text=[status_text 'Perimeter: ' num2str(cell_per,num_fmt) ' \n'];
 cell_sol=cell_track_record(tracks_layout.SolCol);
 status_text=[status_text 'Solidity: ' num2str(cell_sol,num_fmt) ' \n'];
 status_text=sprintf(status_text);
-cell_speed=mtr_gui_struct.CurrentSpeed;
-status_text=[status_text 'Speed: ' num2str(cell_speed,num_fmt) ' \n'];
+cur_speed=mtr_gui_struct.CurrentSpeed;
+status_text=[status_text 'Current Speed: ' num2str(cur_speed,num_fmt) ' \n'];
+cell_speeds=mtr_gui_struct.CellSpeeds;
+overall_speed=cell_speeds(cell_speeds(:,1)==cell_id,2);
+%remove the start point where we have zero speed
+overall_speed(1)=[];
+mean_cell_speed=mean(overall_speed);
+status_text=[status_text 'Mean Speed: ' num2str(mean_cell_speed,num_fmt) ' \n'];
 status_text=sprintf(status_text);
 cell_sq_disp=mtr_gui_struct.CurrentSquareDisplacement;
 status_text=[status_text 'Square Displacement: ' num2str(cell_sq_disp,num_fmt) ' \n'];

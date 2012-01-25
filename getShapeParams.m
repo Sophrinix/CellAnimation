@@ -1,32 +1,11 @@
 function output_args=getShapeParams(input_args)
-%Usage
-%This module is used to extract the shape parameters (Area,Eccentricity,etc.) of objects in a label
-%matrix. Mostly, a wrapper for the MATLAB regionprops function. Adds a blob id to the output so
-%that objects that belong to the same blob may be identified at a later time.
-%
-%Input Structure Members
-%LabelMatrix â€“ The label matrix from which the shape parameters will be extracted.
-%
-%Output Structure Members
-%Centroids â€“ The centroids of the objects in the label matrix.
-%ShapeParameters â€“ The shape parameters of the objects in the label matrix.
-%
-%Example
-%
-%get_shape_params_function.InstanceName='GetShapeParameters';
-%get_shape_params_function.FunctionHandle=@getShapeParams;
-%get_shape_params_function.FunctionArgs.LabelMatrix.FunctionInstance='IfIsEmpt
-%yPreviousCellsLabel';
-%get_shape_params_function.FunctionArgs.LabelMatrix.InputArg='CellsLabel';
-%if_is_empty_cells_label_functions=addToFunctionChain(if_is_empty_cells_label_
-%functions,get_shape_params_function);
-%
-%â€¦
-%
-%start_tracks_function.FunctionArgs.ShapeParameters.FunctionInstance='GetShape
-%Parameters';
-%start_tracks_function.FunctionArgs.ShapeParameters.OutputArg='ShapeParameters
-%';
+% Usage
+% This module is used to extract the shape parameters (Area, Eccentricity, etc.) of objects in a label matrix.  Mostly, a wrapper for the MATLAB regionprops function. Adds a blob id to the output so that objects that belong to the same blob may be identified at a later time.
+% Input Structure Members
+% LabelMatrix – The label matrix from which the shape parameters will be extracted.
+% Output Structure Members
+% Centroids – The centroids of the objects in the label matrix.
+% ShapeParameters – The shape parameters of the objects in the label matrix.
 
 cells_lbl=input_args.LabelMatrix.Value;
 cells_props=regionprops(cells_lbl,'Centroid','Area','Eccentricity','MajorAxisLength','MinorAxisLength',...

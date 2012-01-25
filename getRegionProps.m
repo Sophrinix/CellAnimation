@@ -1,6 +1,12 @@
 function output_args=getRegionProps(input_args)
 %module to return the region properties of the objects in a
 %label matrix. a particular wrapper to regionprops.
+%Input Structure Members
+%LabelMatrix - Label matrix from which the object properties will be
+%extracted
+%Output Structure Members
+%RegionProps - Matrix containing the object properties extracted from the
+%label matrix.
 cells_lbl=input_args.LabelMatrix.Value;
 cells_props=regionprops(cells_lbl,'Centroid','Area','Eccentricity','MajorAxisLength','MinorAxisLength',...
     'Orientation','Perimeter','Solidity');

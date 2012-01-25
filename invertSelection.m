@@ -1,5 +1,6 @@
 function invertSelection()
-
+%helper function for manual segmentation review GUI. used to select the
+%objects not currently selected
 global msr_gui_struct;
 
 switch (msr_gui_struct.CurrentAction)

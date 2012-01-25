@@ -1,188 +1,145 @@
-function []=assayFlCytoLNCapTracksReviewWG(well_folder)
-%Usage
-%This assay is used to manually review the automatic tracks generated using a tracking assay.
-%
-%Important Parameters
-%well_folder – String that specifies the absolute location of the directory which contains
-%the time-lapse images. Needs to be specified every time the assay is run. For example,
-%assayBrightFieldCytoTestNN(‘c:\test_movie’).
-%TrackStruct.DS – The directory separator to be used (‘\’ for Windows, ‘/’ for Linux/Unix).
-%TrackStruct.FrameCount – The number of frames to track.
-%TrackStruct.ImgExt – String indicating the image file extension. Usually, “.jpg” or “.tif”.
-%TrackStruct.ImageFileName – The root file name of the images in the sequence. For
-%example, if the image names in the time-lapse sequence are “Experiment-0002_Position(8)
-%_t001.jpg”,”Experiment-0002_Position(8)_t002.jpg”, etc., the root image file name
-%is “Experiment-0002_Position(8)_t”.
-%TrackStruct.NumberFormat – The number format of the counter in the image file name. For
-%example '%03d' for an image file name containing 3 digits such as “image001.jpg”, '%04d' for an
-%image containing 4 digits such as “image0001.jpg”, etc.
-%TrackStruct.StartFrame – Integer indicating at which frame the tracking should start.
-%TrackStruct.TimeFrame – The time frame between consecutive images.
-%Other important parameters are those listed in the module section for the important modules
-%listed below.
-%
-%Important Modules
-%manualTrackingReview.
+function []=assayFlCytoLNCapTracksReviewWG()
+%assayFlCytoLNCapTracksReviewWG - This assay is used to manually review the automatic tracks generated using a 
+%  tracking assay.  ImageFolder - String variable that specifies the absolute location 
+%of  the  directory which contains the  time-lapse images. An example of 
+%such a  string variable  would be 'c:/sample images/high-density'. ImageFilesRoot - String variable 
+%specifying the root  image file name.  The root image file name  
+%for a set of  images is the image  file name of any 
+%of the  images without  the number or the file  extension. For 
+%example, if the file name   is 'Experiment-0002_Position(8)_t021.tif' the root image file  
+%name will be 'Experiment-0002_Position(8)_t'. ImageExtension - String  variable specifying the image file extension 
+%including  the preceding dot. For example   if the file name is 
+%'image003.jpg' the image  extension is '.jpg'. StartFrame -  Number specifying the first 
+%image in the sequence to  be analyzed. The minimum   value for 
+%this variable depends on the numbering of  the image sequence  so if 
+% the first image in the sequence is 'image003.tif'  then the  minimum 
+%value is 3. FrameCount - Number specifying how many images from  the  
+%image sequence should be processed. TimeFrame - Number specifying the time between consecutive  
+% images in minutes. FrameStep - Number specifying the step size when reading images. 
+%Set   this variable to 1  to read every image in the 
+%sequence, 2  to  read every other image and  so on. NumberFormat 
+%- String value  specifying the  number of digits in the image file 
+%names in  the  sequence. For example  if the image file name 
+%is 'image020.jpg' the value for   the NumberFormat is  '%03d', while if 
+%the file name is 'image000020.jpg' the  value should  be '%06d'.  MaxFramesMissing 
+%- Number specifying for how many frames  a cell may be disappear before 
+% its  track is ended. OutputFolder -  The folder where the overlayed 
+%images and  track data will be saved. By   default this value 
+%is set to a  folder named 'output' within the  folder where  
+%the images to be analyzed are  located. AncestryFolder - The  folder where 
+%the overlayed images and ancestry data will be  saved. By   default 
+%this value is set to a folder named 'ancestry' within  the output  
+%folder. AncestrySpreadsheet - The path name to the spreadsheet containing the ancestry  data. 
+% By default this  value is set to a file named 'ancestry.csv' within 
+%  the ancestry folder. ShapesSpreadsheet - The path name to the spreadsheet containing 
+%the position   and shape properties for  each cell in the timelapse 
+%sequence at every  time  point. By default this is  set to 
+%to a file named  'shapes.csv' within  the ancestry folder. TracksFolder - The 
+%folder where the label matrixes  containing the cell  outlines are saved. By 
+% default this value is set  to a folder named  'track' within 
+%the output folder. SegmentationFilesRoot - The root  file name of the label  
+%matrixes containing the cell outlines. ImageFileBase - The  path name to the images. 
+%This  value is generated from the ImageFolder   and the ImageFilesRoot and 
+%should not be  changed. Important Modules - manualTrackingReview.
 
-TrackStruct=[];
-TrackStruct.ImgExt='.tif';
-ds='\'  %directory symbol
-TrackStruct.DS=ds;
-root_folder='i:\walter';
-TrackStruct.ImageFileName='Cell Tracker Green - Confocal - n';
-%low hepsin expressing - not really wildtype
-TrackStruct.ImageFileBase=[well_folder ds TrackStruct.ImageFileName];
-%hepsin overexpressing
-% TrackStruct.ImageFileBase=[well_folder ds 'llh_hep_lm7_t'];
-TrackStruct.StartFrame=31;
-TrackStruct.FrameCount=29;
-TrackStruct.TimeFrame=8; %minutes
-TrackStruct.FrameStep=1; %read every x frames
-TrackStruct.NumberFormat='%06d';
-TrackStruct.MaxFramesMissing=6; %how many frames a cell can disappear before we end its track
-TrackStruct.FrontParams=[];
 global functions_list;
+functions_list=[];
+%script variables
+ImageFolder='C:/sample movies/low density';
+ImageFilesRoot='low density sample';
+ImageExtension='.tif';
+StartFrame=1;
+FrameCount=71;
+TimeFrame=15;
+FrameStep=1;
+NumberFormat='%06d';
+MaxFramesMissing=6;
+OutputFolder=[ImageFolder '/output'];
+AncestryFolder=[OutputFolder '/ancestry'];
+AncestrySpreadsheet=[AncestryFolder 'ancestry.csv'];
+ShapesSpreadsheet=[AncestryFolder 'shapes.csv'];
+TracksFolder=[OutputFolder '/track'];
+SegmentationFilesRoot=[TracksFolder '/grayscale'];
+ImageFileBase=[ImageFolder '/' ImageFilesRoot];
+%end script variables
 
 
-name_idx=find(well_folder==ds,2,'last');
-%generate a unique well name
-well_name=well_folder((name_idx(1)+1):end);
-well_name(name_idx(2)-name_idx(1))=[];
-well_name(well_name==' ')=[];
-TrackStruct.OutputFolder=[root_folder ds 'output' ds well_name];
-track_dir=[TrackStruct.OutputFolder ds 'track'];
-TrackStruct.TrackDir=track_dir;
-mkdir(track_dir);
-TrackStruct.SegFileRoot=[track_dir ds 'grayscale'];
-TrackStruct.ShapesFile=[track_dir ds 'shapes.mat'];
-TrackStruct.RankFile=[track_dir ds 'ranks.mat'];
-prol_dir=[TrackStruct.OutputFolder ds 'proliferation'];
-TrackStruct.ProlDir=prol_dir;
-mkdir(prol_dir);
-TrackStruct.ProlFileRoot=[prol_dir ds 'prol'];
-xls_folder=[root_folder ds 'spreadsheets'];
-mkdir(xls_folder);
-TrackStruct.ProlXlsFile=[xls_folder ds well_name '.csv'];
-TrackStruct.ShapesXlsFile=[xls_folder ds well_name '_shapes.csv'];
-TrackStruct.NegligibleDistance=30; %distance below which distance ranking becomes unreliable
-TrackStruct.NrParamsForSureMatch=6; %nr of params that need to match between a previous cell and an unidentified cell for a sure match
-TrackStruct.MinPctDiff=0.1; %minimum significant difference bet two parameters (0-1)
-TrackStruct.MinSecondDistance=5; % minimum distance the second cell has to be from the first to pick distance as most significant
-TrackStruct.MaxAngleDiff=0.35; % radians - max difference between previous and current direction at which direction may still be most significant
-TrackStruct.MaxDistRatio=0.6; %how close the first cell may be from the second cell and stiil have distance be most significant
+loadtrackslayout.InstanceName='LoadTracksLayout';
+loadtrackslayout.FunctionHandle=@loadTracksLayout;
+loadtrackslayout.FunctionArgs.FileName.Value='tracks_layout.mat';
+functions_list=addToFunctionChain(functions_list,loadtrackslayout);
 
-TrackStruct.UnknownRankingOrder=[1 2 3 4 5 6 7 8 9];
-TrackStruct.DistanceRankingOrder=[1 3 4 5 6 7 8 9 2];
-TrackStruct.DirectionRankingOrder=[2 3 4 5 6 7 8 9 1];
-TrackStruct.DefaultParamWeights=[34 21 13 8 5 3 2 2 2];
-TrackStruct.UnknownParamWeights=[5 3 1 1 1 1 1 1 1];
-%tracks grid layout
-tracks_layout.TrackIDCol=1;
-tracks_layout.TimeCol=2;
-tracks_layout.Centroid1Col=3;
-tracks_layout.Centroid2Col=4;
-%always start shape params after centroid2col
-tracks_layout.AreaCol=5; %area 3 gp
-tracks_layout.EccCol=6; %eccentricity 4 bp
-tracks_layout.MalCol=7; %major axis length 5 gp
-tracks_layout.MilCol=8; %minor axis length 6 gp
-tracks_layout.OriCol=9; %orientation 7
-tracks_layout.PerCol=10; %perimeter 8
-tracks_layout.SolCol=11; %solidity 9 bp
-tracks_layout.BlobIDCol=12; %pixel blob id - used to get rid of oversegmentation
-tracks_layout.MatchGroupIDCol=13; %matching group id - to determine which parameters to use when matching
-TrackStruct.TracksLayout=tracks_layout;
+loadtracks.InstanceName='LoadTracks';
+loadtracks.FunctionHandle=@loadTracks;
+loadtracks.FunctionArgs.FileName.Value=[AncestryFolder '/tracks.mat'];
+functions_list=addToFunctionChain(functions_list,loadtracks);
 
-%ancestry grid layout
-ancestry_layout.TrackIDCol=1;
-ancestry_layout.ParentIDCol=2;
-ancestry_layout.GenerationCol=3;
-ancestry_layout.StartTimeCol=4;
-ancestry_layout.StopTimeCol=5;
-TrackStruct.AncestryLayout=ancestry_layout;
+loadancestry.InstanceName='LoadAncestry';
+loadancestry.FunctionHandle=@loadAncestry;
+loadancestry.FunctionArgs.FileName.Value=[AncestryFolder '/ancestry.mat'];
+functions_list=addToFunctionChain(functions_list,loadancestry);
 
-%TrackStruct.SearchRadius=40; automatically determined right now
-% TrackStruct.SearchRadius=20;
-TrackStruct.Channel='';
-TrackStruct.MinCytoArea=30;
-TrackStruct.MinNuclArea=30;
-TrackStruct.bContourLink=false;
-TrackStruct.LinkDist=1;
-TrackStruct.ObjectReduce=1;
-TrackStruct.ClusterDist=7.5;
-TrackStruct.bClearBorder=false;
-TrackStruct.ApproxDist=2.4;
-TrackStruct.ClearBorderDist=0;
-TrackStruct.WatershedMed=2;
-TrackStruct.MaxMergeDist=23;
-TrackStruct.MaxSplitDist=45;
-TrackStruct.MaxSplitArea=400;
-TrackStruct.MinSplitEcc=0.5;
-TrackStruct.MaxSplitEcc=0.95;
-TrackStruct.MinTimeForSplit=900; %minutes
+loadcolormap.InstanceName='LoadColormap';
+loadcolormap.FunctionHandle=@loadColormap;
+loadcolormap.FunctionArgs.FileName.Value='colormap_lines';
+functions_list=addToFunctionChain(functions_list,loadcolormap);
 
+loadancestrylayout.InstanceName='LoadAncestryLayout';
+loadancestrylayout.FunctionHandle=@loadAncestryLayout;
+loadancestrylayout.FunctionArgs.FileName.Value='ancestry_layout.mat';
+functions_list=addToFunctionChain(functions_list,loadancestrylayout);
 
-load_tracks_function.InstanceName='LoadTracks';
-load_tracks_function.FunctionHandle=@loadMatFile;
-load_tracks_function.FunctionArgs.MatFileName.Value=[TrackStruct.ProlDir ds 'tracks.mat'];
+manualtracksreview.InstanceName='ManualTracksReview';
+manualtracksreview.FunctionHandle=@manualTrackingReview;
+manualtracksreview.FunctionArgs.ImageFileBase.Value=ImageFileBase;
+manualtracksreview.FunctionArgs.NumberFormat.Value=NumberFormat;
+manualtracksreview.FunctionArgs.ImgExt.Value=ImageExtension;
+manualtracksreview.FunctionArgs.TimeFrame.Value=TimeFrame;
+manualtracksreview.FunctionArgs.TimeCol.Value=2;
+manualtracksreview.FunctionArgs.TrackIDCol.Value=1;
+manualtracksreview.FunctionArgs.MaxMissingFrames.Value=MaxFramesMissing;
+manualtracksreview.FunctionArgs.FrameStep.Value=FrameStep;
+manualtracksreview.FunctionArgs.SegFileRoot.Value=SegmentationFilesRoot;
+manualtracksreview.FunctionArgs.FrameCount.Value=FrameCount;
+manualtracksreview.FunctionArgs.StartFrame.Value=StartFrame;
+manualtracksreview.FunctionArgs.Tracks.FunctionInstance='LoadTracks';
+manualtracksreview.FunctionArgs.Tracks.OutputArg='Tracks';
+manualtracksreview.FunctionArgs.CellsAncestry.FunctionInstance='LoadAncestry';
+manualtracksreview.FunctionArgs.CellsAncestry.OutputArg='Ancestry';
+manualtracksreview.FunctionArgs.ColorMap.FunctionInstance='LoadColormap';
+manualtracksreview.FunctionArgs.ColorMap.OutputArg='Colormap';
+manualtracksreview.FunctionArgs.TracksLayout.FunctionInstance='LoadTracksLayout';
+manualtracksreview.FunctionArgs.TracksLayout.OutputArg='TracksLayout';
+manualtracksreview.FunctionArgs.AncestryLayout.FunctionInstance='LoadAncestryLayout';
+manualtracksreview.FunctionArgs.AncestryLayout.OutputArg='AncestryLayout';
+functions_list=addToFunctionChain(functions_list,manualtracksreview);
 
-load_ancestry_function.InstanceName='LoadAncestry';
-load_ancestry_function.FunctionHandle=@loadMatFile;
-load_ancestry_function.FunctionArgs.MatFileName.Value=[TrackStruct.ProlDir ds 'ancestry.mat'];
+saveupdatedtracks.InstanceName='SaveUpdatedTracks';
+saveupdatedtracks.FunctionHandle=@saveTracks;
+saveupdatedtracks.FunctionArgs.TracksFileName.Value=[AncestryFolder '/tracks.mat'];
+saveupdatedtracks.FunctionArgs.Tracks.FunctionInstance='ManualTracksReview';
+saveupdatedtracks.FunctionArgs.Tracks.OutputArg='Tracks';
+functions_list=addToFunctionChain(functions_list,saveupdatedtracks);
 
-load_colormap_function.InstanceName='LoadColormap';
-load_colormap_function.FunctionHandle=@loadMatFile;
-load_colormap_function.FunctionArgs.MatFileName.Value='colormap_lines';
+saveancestry.InstanceName='SaveAncestry';
+saveancestry.FunctionHandle=@saveAncestry;
+saveancestry.FunctionArgs.AncestryFileName.Value=[AncestryFolder '/ancestry.mat'];
+saveancestry.FunctionArgs.CellsAncestry.FunctionInstance='ManualTracksReview';
+saveancestry.FunctionArgs.CellsAncestry.OutputArg='CellsAncestry';
+functions_list=addToFunctionChain(functions_list,saveancestry);
 
-manual_tracks_review_function.InstanceName='ManualTracksReview';
-manual_tracks_review_function.FunctionHandle=@manualTrackingReview;
-manual_tracks_review_function.FunctionArgs.Tracks.FunctionInstance='LoadTracks';
-manual_tracks_review_function.FunctionArgs.Tracks.OutputArg='tracks';
-manual_tracks_review_function.FunctionArgs.CellsAncestry.FunctionInstance='LoadAncestry';
-manual_tracks_review_function.FunctionArgs.CellsAncestry.OutputArg='cells_ancestry';
-manual_tracks_review_function.FunctionArgs.ColorMap.FunctionInstance='LoadColormap';
-manual_tracks_review_function.FunctionArgs.ColorMap.OutputArg='cmap';
-manual_tracks_review_function.FunctionArgs.ImageFileBase.Value=TrackStruct.ImageFileBase;
-manual_tracks_review_function.FunctionArgs.NumberFormat.Value=TrackStruct.NumberFormat;
-manual_tracks_review_function.FunctionArgs.ImgExt.Value=TrackStruct.ImgExt;
-manual_tracks_review_function.FunctionArgs.TimeFrame.Value=TrackStruct.TimeFrame;
-manual_tracks_review_function.FunctionArgs.TimeCol.Value=tracks_layout.TimeCol;
-manual_tracks_review_function.FunctionArgs.TrackIDCol.Value=tracks_layout.TrackIDCol;
-manual_tracks_review_function.FunctionArgs.MaxMissingFrames.Value=TrackStruct.MaxFramesMissing;
-manual_tracks_review_function.FunctionArgs.FrameStep.Value=TrackStruct.FrameStep;
-manual_tracks_review_function.FunctionArgs.TracksLayout.Value=tracks_layout;
-manual_tracks_review_function.FunctionArgs.SegFileRoot.Value=TrackStruct.SegFileRoot;
-manual_tracks_review_function.FunctionArgs.AncestryLayout.Value=ancestry_layout;
-manual_tracks_review_function.FunctionArgs.FrameCount.Value=TrackStruct.FrameCount;
-manual_tracks_review_function.FunctionArgs.StartFrame.Value=TrackStruct.StartFrame;
+saveancestryspreadsheets.InstanceName='SaveAncestrySpreadsheets';
+saveancestryspreadsheets.FunctionHandle=@saveAncestrySpreadsheets;
+saveancestryspreadsheets.FunctionArgs.ShapesXlsFile.Value=ShapesSpreadsheet;
+saveancestryspreadsheets.FunctionArgs.ProlXlsFile.Value=AncestrySpreadsheet;
+saveancestryspreadsheets.FunctionArgs.Tracks.FunctionInstance='ManualTracksReview';
+saveancestryspreadsheets.FunctionArgs.Tracks.OutputArg='Tracks';
+saveancestryspreadsheets.FunctionArgs.CellsAncestry.FunctionInstance='ManualTracksReview';
+saveancestryspreadsheets.FunctionArgs.CellsAncestry.OutputArg='CellsAncestry';
+saveancestryspreadsheets.FunctionArgs.TracksLayout.FunctionInstance='LoadTracksLayout';
+saveancestryspreadsheets.FunctionArgs.TracksLayout.OutputArg='TracksLayout';
+functions_list=addToFunctionChain(functions_list,saveancestryspreadsheets);
 
-
-save_updated_tracks_function.InstanceName='SaveUpdatedTracks';
-save_updated_tracks_function.FunctionHandle=@saveTracks;
-save_updated_tracks_function.FunctionArgs.Tracks.FunctionInstance='ManualTracksReview';
-save_updated_tracks_function.FunctionArgs.Tracks.OutputArg='Tracks';
-save_updated_tracks_function.FunctionArgs.TracksFileName.Value=[TrackStruct.ProlDir ds 'tracks.mat'];
-
-save_ancestry_function.InstanceName='SaveAncestry';
-save_ancestry_function.FunctionHandle=@saveAncestry;
-save_ancestry_function.FunctionArgs.CellsAncestry.FunctionInstance='ManualTracksReview';
-save_ancestry_function.FunctionArgs.CellsAncestry.OutputArg='CellsAncestry';
-save_ancestry_function.FunctionArgs.AncestryFileName.Value=[TrackStruct.ProlDir ds 'ancestry.mat'];
-
-
-save_ancestry_spreadsheets.InstanceName='SaveAncestrySpreadsheets';
-save_ancestry_spreadsheets.FunctionHandle=@saveAncestrySpreadsheets;
-save_ancestry_spreadsheets.FunctionArgs.Tracks.FunctionInstance='ManualTracksReview';
-save_ancestry_spreadsheets.FunctionArgs.Tracks.OutputArg='Tracks';
-save_ancestry_spreadsheets.FunctionArgs.CellsAncestry.FunctionInstance='ManualTracksReview';
-save_ancestry_spreadsheets.FunctionArgs.CellsAncestry.OutputArg='CellsAncestry';
-save_ancestry_spreadsheets.FunctionArgs.TracksLayout.Value=tracks_layout;
-save_ancestry_spreadsheets.FunctionArgs.ShapesXlsFile.Value=TrackStruct.ShapesXlsFile;
-save_ancestry_spreadsheets.FunctionArgs.ProlXlsFile.Value=TrackStruct.ProlXlsFile;
-
-
-functions_list=[{load_tracks_function};{load_ancestry_function};{load_colormap_function};{manual_tracks_review_function};...
-    {save_updated_tracks_function};{save_ancestry_function};{save_ancestry_spreadsheets}];
 
 global dependencies_list;
 global dependencies_index;
@@ -190,6 +147,4 @@ dependencies_list={};
 dependencies_index=java.util.Hashtable;
 makeDependencies([]);
 runFunctions();
-
-%end function
 end

@@ -1,37 +1,12 @@
 function output_args=getConvexObjects(input_args)
-%Usage
-%This module is used to find and return the index of convex objects in a binary image. The object
-%outlines are simplified using a Douglas-Pecker algorithm to prevent detection of insignificant
-%convexities.
-%
-%Input Structure Members
-%ApproximationDistance â€“ This value represents the minimum distance between the
-%approximated outline and the real one. Increasing this value makes the contours simpler but
-%less like the original outlines.
-%Image â€“ Binary image to be processed.
-%
-%Output Structure Members
-%ConvexObjectsIndex â€“ List containing the index of the convex objects. The index of each object
-%is based on performing a bwlabeln operation on the binary image.
-%
-%Example
-%
-%get_convex_objects_function.InstanceName='GetConvexObjects';
-%get_convex_objects_function.FunctionHandle=@getConvexObjects;
-%get_convex_objects_function.FunctionArgs.Image.FunctionInstance='ClearSmallNu
-%clei';
-%get_convex_objects_function.FunctionArgs.Image.OutputArg='Image';
-%get_convex_objects_function.FunctionArgs.ApproximationDistance.Value=TrackStr
-%uct.ApproxDist;
-%image_read_loop_functions=addToFunctionChain(image_read_loop_functions,get_co
-%nvex_objects_function);
-%
-%â€¦
-%
-%polygonal_assisted_watershed_function.FunctionArgs.ConvexObjectsIndex.Functio
-%nInstance='GetConvexObjects';
-%polygonal_assisted_watershed_function.FunctionArgs.ConvexObjectsIndex.OutputA
-%rg='ConvexObjectsIndex';
+% Usage
+% This module is used to find and return the index of convex objects in a binary image. The object outlines are simplified using a Douglas-Pecker algorithm to prevent detection of insignificant convexities.
+% Input Structure Members
+% ApproximationDistance – This value represents the minimum distance between the approximated outline and the real one. Increasing this value makes the contours simpler but less like the original outlines.
+% Image – Binary image to be processed.
+% 
+% Output Structure Members
+% ConvexObjectsIndex – List containing the index of the convex objects. The index of each object is based on performing a bwlabeln operation on the binary image.
 
 obj_bounds=bwboundaries(input_args.Image.Value);
 obj_nr=length(obj_bounds);
@@ -50,7 +25,7 @@ for i=1:obj_nr
     pol_vect_1=diff(pol_points_1);
     pol_vect_2=diff(pol_points_2);
     pol_len=length(pol_vect_1);    
-    if (pol_len==3)
+    if (pol_len<=3)
         %a triangle is a convex polygon
         convex_objects_idx(i)=true;
         continue;

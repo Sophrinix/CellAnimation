@@ -1,30 +1,13 @@
 function output_args=getFileInfo(input_args)
-%Usage
-%This module is used to extract the file name, extension and directory from the absolute path.
-%
-%Input Structure Members
-%DirSep ‚Äì Directory separator (‚Äú\‚Äù for Windows, ‚Äú/‚Äù for Linux/Unix).
-%PathName ‚Äì Absolute path name from which file name, extension and directory will be
-%extracted.
-%
-%Output Structure Members
-%DirName ‚Äì The extracted directory name.
-%FileName ‚Äì The extracted file name.
-%ExtName ‚Äì The extracted extension name.
-%
-%Example
-%
-%get_file_function.InstanceName='GetFileInfo';
-%get_file_function.FunctionHandle=@getFileInfo;
-%get_file_function.FunctionArgs.DirSep.Value='\';
-%get_file_function.FunctionArgs.PathName.Value=path_name;
-%functions_list=addToFunctionChain(functions_list,get_file_function);
-%
-%‚Ä¶
-%
-%make_spreadsheet_file_name_function.FunctionArgs.DirName.FunctionInstance='Ge
-%tFileInfo';
-%make_spreadsheet_file_name_function.FunctionArgs.DirName.OutputArg='DirName';
+% Usage
+% This module is used to extract the file name, extension and directory from the absolute path.
+% Input Structure Members
+% DirSep ñ Directory separator (ì\î for Windows, ì/î for Linux/Unix).
+% PathName ñ Absolute path name from which file name, extension and directory will be extracted.
+% Output Structure Members
+% DirName ñ The extracted directory name.
+% FileName ñ The extracted file name.
+% ExtName ñ The extracted extension name.
 
 ds=input_args.DirSep.Value;
 path_name=input_args.PathName.Value;

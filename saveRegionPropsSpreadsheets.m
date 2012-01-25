@@ -1,26 +1,11 @@
 function output_args=saveRegionPropsSpreadsheets(input_args)
-%Usage
-%This module is used to save the shape parameters extracted using the getRegionProps wrapper
-%module.
-%
-%Input Structure Members
-%RegionProps â€“ The matrix containing the shape parameters.
-%SpreadsheetFileName â€“ The desired file name for the saved file.
-%
-%Output Structure Members
-%None.
-%
-%Example
-%
-%save_region_props_function.InstanceName='SaveRegionProps';
-%save_region_props_function.FunctionHandle=@saveRegionPropsSpreadsheets;
-%save_region_props_function.FunctionArgs.RegionProps.FunctionInstance='GetRegi
-%onProps';
-%save_region_props_function.FunctionArgs.RegionProps.OutputArg='RegionProps';
-%save_region_props_function.FunctionArgs.SpreadsheetFileName.FunctionInstance=
-%'MakeSpreadsheetFileName';
-%save_region_props_function.FunctionArgs.SpreadsheetFileName.OutputArg='Text';
-%functions_list=addToFunctionChain(functions_list,save_region_props_function);
+% Usage
+% This module is used to save the shape parameters extracted using the getRegionProps wrapper module.
+% Input Structure Members
+% RegionProps – The matrix containing the shape parameters.
+% SpreadsheetFileName – The desired file name for the saved file.
+% Output Structure Members
+% None.
 
 region_props=input_args.RegionProps.Value;
 %sort tracks_with_stats by cell id

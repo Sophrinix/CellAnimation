@@ -3,26 +3,12 @@ function output_args=areaFilterLabel(input_args)
 %This module is used to remove objects below and/or above a certain area from a label matrix.
 %
 %Input Structure Members
-%MaxArea – Objects with an area larger than this value will be removed.
-%MinArea – Objects with an area smaller than this value will be removed.
-%ObjectsLabel – The label matrix from which objects will be removed.
+%MaxArea - Objects with an area larger than this value will be removed.
+%MinArea - Objects with an area smaller than this value will be removed.
+%ObjectsLabel - The label matrix from which objects will be removed.
 %
 %Output Structure Members
-%LabelMatrix – The filtered label matrix.
-%
-%Example
-%
-%area_filter_function.InstanceName='AreaFilter';
-%area_filter_function.FunctionHandle=@areaFilterLabel;
-%area_filter_function.FunctionArgs.ObjectsLabel.FunctionInstance='SegmentObjec
-%tsUsingMarkers';
-%area_filter_function.FunctionArgs.ObjectsLabel.OutputArg='LabelMatrix';
-%area_filter_function.FunctionArgs.MinArea.Value=20;
-%image_read_loop_functions=addToFunctionChain(image_read_loop_functions,area_f
-%ilter_function);
-%...
-%resize_cyto_label_function.FunctionArgs.Image.FunctionInstance='AreaFilter';
-%resize_cyto_label_function.FunctionArgs.Image.OutputArg='LabelMatrix';
+%LabelMatrix - The filtered label matrix.
 
 cells_lbl=input_args.ObjectsLabel.Value;
 cells_props=regionprops(cells_lbl,'Area');
@@ -39,12 +25,12 @@ else
 end
 cells_area=[cells_props.Area];
 cells_nr=length(cells_area);
-valid_areas_idx=false(1,cells_nr);
+valid_areas_idx=true(1,cells_nr);
 if (b_min)
-    valid_areas_idx=valid_areas_idx|(cells_area>=input_args.MinArea.Value);
+    valid_areas_idx=valid_areas_idx&(cells_area>=input_args.MinArea.Value);
 end
 if (b_max)
-    valid_areas_idx=valid_areas_idx|(cells_area<=input_args.MaxArea.Value);
+    valid_areas_idx=valid_areas_idx&(cells_area<=input_args.MaxArea.Value);
 end
 if (min(valid_areas_idx)==1)
     %no invalid objects return the same label back

@@ -1,7 +1,12 @@
-function output_args=readImage(function_args)
-%read image module
-image_name=function_args.ImageName.Value;
-img_channel=function_args.ImageChannel.Value;
+function output_args=readImage(input_args)
+%simple wrapper for the MATLAB imread function
+%Input Structure Members
+%ImageName - Path to the image to be loaded.
+%Output Structure Members
+%Image - The image matrix.
+
+image_name=input_args.ImageName.Value;
+img_channel=input_args.ImageChannel.Value;
 img_to_proc=imread(image_name);
 switch img_channel
     case 'r'

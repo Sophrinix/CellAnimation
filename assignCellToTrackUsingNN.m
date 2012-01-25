@@ -4,61 +4,19 @@ function output_args=assignCellToTrackUsingNN(input_args)
 %algorithm.
 %
 %Input Structure Members
-%CellsCentroids – Current object centroids.
-%CurrentTracks – Matrix containing the track assignments for the objects in the previous frame.
-%MaxTrackID – Current maximum track ID.
-%TrackAssignments – List of track assignments that have already been completed.
-%TracksLayout – Matrix describing the order of the columns in the tracks matrix.
-%UnassignedCells – List of object IDs currently unassigned.
+%CellsCentroids - Current object centroids.
+%CurrentTracks - Matrix containing the track assignments for the objects in the previous frame.
+%MaxTrackID - Current maximum track ID.
+%TrackAssignments - List of track assignments that have already been completed.
+%TracksLayout - Matrix describing the order of the columns in the tracks matrix.
+%UnassignedCells - List of object IDs currently unassigned.
 %
 %Output Structure Members
-%ExcludedTracks – Returns empty value. Included for compatibility only.
-%GroupIndex – Returns zero. Included for compatibility only.
-%MatchingGroups – Returns empty value. Included for compatibility only.
-%TrackAssignments – List of track assignments that have already been completed.
-%UnassignedIDs – List of object IDs currently unassigned.
-%
-%Example
-%
-%assign_cell_to_track_function.InstanceName='AssignCellToTrackUsingNN';
-%assign_cell_to_track_function.FunctionHandle=@assignCellToTrackUsingNN;
-%assign_cell_to_track_function.FunctionArgs.UnassignedCells.FunctionInstance='
-%AssignCellsToTracksLoop';
-%assign_cell_to_track_function.FunctionArgs.UnassignedCells.InputArg='Unassign
-%edCells';
-%assign_cell_to_track_function.FunctionArgs.CellsCentroids.FunctionInstance='A
-%ssignCellsToTracksLoop';
-%assign_cell_to_track_function.FunctionArgs.CellsCentroids.InputArg='CellsCent
-%roids';
-%assign_cell_to_track_function.FunctionArgs.CurrentTracks.FunctionInstance='As
-%signCellsToTracksLoop';
-%assign_cell_to_track_function.FunctionArgs.CurrentTracks.InputArg='CurrentTra
-%cks';
-%assign_cell_to_track_function.FunctionArgs.TrackAssignments.FunctionInstance=
-%'AssignCellsToTracksLoop';
-%assign_cell_to_track_function.FunctionArgs.TrackAssignments.InputArg='TrackAs
-%signments';
-%assign_cell_to_track_function.FunctionArgs.MaxTrackID.FunctionInstance='Assig
-%nCellsToTracksLoop';
-%assign_cell_to_track_function.FunctionArgs.MaxTrackID.InputArg='MaxTrackID';
-%assign_cell_to_track_function.FunctionArgs.TracksLayout.Value=tracks_layout;
-%assign_cells_to_tracks_functions=addToFunctionChain(assign_cells_to_tracks_fu
-%nctions,assign_cell_to_track_function);
-%
-%…
-%
-%assign_cells_to_tracks_loop.FunctionArgs.UnassignedCells.FunctionInstance='Ma
-%keUnassignedCellsList';
-%assign_cells_to_tracks_loop.FunctionArgs.UnassignedCells.OutputArg='Unassigne
-%dCellsIDs';
-%assign_cells_to_tracks_loop.FunctionArgs.UnassignedCells.FunctionInstance2='A
-%ssignCellToTrackUsingAll';
-%assign_cells_to_tracks_loop.FunctionArgs.UnassignedCells.OutputArg2='Unassign
-%edIDs';
-%assign_cells_to_tracks_loop.FunctionArgs.TrackAssignments.FunctionInstance2='
-%AssignCellToTrackUsingAll';
-%assign_cells_to_tracks_loop.FunctionArgs.TrackAssignments.OutputArg2='TrackAs
-%signments';
+%ExcludedTracks - Returns empty value. Included for compatibility only.
+%GroupIndex - Returns zero. Included for compatibility only.
+%MatchingGroups - Returns empty value. Included for compatibility only.
+%TrackAssignments - List of track assignments that have already been completed.
+%UnassignedIDs - List of object IDs currently unassigned.
 
 unassignedIDs=input_args.UnassignedCells.Value;
 cells_centroids=input_args.CellsCentroids.Value;

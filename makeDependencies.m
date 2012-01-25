@@ -20,13 +20,13 @@ for i=1:nr_functions
             functions_list=temp;
         case 'whileLoop'
             temp=functions_list;
-            functions_list=[{function_struct.TestFunction};function_struct.LoopFunctions];
+            functions_list=function_struct.LoopFunctions;
             dependency_struct=getDependencies(dependency_struct,0,parent_function_struct);
             makeDependencies(function_struct);
             functions_list=temp;
         case 'if_statement'
             temp=functions_list;
-            functions_list=[{function_struct.TestFunction}; function_struct.IfFunctions; function_struct.ElseFunctions];
+            functions_list=[function_struct.IfFunctions; function_struct.ElseFunctions];
             dependency_struct=getDependencies(dependency_struct,0,parent_function_struct);
             makeDependencies(function_struct);
             functions_list=temp;
@@ -50,9 +50,6 @@ if (~isempty(parent_function_struct))
     end    
 end
 for i=1:size(functions_list,1)
-    if (i==this_idx)
-        continue;
-    end
     [b_dependent dependency_item]=makeDependencyRecord(instance_name,functions_list{i});
     if (b_dependent)
         dependent_functions=[dependent_functions; {dependency_item}];
@@ -67,7 +64,12 @@ function [b_dependent dependency_item]=makeDependencyRecord(instance_name,functi
 %if function_struct has any arguments that depend on the function for which
 %we're building the dependency chain create a dependency record 
 
-function_args=function_struct.FunctionArgs;
+field_names=fieldnames(function_struct);
+if max(strcmp(field_names,'FunctionArgs'))
+    function_args=function_struct.FunctionArgs;
+else
+    function_args={};
+end
 function_instance=function_struct.InstanceName;
 b_first_dep=true;
 b_dependent=false;

@@ -5,6 +5,10 @@ function []=updateArgs(instance_name,function_struct,update_type)
 global dependencies_list;
 global dependencies_index;
 
+if isempty(function_struct)
+    return;
+end
+
 cur_idx=dependencies_index.get(instance_name);
 dependency_item=dependencies_list{cur_idx};
 dependent_functions=dependency_item.DependentFunctions;
@@ -20,68 +24,33 @@ for i=1:size(dependent_functions,1)
             case('input')
                 if (args_struct.Type==2)
                     input_arg_name=args_struct.InputArg;
+                    output_fun_field_names=fieldnames(function_struct.(input_arg_name));
+                    if (max(strcmp(output_fun_field_names,'Value'))==0)
+                        %the output value was not provided by this module
+                        %another module may provide it (such is the case in
+                        %an if-else branch for example
+                        continue;
+                    end                    
                     if (args_struct.DependencyType==1)
-                        try
-                            dependencies_list{function_idx}.FunctionArgs.(arg_name).Value=function_struct.(input_arg_name).Value;
-                        catch ME
-                            err_text=ME.message;
-                            err_text=[err_text ' \n Function Instance: ' instance_name ' \n '];
-                            err_text=[err_text 'Input arg name: ' output_arg_name ' \n '];
-                            err_text=[err_text 'Dependent function arg name: ' arg_name ' \n '];
-                            err_text=[err_text 'Dependent function name: ' function_instance ' \n '];
-                            new_err.message=sprintf(err_text);
-                            new_err.identifier=ME.identifier;
-                            new_err.stack=ME.stack;
-                            error(new_err);
-                        end
+                        dependencies_list{function_idx}.FunctionArgs.(arg_name).Value=function_struct.(input_arg_name).Value;                        
                     elseif (args_struct.DependencyType==2)
-                        try
-                            dependencies_list{function_idx}.KeepValues.(arg_name).Value=function_struct.(input_arg_name).Value;
-                        catch ME
-                            err_text=ME.message;
-                            err_text=[err_text ' \n Function Instance: ' instance_name ' \n '];
-                            err_text=[err_text 'Input arg name: ' output_arg_name ' \n '];
-                            err_text=[err_text 'Dependent function keepvalue name: ' arg_name ' \n '];
-                            err_text=[err_text 'Dependent function name: ' function_instance ' \n '];
-                            new_err.message=sprintf(err_text);
-                            new_err.identifier=ME.identifier;
-                            new_err.stack=ME.stack;
-                            error(new_err);
-                        end
+                        dependencies_list{function_idx}.KeepValues.(arg_name).Value=function_struct.(input_arg_name).Value;                        
                     end
                 end
             case('output')
                 if (args_struct.Type==1)
                     output_arg_name=args_struct.OutputArg;
-                    if (args_struct.DependencyType==1)
-                        try
-                            dependencies_list{function_idx}.FunctionArgs.(arg_name).Value=function_struct.(output_arg_name);
-                        catch ME
-                            err_text=ME.message;
-                            err_text=[err_text ' \n Function Instance: ' instance_name ' \n '];
-                            err_text=[err_text 'Output arg name: ' output_arg_name ' \n '];                            
-                            err_text=[err_text 'Dependent function arg name: ' arg_name ' \n '];
-                            err_text=[err_text 'Dependent function name: ' function_instance ' \n '];
-                            new_err.message=sprintf(err_text);
-                            new_err.identifier=ME.identifier;
-                            new_err.stack=ME.stack;
-                            error(new_err);                            
-                        end
-                            
+                    output_fun_field_names=fieldnames(function_struct);
+                    if (max(strcmp(output_fun_field_names,output_arg_name))==0)
+                        %the output value was not provided by this module
+                        %another module may provide it (such is the case in
+                        %an if-else branch for example
+                        continue;
+                    end
+                    if (args_struct.DependencyType==1)                        
+                        dependencies_list{function_idx}.FunctionArgs.(arg_name).Value=function_struct.(output_arg_name);
                     elseif (args_struct.DependencyType==2)
-                        try
-                            dependencies_list{function_idx}.KeepValues.(arg_name).Value=function_struct.(output_arg_name);
-                        catch ME
-                            err_text=ME.message;
-                            err_text=[err_text ' \n Function Instance: ' instance_name ' \n '];
-                            err_text=[err_text 'Output arg name: ' output_arg_name ' \n '];                            
-                            err_text=[err_text 'Dependent function keepvalue name: ' arg_name ' \n '];
-                            err_text=[err_text 'Dependent function name: ' function_instance ' \n '];
-                            new_err.message=sprintf(err_text);
-                            new_err.identifier=ME.identifier;
-                            new_err.stack=ME.stack;
-                            error(new_err);                            
-                        end
+                        dependencies_list{function_idx}.KeepValues.(arg_name).Value=function_struct.(output_arg_name);                        
                     end
                 end        
         end        

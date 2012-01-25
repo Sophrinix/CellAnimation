@@ -4,7 +4,7 @@ function joinObjects()
 global msr_gui_struct;
 
 objects_lbl=msr_gui_struct.ObjectsLabel;
-join_ids=sort(msr_gui_struct.SelectedObjectIDs);
+join_ids=sort(msr_gui_struct.SelectedObjectID);
 join_ids_len=length(join_ids);
 if (length(join_ids)<2)
     warnDlg('Multiple objects need to be selected!');

@@ -1,6 +1,12 @@
 function output_args=calculateCropSize(input_args)
-%module to calculate how much a image will need to be cropped to remove the
+%This module is used to calculate how much a image will need to be cropped to remove the
 %microscope stage offsets
+%Input Structure Members
+%Image - Image in the sequence to be cropped.
+%XYOffsets - Array containing the offsets for all the images in the series.
+%Output Structure Members
+%CropSize - Array indicating how much the image will need to be cropped in
+%each direction.
 
 img=input_args.Image.Value;
 img_sz=size(img);

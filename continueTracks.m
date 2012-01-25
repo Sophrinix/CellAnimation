@@ -1,7 +1,15 @@
 function output_args=continueTracks(input_args)
-%helper function for the CA tracking module. used to continue the tracks as
-%the tracking progresses
-%continue the tracks
+% continueTracks
+% Usage
+% This module is used to continue the tracks with the new track assignments as tracking progresses from frame to frame.
+% Input Structure Members
+% CurFrame – Integer value representing the current frame number.
+% TrackAssignments – Matrix containing the new track assignments.
+% TimeFrame – Integer value representing the current time frame.
+% Output Structure Members
+% NewTracks – Matrix containing the new tracks for the current frame.
+% Tracks – Matrix containing the tracks including the new track assignments.
+
 trackAssignments=input_args.TrackAssignments.Value;
 [dummy tracks_sort_idx]=sort(trackAssignments(:,2));
 tracks_ids_sorted=trackAssignments(tracks_sort_idx,1);

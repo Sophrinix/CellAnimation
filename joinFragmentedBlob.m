@@ -72,6 +72,18 @@ set_a_select_edges=set_a_indexes(same_orientation_idx);
 set_b_select_edges=set_b_indexes(same_orientation_idx);
 set_a_selected_points=set_a(set_a_select_edges,:);
 set_b_selected_points=set_b(set_b_select_edges,:);
+if (size(set_a_selected_points,1)==1)
+    point_a=set_a_selected_points';
+    point_b=set_b_selected_points';
+    line_slope=(point_a(1)-point_b(1))/(point_a(2)-point_b(2));
+    if (line_slope>0)
+        line_offset=[2;-2];
+    else
+        line_offset=[2;2];
+    end
+    join_polygon=[point_a+line_offset point_b+line_offset point_b-line_offset point_a-line_offset point_a+line_offset];
+    return;
+end
 a_clusters=getPointsClusters(set_a_selected_points);
 b_clusters=getPointsClusters(set_b_selected_points);
 %find out which clusters contains the min distance points
@@ -172,7 +184,13 @@ end
 end
 
 function linkage_clusters=getPointsClusters(point_set)
-
+%test and make sure the point sets are not equal
+set_sz=size(point_set);
+test_set=repmat(point_set(1,:),set_sz(1),1);
+if isequal(point_set,test_set)
+    linkage_clusters=ones(set_sz(1),1);
+    return;
+end
 blob_dist=pdist(point_set);
 %tested all linkage params - this works best
 blob_linkage=linkage(blob_dist,'average');

@@ -1,65 +1,22 @@
 function output_args=displayAncestryData(input_args)
-%Usage
-%This module is used to overlay cell outlines (using different colors to indicate different cell
-%generations) and cell labels on the original images after tracking and save the resulting image.
-%
-%Input Structure Members
-%AncestryLayout ‚Äì Matrix describing the order of the columns in the tracks matrix.
-%CellsAncestry ‚Äì Matrix containing the ancestry records for the cells in the image.
-%CellsLabel ‚Äì The label matrix containing the cell outlines for the current image.
-%ColorMap ‚Äì Color map to be used in drawing the cell outlines for each generation. Each
-%generation will use the next color in the color map until all colors have been used. Afterwards,
-%the colors in the map are recycled.
-%
-%CurFrame ‚Äì Integer containing the current frame number.
-%CurrentTracks ‚Äì The list of the tracks for the current image.
-%DS ‚Äì The directory separator to be used when generating file names (‚Äú\‚Äù for Windows, ‚Äú/‚Äù for
-%Unix/Linux).
-%Image ‚Äì The original image which will be used to generate the image with overlayed outlines
-%and labels.
-%ImageFileName ‚Äì The root of the image file name to be used when generating the image file
-%name for the current image in combination with the current frame number.
-%NumberFormat ‚Äì A string indicating the number format of the file name to be used when saving
-%the overlayed image.
-%ProlDir ‚Äì Output directory where the resulting image will be saved.
-%TracksLayout ‚Äì Matrix describing the order of the columns in the tracks matrix.
-%
-%Output Structure Members
-%None.
-%
-%Example
-%
-%display_ancestry_function.InstanceName='DisplayAncestry';
-%display_ancestry_function.FunctionHandle=@displayAncestryData;
-%display_ancestry_function.FunctionArgs.Image.FunctionInstance='ReadImagesInOv
-%erlayLoop';
-%display_ancestry_function.FunctionArgs.Image.OutputArg='Image';
-%display_ancestry_function.FunctionArgs.CurrentTracks.FunctionInstance='GetCur
-%rentTracks2';
-%display_ancestry_function.FunctionArgs.CurrentTracks.OutputArg='Tracks';
-%display_ancestry_function.FunctionArgs.CellsLabel.FunctionInstance='LoadCells
-%Label';
-%display_ancestry_function.FunctionArgs.CellsLabel.OutputArg='cells_lbl';
-%display_ancestry_function.FunctionArgs.CellsAncestry.FunctionInstance='ImageO
-%verlayLoop';
-%display_ancestry_function.FunctionArgs.CellsAncestry.InputArg='CellsAncestry'
-%;
-%display_ancestry_function.FunctionArgs.CurFrame.FunctionInstance='ImageOverla
-%yLoop';
-%display_ancestry_function.FunctionArgs.CurFrame.OutputArg='LoopCounter';
-%display_ancestry_function.FunctionArgs.ColorMap.FunctionInstance='LoadColorma
-%p';
-%display_ancestry_function.FunctionArgs.ColorMap.OutputArg='cmap';
-%display_ancestry_function.FunctionArgs.NumberFormat.Value=TrackStruct.NumberF
-%ormat;
-%display_ancestry_function.FunctionArgs.TracksLayout.Value=tracks_layout;
-%display_ancestry_function.FunctionArgs.ProlDir.Value=TrackStruct.ProlDir;
-%display_ancestry_function.FunctionArgs.ImageFileName.Value=TrackStruct.ImageF
-%ileName;
-%display_ancestry_function.FunctionArgs.DS.Value=ds;
-%display_ancestry_function.FunctionArgs.AncestryLayout.Value=ancestry_layout;
-%image_overlay_loop_functions=addToFunctionChain(image_overlay_loop_functions,
-%display_ancestry_function);
+% Usage
+% This module is used to overlay cell outlines (using different colors to indicate different cell generations) and cell labels on the original images after tracking and save the resulting image.
+% Input Structure Members
+% AncestryLayout ñ Matrix describing the order of the columns in the tracks matrix.
+% CellsAncestry ñ Matrix containing the ancestry records for the cells in the image.
+% CellsLabel ñ The label matrix containing the cell outlines for the current image.
+% ColorMap ñ Color map to be used in drawing the cell outlines for each generation. Each generation will use the next color in the color map until all colors have been used.  Afterwards, the colors in the map are recycled.
+% CurFrame ñ Integer containing the current frame number.
+% CurrentTracks ñ The list of the tracks for the current image.
+% DS ñ The directory separator to be used when generating file names (ì\î for Windows, ì/î for Unix/Linux).
+% Image ñ The original image which will be used to generate the image with overlayed outlines and labels.
+% ImageFileName ñ The root of the image file name to be used when generating the image file name for the current image in combination with the current frame number.
+% NumberFormat ñ A string indicating the number format of the file name to be used when saving the overlayed image.
+% ProlDir ñ Output directory where the resulting image will be saved.
+% TracksLayout ñ Matrix describing the order of the columns in the tracks matrix.
+% Output Structure Members
+% None.
+
 
 cur_img=input_args.Image.Value;
 cur_tracks=input_args.CurrentTracks.Value;
