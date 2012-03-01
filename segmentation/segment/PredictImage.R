@@ -1,3 +1,8 @@
+#inputs:
+#	1 - working directory
+#	2 - name of image
+#	3 - classification
+
 args <- commandArgs(TRUE)
 
 setwd(args[[1]])

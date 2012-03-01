@@ -10,8 +10,20 @@ function objSet = GMMSegment(im, OS, trainingset)
 		clear p2;
 	end
 	nuclei = p(find([p(:).nucleus]));
-	avgArea = mean([nuclei.Area])
-	stdArea = std([nuclei.Area])
+	avgArea = mean([nuclei.Area]);
+	stdArea = std([nuclei.Area]);
+
+	avgEccentricity = mean([nuclei.Eccentricity]);
+	stdEccentricity = std([nuclei.Eccentricity]);
+    
+    avgMinAL = mean([nuclei.MinorAxisLength]);
+    stdMinAL = std([nuclei.MinorAxisLength]);
+    
+    avgSolidity = mean([nuclei.Solidity]);
+    stdSolidity = std([nuclei.Solidity]);
+
+	clear nuclei
+	clear p
 
 	for(n=1:size(objSet.props,1))
 		
@@ -28,7 +40,7 @@ function objSet = GMMSegment(im, OS, trainingset)
 		pl = objSet.props(n).PixelList;
 		points = [];
 		for(pt = 1:size(pl,1))
-			numPts = i(pl(pt,2), pl(pt,1)) * 100 * 20;
+			numPts = i(pl(pt,2), pl(pt,1)) * 100 * 10;
 			for(j=1:numPts)
 				pts2 = [points; pl(pt,2), pl(pt,1)];
 				clear points;
@@ -37,13 +49,22 @@ function objSet = GMMSegment(im, OS, trainingset)
 			end
 		end
 
+		clear pl;	
+
 		maxlklhd = -Inf;
 		finalNum = 0;
 
-		for(numObj=1:10)
+		%guess = floor(objSet.props(n).Area / avgArea);
+
+		%guess = max(guess, 3)
+
+		for(numObj=1:10)%guess-2:guess+1)
 				
-			options = statset('Display', 'off');
-			gm = gmdistribution.fit(points, numObj,'Options',options);
+			options = statset('Display', 'off', 'MaxIter', 500);
+			gm = gmdistribution.fit(points, numObj,...
+									'Options',options, ...
+									'Start', 'randSample', ...
+									'Replicates', 3);
 			idx = cluster(gm, points);
 
 			im2 = zeros(size(im));
@@ -55,13 +76,26 @@ function objSet = GMMSegment(im, OS, trainingset)
 				end
 			end
 			im2 = imfill(im2, 'holes');
+
 			likelihood = 0;
-			props = regionprops(im2, 'Area');
+			props = regionprops(im2, 'MinorAxisLength',...
+									 'Solidity', ...
+									 'Area', ...
+									 'Eccentricity');
 			for(obj=1:size(props,1))
 				likelihood = likelihood + ...
-								log(normpdf(props(obj).Area,...
-											avgArea,...
-											stdArea));
+							log(normpdf(props(obj).MinorAxisLength,...
+										avgMinAL,...
+										stdMinAL)) + ...
+							log(normpdf(props(obj).Solidity, ...
+										avgSolidity, ...
+										stdSolidity)) + ...
+							log(normpdf(props(obj).Area, ...
+										avgArea, ...
+										stdArea)) + ...
+							log(normpdf(props(obj).Eccentricity, ...
+										avgEccentricity, ...
+										stdEccentricity));
 			end
 
 			likelihood = likelihood - (obj * log(obj));
@@ -73,6 +107,9 @@ function objSet = GMMSegment(im, OS, trainingset)
 			end
 			clear im2;
 		end
+
+		disp(maxlklhd);
+		disp(finalNum);
 
 		%place division between newly segmented objects
 		%gmmIm is image with final segmentation
@@ -88,8 +125,10 @@ function objSet = GMMSegment(im, OS, trainingset)
 		%insert new objects into labels
 		objSet.labels = objSet.labels | gmmIm;
 		clear gmmIm;
+		clear points;
 		
 	end
+
 	%relabel and find new object properties
 	objSet.labels = bwlabel(objSet.labels);
 	objSet.props = regionprops(logical(objSet.labels), 	...
@@ -134,5 +173,7 @@ function objSet = GMMSegment(im, OS, trainingset)
 		objSet.props = ClassifyFirstPass(objSet.props);
 	end
 	
+
+	clear i
 
 end
