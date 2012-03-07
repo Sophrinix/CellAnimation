@@ -25,6 +25,9 @@ track_id_col=input_args.TrackIDCol.Value;
 cur_tracks=tracks(tracks(:,timeCol)==(startframe-1)*timeframe,:);
 track_ids=cur_tracks(:,track_id_col);
 min_time=min(tracks(:,timeCol));
+if (max_missing_frames<1)
+    max_missing_frames=1;
+end
 for i=frame_step:frame_step:(frame_step*max_missing_frames)
     cur_time=(startframe+offset_dir*i-1)*timeframe;
     if (cur_time<min_time)
