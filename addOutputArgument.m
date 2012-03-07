@@ -7,7 +7,7 @@ if (length(selection_text)>9)&&strcmp(selection_text(1:9),'<html><i>')
     warndlg('You need to select an argument name (not in italics)');
     return;
 end
-if strcmp(selection_text(1:6),'<html>')
+if (length(selection_text)>6&&strcmp(selection_text(1:6),'<html>'))
     %remove the html formatting
     selection_text=selection_text(25:(end-14));
     %display the selection text without the red warning format
