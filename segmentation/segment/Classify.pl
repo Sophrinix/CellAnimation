@@ -4,7 +4,8 @@
 #	1 - imageNameBase
 #	2 - startIndex
 #	3 - endIndex
-#	4 - digitsForEnum
+#	4 - frameStep
+#	5 - digitsForEnum
 
 print("$ARGV[1]");
 
@@ -20,7 +21,7 @@ foreach $name (@classifications)
 {
   for($image = $ARGV[2]; $image <= $ARGV[3]; $image++)
   {
-    $imNumStr = sprintf("%0$ARGV[4]d", $image);
+    $imNumStr = sprintf("%0$ARGV[5]d", $image * $ARGV[4]);
 #    system("~/R-2.13.0/bin/R --vanilla --slave --args " .
     system("R --vanilla --slave --args " . 
 					  "'$ARGV[0]' " . 

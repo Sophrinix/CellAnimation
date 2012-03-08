@@ -1,7 +1,3 @@
-%AccreFinish.m
-%imports data from csv files in directory/outdir into 
-%corresponding matlab objects
-
 directory		= getenv('DIRECTORY');
 wellName		= getenv('WELLNAME');
 imageNameBase 	= getenv('IMAGENAMEBASE');
@@ -12,28 +8,36 @@ endIndex		= str2num(getenv('ENDINDEX'));
 frameStep		= str2num(getenv('FRAMESTEP'));
 outdir			= getenv('OUTDIR');
 
-mkdir([directory filesep wellName filesep 'gmm']);
+mkdir([directory filesep wellName filesep 'naive']);
 
+%export each object set as a csv file for interfacing with R
 for(imNum=startIndex:endIndex)
+  
 	imNumStr = sprintf('%%0%dd', digitsForEnum);
-	imNumStr = sprintf(imNumStr, imNum * frameStep);
+  	imNumStr = sprintf(imNumStr, imNum * frameStep);
+  	
+	%load image 
+  	[im, objSet.wellName, objSet.imageName] = ...
+    	LoadImage([	directory filesep ...
+					outdir filesep ...
+					imageNameBase imNumStr fileExt]);
 
-	%load the current objSet
-	load([	directory filesep ...
-			outdir filesep ...
-			imageNameBase imNumStr '.mat']);
+	%segment
+	[objSet.props, objSet.labels] = NaiveSegment(im);
 
-	%load and add classification data from R into matlab object
-	objSet = CSVToSet(objSet, [directory filesep outdir]);
 
-	%save the updated objSet
+	SetToCSV(objSet, [	directory filesep ...
+						wellName filesep ...
+						'naive' filesep ...
+						imageNameBase imNumStr '.csv']);
+
 	save([	directory filesep ...
 			wellName filesep ...
-			'gmm' filesep ...
+			'naive' filesep ...
 			imageNameBase imNumStr '.mat'], 'objSet');
-  
-	%reclaim memory
+
 	clear objSet;
+	clear im;
 	clear imNumStr;
 end
 

@@ -6,21 +6,38 @@
 #PBS -o testrun.out
 #PBS -j oe
 
-export DIRECTORY="~"
+#Directory above the one containing the raw images
+export DIRECTORY="~/Work/Images"
+#Directory containing the raw images
 export WELLNAME="WellC05"
+#Part of image names that all have in common
 export IMAGENAMEBASE="DsRed - Confocal - n"
+#Extension on all images
 export FILEEXT=".tif"
+#How many digits long the image enumerations are
 export DIGITSFORENUM=6 
+#image number to start segmenting on (multiplied by framestep)
 export STARTINDEX=1
-export ENDINDEX=250
+#image number to finish segmenting on (multiplies by framestep)
+export ENDINDEX=15
+#number of images to skip between iterations
+export FRAMESTEP=1
+#location of most recent output (raw images at start)
+export OUTDIR=$WELLNAME	
+#training set used to create classifier
+export TRAINING="~/Work/CellAnimation/segmentation/segment/" \
+				"kernel01.mat"
 
-cd ~/CellAnimation/segmentation/segment
+cd ~/Work/CellAnimation/segmentation/segment
 
-matlab <AccreSegment.m
-perl Classify.pl "$DIRECTORY/$WELLNAME/output" "$IMAGENAMEBASE" \
+matlab <AccreNaiveSegment.m
+export OUTDIR="$WELLNAME/naive"
+perl Classify.pl "$DIRECTORY/$OUTDIR" "$IMAGENAMEBASE" \
 				  $STARTINDEX $ENDINDEX $DIGITSFORENUM
 matlab <AccreFinish.m 
-matlab <AccreResegment.m
-perl Classify.pl "$DIRECTORY/$WELLNAME/output" "$IMAGENAMEBASE" \
+
+matlab <AccreGMMSegment.m
+export OUTDIR="$WELLNAME/gmm"
+perl Classify.pl "$DIRECTORY/$OUTDIR" "$IMAGENAMEBASE" \
 				  $STARTINDEX $ENDINDEX $DIGITSFORENUM 
 matlab <AccreFinish.m
