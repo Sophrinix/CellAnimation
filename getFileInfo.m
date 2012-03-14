@@ -2,16 +2,16 @@ function output_args=getFileInfo(input_args)
 % Usage
 % This module is used to extract the file name, extension and directory from the absolute path.
 % Input Structure Members
-% DirSep – Directory separator (“\” for Windows, “/” for Linux/Unix).
 % PathName – Absolute path name from which file name, extension and directory will be extracted.
 % Output Structure Members
 % DirName – The extracted directory name.
 % FileName – The extracted file name.
 % ExtName – The extracted extension name.
 
-ds=input_args.DirSep.Value;
 path_name=input_args.PathName.Value;
-dir_idx=strfind(path_name,ds);
+dir_idx=strfind(path_name,'\');
+dir_idx=[dir_idx strfind(path_name,'/')];
+dir_idx=sort(dir_idx);
 dir_idx=dir_idx(end);
 ext_idx=strfind(path_name,'.');
 ext_idx=ext_idx(end);

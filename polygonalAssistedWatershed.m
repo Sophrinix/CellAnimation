@@ -21,17 +21,27 @@ ws_props=regionprops(ws_lbl,'Area');
 ws_area=[ws_props.Area];
 bkg_mask=ismember(ws_lbl,find(ws_area>area_max));
 ws_lbl(bkg_mask)=0;
+%optional argument MaxObjectSize
+field_names=fieldnames(input_args);
+if (max(strcmp(field_names,'MaxObjectSize')))
+    maxObjectSize=input_args.MaxObjectSize.Value;
+else
+    maxObjectSize=Inf;
+end
 % 
 % 
 nuclei_nr=max(nuclei_lbl(:));
 convex_idx=input_args.ConvexObjectsIndex.Value;
 min_nucl_area=input_args.MinBlobArea.Value;
 for i=1:nuclei_nr
-    if (convex_idx(i))
-        %don't let the watershed split convex blobs
-        continue;
-    end
     cur_obj=nuclei_lbl==i;
+    if (convex_idx(i))
+        if (maxObjectSize>sum(cur_obj(:)))
+            %if the object is smaller than maxObjectSize and convex don't
+            %split it
+            continue;
+        end
+    end    
     ws_lbl_obj=ws_lbl(cur_obj);
     ws_cluster_ids=unique(ws_lbl_obj);
     ws_cluster_ids=ws_cluster_ids(ws_cluster_ids>0);
