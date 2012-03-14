@@ -26,9 +26,7 @@ function objSet = GMMSegment(im, OS, trainingset)
 	clear p
 
 	for(n=1:size(objSet.props,1))
-		
-		n
-		
+				
 		for(i=1:size(objSet.props(n).PixelList,1))
 			objSet.labels(	objSet.props(n).PixelList(i,2), ...
 							objSet.props(n).PixelList(i,1)) = 0;
@@ -56,9 +54,9 @@ function objSet = GMMSegment(im, OS, trainingset)
 
 		%guess = floor(objSet.props(n).Area / avgArea);
 
-		%guess = max(guess, 3)
+		%guess = max(guess, 3);
 
-		for(numObj=1:10)%guess-2:guess+1)
+		for(numObj=1:5)
 				
 			options = statset('Display', 'off', 'MaxIter', 500);
 			gm = gmdistribution.fit(points, numObj,...
@@ -107,9 +105,6 @@ function objSet = GMMSegment(im, OS, trainingset)
 			end
 			clear im2;
 		end
-
-		disp(maxlklhd);
-		disp(finalNum);
 
 		%place division between newly segmented objects
 		%gmmIm is image with final segmentation
@@ -173,7 +168,6 @@ function objSet = GMMSegment(im, OS, trainingset)
 		objSet.props = ClassifyFirstPass(objSet.props);
 	end
 	
-
 	clear i
 
 end

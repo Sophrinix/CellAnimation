@@ -9,7 +9,8 @@ function [s,l] = Resegment(im, properties, labels, objids)
 %
 %labels      -  the matrix of labeled objects
 %
-%objids      -  a list of object ids (indexes in the properties struct) 
+%objids      -  a list of object ids (indexes in the properties 
+%				struct) 
 %				to be resegmented
 %OUTPUTS:
 %s           -  properties of all objects in the image after 
@@ -38,7 +39,8 @@ function [s,l] = Resegment(im, properties, labels, objids)
 		for(i=1:size(bounds,1))
 			blankSlate(bounds(i,1), bounds(i,2)) = ...
 				l(bounds(i,1), bounds(i,2));
-			mask(bounds(i,1), bounds(i,2)) = l(bounds(i,1), bounds(i,2));
+			mask(bounds(i,1), bounds(i,2)) = ...
+				l(bounds(i,1), bounds(i,2));
 		end
 	end
 	

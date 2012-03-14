@@ -9,10 +9,12 @@ library('ada')
 
 d$MeanIntensity <- d$Intensity/d$Area
 
-model.nuclei <- ada(nucleus ~ Area + MajorAxisLength + MinorAxisLength + 
-                              Eccentricity + ConvexArea + FilledArea + 
-                              EulerNumber + EquivDiameter + Solidity + 
-                              Perimeter + Intensity + MeanIntensity,
+model.nuclei <- ada(nucleus ~ 	Area + MajorAxisLength + 
+								MinorAxisLength + Eccentricity + 
+								ConvexArea + FilledArea + 
+								EulerNumber + EquivDiameter + 
+								Solidity + Perimeter + 
+								Intensity + MeanIntensity,
                     data=d,
                     iter=1000,
                     type="discrete",

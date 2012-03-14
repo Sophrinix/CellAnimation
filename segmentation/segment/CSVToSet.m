@@ -1,7 +1,7 @@
 function objSet = CSVToSet(objSet, directory)
 
-  names = {'debris', 		'nucleus', 		 		'under', ...
-		   'predivision', 	'postdivision',  	'newborn'};
+  names = {'debris', 		'nucleus', 		 		'under'};%, ...
+%		   'predivision', 	'postdivision',  	'newborn'};
 
   for(nm=1:size(names,2))
     imageName = objSet.imageName(1:(find(objSet.imageName == '.')-1));

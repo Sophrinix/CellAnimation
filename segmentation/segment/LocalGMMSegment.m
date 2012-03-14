@@ -22,6 +22,8 @@ for(imNum = startIndex:endIndex)
 	imNumStr = sprintf('%%0%dd', digitsForEnum);
 	imNumStr = sprintf(imNumStr, imNum * frameStep);
 
+	disp(['Image Number: ' imNumStr]);
+
 	im = imread([	directory filesep ...
 					wellName filesep ...
 					imageNameBase imNumStr fileExt]);
@@ -51,6 +53,29 @@ for(imNum = startIndex:endIndex)
 								imageNameBase imNumStr '.jpg'], ...
 			'jpg');
 
+
+	%combine gmm and naive results
+	gmmOS = objSet;
+	clear objSet;
+
+	load([	directory filesep ...
+			outdir filesep ...
+			imageNameBase imNumStr '.mat']);
+	naiveOS = objSet;
+	naiveOS = RemoveObjects(naiveOS, 'under');
+	naiveOS = RemoveObjects(naiveOS, 'debris');
+	clear objSet;
+
+	objSet = CombineImages(gmmOS, naiveOS);
+	mkdir([directory filesep wellName filesep 'output']);
+	save([	directory filesep ...
+			wellName filesep ...
+			'output' filesep ...
+			imageNameBase imNumStr '.mat'], 'objSet');	
+
+	%clean-up
+	clear gmmOS;
+	clear naiveOS;
 	clear objSet;
 	clear im;
 	clear imNumStr;
