@@ -111,7 +111,7 @@ function error=InitDisplay(handles, directory, outputfile)
 	guidata(handles.output, handles);
 
 	try %load objSet object, if it exists
-		load([directory filesep outputfile], 'objSet');
+		load(outputfile, 'objSet');
 		handles.objSet				= objSet;
 		InitFirstSet(handles);
   	catch %initialize a new set if necessary

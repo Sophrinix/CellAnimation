@@ -1,11 +1,12 @@
-directory		= '~/Work/Images';
-wellName		= 'Well F05';
+directory		= '~/Work/Images/2009-05-01_001';
+wellName		= 'WellB02';
 imageNameBase 	= 'DsRed - Confocal - n';
 fileExt			= '.tif';
 digitsForEnum	= 6;
-startIndex		= 0;
-endIndex		= 25;
-frameStep		= 4;
+startIndex		= 290;
+endIndex		= 300;
+frameStep		= 1;
+outdir 			= 'WellB02/naive';
 
 for(imNum=startIndex:endIndex)
 	imNumStr = sprintf('%%0%dd', digitsForEnum);
@@ -13,19 +14,15 @@ for(imNum=startIndex:endIndex)
 
 	%load the current objSet
 	load([	directory filesep ...
-			wellName filesep ...
-			'output' filesep ...
+			outdir filesep ...
 			imageNameBase imNumStr '.mat']);
 
 	%load and add classification data from R into matlab object
-	objSet = CSVToSet(objSet, [directory filesep wellName filesep 'output']);
-
-	%remove temporary csv files (communication between R and matlab)
+	objSet = CSVToSet(objSet, [directory filesep outdir]);
   
 	%save the updated objSet
 	save([	directory filesep ...
-			wellName filesep ...
-			'output' filesep ...
+			outdir filesep ...
 			imageNameBase imNumStr '.mat'], 'objSet');
   
 	%reclaim memory
