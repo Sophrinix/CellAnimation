@@ -15,7 +15,8 @@ for(imNum=startIndex:endIndex)
   
 	imNumStr = sprintf('%%0%dd', digitsForEnum);
   	imNumStr = sprintf(imNumStr, imNum * frameStep);
-  	
+	disp(imNumStr);  	
+
 	%load image 
   	[im, objSet.wellName, objSet.imageName] = ...
     	LoadImage([	directory filesep ...

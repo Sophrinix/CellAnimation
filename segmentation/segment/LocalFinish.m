@@ -1,12 +1,12 @@
 directory		= '~/Work/Images/2009-05-01_001';
-wellName		= 'WellB02';
+wellName		= 'WellC04';
 imageNameBase 	= 'DsRed - Confocal - n';
 fileExt			= '.tif';
 digitsForEnum	= 6;
-startIndex		= 290;
-endIndex		= 300;
+startIndex		= 0;
+endIndex		= 65;
 frameStep		= 1;
-outdir 			= 'WellB02/naive';
+outdir 			= 'WellC04/naive';
 
 for(imNum=startIndex:endIndex)
 	imNumStr = sprintf('%%0%dd', digitsForEnum);

@@ -3,8 +3,8 @@ wellName		= 'WellB02';
 imageNameBase 	= 'DsRed - Confocal - n';
 fileExt			= '.tif';
 digitsForEnum	= 6;
-startIndex		= 290;
-endIndex		= 300;
+startIndex		= 1;
+endIndex		= 100;
 framestep		= 1;
 outdir			= 'WellB02'
 
@@ -24,7 +24,7 @@ for(imNum=startIndex:endIndex)
 
 	%segment
 	[objSet.props, objSet.labels] = ...
-		NaiveSegment(im, 'BackgroundThreshold', .2);
+		NaiveSegment(im, 'BackgroundThreshold', .1);
 
 	%export to CSV file for classification
 	SetToCSV(objSet, [	directory filesep ...

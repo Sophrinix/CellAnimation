@@ -2,6 +2,8 @@ function objSet = GMMSegment(im, OS, trainingset)
 
 	objSet = OS;
 
+	% determine average and standard deviations from training set
+	% used in determining best outcome by max likelihood
 	p = [];
 	for(i=1:size(trainingset,2))
 		p2 = [p; trainingset(i).props];
@@ -10,23 +12,32 @@ function objSet = GMMSegment(im, OS, trainingset)
 		clear p2;
 	end
 	nuclei = p(find([p(:).nucleus]));
+	
+	% properties chosen based on variable importance
+	% from classification
+
+	% area
 	avgArea = mean([nuclei.Area]);
 	stdArea = std([nuclei.Area]);
 
+	% eccentricity
 	avgEccentricity = mean([nuclei.Eccentricity]);
 	stdEccentricity = std([nuclei.Eccentricity]);
     
+	% minor axis length
     avgMinAL = mean([nuclei.MinorAxisLength]);
     stdMinAL = std([nuclei.MinorAxisLength]);
     
+	% solidity
     avgSolidity = mean([nuclei.Solidity]);
     stdSolidity = std([nuclei.Solidity]);
 
 	clear nuclei
 	clear p
 
-	for(n=1:size(objSet.props,1))
-				
+	% begin segmentation of each object seperately
+	for(n=1:size(objSet.props,1))			
+	
 		for(i=1:size(objSet.props(n).PixelList,1))
 			objSet.labels(	objSet.props(n).PixelList(i,2), ...
 							objSet.props(n).PixelList(i,1)) = 0;
@@ -35,6 +46,7 @@ function objSet = GMMSegment(im, OS, trainingset)
 		gmmIm = zeros(size(im));
 		i = im2double(im);
 
+		% extract pixels
 		pl = objSet.props(n).PixelList;
 		points = [];
 		for(pt = 1:size(pl,1))
@@ -46,18 +58,15 @@ function objSet = GMMSegment(im, OS, trainingset)
 				clear pts2;
 			end
 		end
-
 		clear pl;	
 
 		maxlklhd = -Inf;
 		finalNum = 0;
 
-		%guess = floor(objSet.props(n).Area / avgArea);
+		% try to segment object into numObj objects, check likelihoo
+		for(numObj=1:3)
 
-		%guess = max(guess, 3);
-
-		for(numObj=1:5)
-				
+			% gaussian mixture modeling ...
 			options = statset('Display', 'off', 'MaxIter', 500);
 			gm = gmdistribution.fit(points, numObj,...
 									'Options',options, ...
@@ -73,14 +82,17 @@ function objSet = GMMSegment(im, OS, trainingset)
 					end
 				end
 			end
+			% fill holes
 			im2 = imfill(im2, 'holes');
 
 			likelihood = 0;
+			% properties for likelihoods
 			props = regionprops(im2, 'MinorAxisLength',...
 									 'Solidity', ...
 									 'Area', ...
 									 'Eccentricity');
 			for(obj=1:size(props,1))
+				% determine likelihood
 				likelihood = likelihood + ...
 							log(normpdf(props(obj).MinorAxisLength,...
 										avgMinAL,...
@@ -96,7 +108,10 @@ function objSet = GMMSegment(im, OS, trainingset)
 										stdEccentricity));
 			end
 
+			% likelihood correction based on number of objects
 			likelihood = likelihood - (obj * log(obj));
+			% compare to current maximum likelihood,
+			% replace if better
 			if(likelihood > maxlklhd)
 				maxlklhd = likelihood;
 				clear gmmIm;
@@ -143,7 +158,7 @@ function objSet = GMMSegment(im, OS, trainingset)
 								'BoundingBox');
 	
 	%compute intensities, store labels, determine edge condition,
-	%first pass classification
+	%first pass classification - same as NaiveSegment.m
 	bounds = bwboundaries(objSet.labels);
 	i = imtophat(im2double(im), strel('disk', 50));
 	

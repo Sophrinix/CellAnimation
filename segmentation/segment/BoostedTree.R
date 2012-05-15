@@ -31,10 +31,13 @@ t1
 t1$frame
 t1$cptable
 
-model.predivision <- ada(predivision ~ Area + MajorAxisLength + MinorAxisLength + 
-                                       Eccentricity + ConvexArea + FilledArea + 
-                                       EulerNumber + EquivDiameter + Solidity + 
-                                       Perimeter + Intensity + MeanIntensity,
+model.predivision <- ada(predivision ~ 	
+							Area + 				MajorAxisLength + 
+							MinorAxisLength + 	Eccentricity + 
+							ConvexArea + 		FilledArea + 
+							EulerNumber + 		EquivDiameter + 
+							Solidity + 			Perimeter + 
+							Intensity + 		MeanIntensity,
                          data=d,
                          iter=1000,
                          type="discrete",
