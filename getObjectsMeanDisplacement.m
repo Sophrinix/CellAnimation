@@ -12,9 +12,12 @@ function output_args=getObjectsMeanDisplacement(input_args)
 
 prev_frame_centroids=input_args.CurrentTracks.Value(:,input_args.Centroid1Col.Value:input_args.Centroid2Col.Value);
 cur_frame_centroids=input_args.ObjectCentroids.Value;
-delaunay_tri=delaunay(prev_frame_centroids(:,1),prev_frame_centroids(:,2));
-nearest_neighbors_idx=dsearch(prev_frame_centroids(:,1),prev_frame_centroids(:,2),delaunay_tri,...
-    cur_frame_centroids(:,1),cur_frame_centroids(:,2));
+delaunay_tri=DelaunayTri(prev_frame_centroids(:,1),prev_frame_centroids(:,2));
+
+%%%%%% Deprecated
+%%%nearest_neighbors_idx=dsearch(prev_frame_centroids(:,1),prev_frame_centroids(:,2),delaunay_tri,...
+%%%    cur_frame_centroids(:,1),cur_frame_centroids(:,2));
+nearest_neighbors_idx=nearestNeighbor(delaunay_tri,cur_frame_centroids(:,1),cur_frame_centroids(:,2));
 cell_displacements=hypot(cur_frame_centroids(:,1)-prev_frame_centroids(nearest_neighbors_idx,1),...
     cur_frame_centroids(:,2)-prev_frame_centroids(nearest_neighbors_idx,2));
 output_args.MeanDisplacement=mean(cell_displacements);

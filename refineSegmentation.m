@@ -18,12 +18,15 @@ end
 
 prev_centroids=getApproximateCentroids(prev_label);
 cur_centroids=getApproximateCentroids(cur_label);
-cur_triangulation=delaunay(cur_centroids(:,1),cur_centroids(:,2));
+cur_triangulation=DelaunayTri(cur_centroids(:,1),cur_centroids(:,2));
 
 %get the indexes of the nearest centroids in the current label to the
 %remaining centroids in the previous label
-nearest_idx=dsearch(cur_centroids(:,1),cur_centroids(:,2),cur_triangulation,...
-    prev_centroids(:,1),prev_centroids(:,2));
+
+%%%%%%%% Original is deprecated
+%%%nearest_idx=dsearch(cur_centroids(:,1),cur_centroids(:,2),cur_triangulation,...
+%%%    prev_centroids(:,1),prev_centroids(:,2));
+nearest_idx=nearestNeighbor(cur_triangulation,prev_centroids(:,1),prev_centroids(:,2));
 label_ids=unique(nearest_idx);
 new_label=bwlabeln(ismember(cur_label,label_ids));
 output_args.LabelMatrix=new_label;
